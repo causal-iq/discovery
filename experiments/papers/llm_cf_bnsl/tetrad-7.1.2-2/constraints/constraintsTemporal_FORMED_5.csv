@@ -1,0 +1,9 @@
+/knowledge
+addtemporal
+1* Impulsivity PCLRfacet3 PCLRfactor1 PCLRfactor2 PriorViolentConvictions CriminalFamilyBackground GangMember
+2* CriminalAttitude Violence
+
+forbiddirect
+
+requiredirect
+

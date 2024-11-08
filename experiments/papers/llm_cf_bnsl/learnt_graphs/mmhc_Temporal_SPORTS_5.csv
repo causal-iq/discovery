@@ -1,0 +1,9 @@
+ID,Variable 1,Dependency,Variable 2
+1,ATshots,->,ATshotsOnTarget
+2,RDlevel,->,possession
+3,HTshots,->,HTshotOnTarget
+4,HTshotOnTarget,->,HTgoals
+5,ATgoals,->,HDA
+6,possession,->,HTshots
+7,ATshotsOnTarget,->,ATgoals
+8,HTgoals,->,HDA

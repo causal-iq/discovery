@@ -1,0 +1,9 @@
+/knowledge
+addtemporal
+1* MTH_Education ECO_WealthQuintile WSH_WashWithAgent WSH_SafeStoolDisposal WSH_WaterTreated KNW_WatchTV CUL_Religion CUL_LanguageGroup BF_EarlyBreastfeeding WSH_ImprovedToilet GEO_Region
+2* FP_ModernMethod BF_BreastfedMonths WSH_ImprovedWaterSource IMM_VitaminA1 SRV_Near
+3* IMM_Diptheria IMM_Measles DIA_HadDiarrhoea CHI_Weight4Height
+
+forbiddirect
+
+requiredirect

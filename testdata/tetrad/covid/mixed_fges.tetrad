@@ -1,0 +1,59 @@
+Graph Nodes:
+Positive_tests;Excess_mortality;Tests_across_all_4_Pillars;Season;Leisure_activity;Work_and_school_activity;Deaths_with_COVID_on_certificate;Reinfections;Patients_in_MVBs;Majority_COVID_19_variant;Lockdown;Hospital_admissions;Face_masks;Second_dose_uptake;Transportation_activity;Patients_in_hospital;New_infections
+
+Graph Edges:
+1. Deaths_with_COVID_on_certificate --> Patients_in_MVBs
+2. Deaths_with_COVID_on_certificate --> Patients_in_hospital
+3. Face_masks --- Season
+4. Hospital_admissions --> Work_and_school_activity
+5. Lockdown --> Deaths_with_COVID_on_certificate
+6. Lockdown --> Excess_mortality
+7. Lockdown --- Face_masks
+8. Lockdown --> Hospital_admissions
+9. Lockdown --> Leisure_activity
+10. Lockdown --> New_infections
+11. Lockdown --> Patients_in_hospital
+12. Lockdown --> Reinfections
+13. Lockdown --> Second_dose_uptake
+14. Lockdown --> Transportation_activity
+15. Majority_COVID_19_variant --> Patients_in_MVBs
+16. Majority_COVID_19_variant --> Positive_tests
+17. Majority_COVID_19_variant --> Second_dose_uptake
+18. Majority_COVID_19_variant --> Tests_across_all_4_Pillars
+19. Majority_COVID_19_variant --> Work_and_school_activity
+20. New_infections --> Hospital_admissions
+21. New_infections --> Positive_tests
+22. New_infections --> Tests_across_all_4_Pillars
+23. Patients_in_MVBs --> Excess_mortality
+24. Patients_in_MVBs --> Leisure_activity
+25. Patients_in_MVBs --> New_infections
+26. Patients_in_MVBs --> Patients_in_hospital
+27. Patients_in_MVBs --> Second_dose_uptake
+28. Patients_in_hospital --> Hospital_admissions
+29. Patients_in_hospital --> Second_dose_uptake
+30. Reinfections --- Deaths_with_COVID_on_certificate
+31. Reinfections --> Majority_COVID_19_variant
+32. Reinfections --> New_infections
+33. Season --> Deaths_with_COVID_on_certificate
+34. Season --> Excess_mortality
+35. Season --> Hospital_admissions
+36. Season --> Majority_COVID_19_variant
+37. Season --> New_infections
+38. Season --> Patients_in_MVBs
+39. Season --> Patients_in_hospital
+40. Season --> Positive_tests
+41. Season --> Reinfections
+42. Season --> Tests_across_all_4_Pillars
+43. Season --> Transportation_activity
+44. Second_dose_uptake --> New_infections
+45. Second_dose_uptake --> Tests_across_all_4_Pillars
+46. Second_dose_uptake --> Transportation_activity
+47. Tests_across_all_4_Pillars --> Work_and_school_activity
+48. Transportation_activity --> Leisure_activity
+49. Transportation_activity --> Work_and_school_activity
+
+Graph Attributes:
+BIC: -123569.919419
+
+Graph Node Attributes:
+Score: [Positive_tests: -8496.73737350203;Excess_mortality: -5081.46660888727;Tests_across_all_4_Pillars: -22301.620240937464;Season: -1901.626030681016;Leisure_activity: -1425.9167859188994;Work_and_school_activity: -196.9500182606131;Deaths_with_COVID_on_certificate: -8749.38236793283;Reinfections: -9978.399670334351;Patients_in_MVBs: -9848.088361606742;Majority_COVID_19_variant: -1194.9892018664054;Lockdown: -2614.3467821083327;Hospital_admissions: -10462.628993788305;Face_masks: -784.1846882694356;Second_dose_uptake: -3749.3249407897656;Transportation_activity: -41.751359993302344;Patients_in_hospital: -13243.50035843704;New_infections: -17661.8842170039]

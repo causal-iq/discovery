@@ -1,0 +1,4 @@
+
+# Ignore uncompressed data fles
+
+*.data

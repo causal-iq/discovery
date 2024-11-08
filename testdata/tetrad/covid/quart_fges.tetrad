@@ -1,0 +1,23 @@
+Graph Nodes:
+Positive_tests;Excess_mortality;Tests_across_all_4_Pillars;Season;Leisure_activity;Work_and_school_activity;Deaths_with_COVID_on_certificate;Reinfections;Patients_in_MVBs;Majority_COVID_19_variant;Lockdown;Hospital_admissions;Face_masks;Second_dose_uptake;Transportation_activity;Patients_in_hospital;New_infections
+
+Graph Edges:
+1. Deaths_with_COVID_on_certificate --- Patients_in_MVBs
+2. Face_masks --- Majority_COVID_19_variant
+3. Lockdown --- Deaths_with_COVID_on_certificate
+4. Lockdown --- Face_masks
+5. Lockdown --- Leisure_activity
+6. Majority_COVID_19_variant --- Reinfections
+7. Majority_COVID_19_variant --- Season
+8. Majority_COVID_19_variant --- Second_dose_uptake
+9. Majority_COVID_19_variant --- Tests_across_all_4_Pillars
+10. New_infections --- Positive_tests
+11. Patients_in_MVBs --- Excess_mortality
+12. Patients_in_hospital --- Deaths_with_COVID_on_certificate
+13. Patients_in_hospital --- Hospital_admissions
+14. Reinfections --- Positive_tests
+15. Transportation_activity --- Lockdown
+16. Transportation_activity --- Work_and_school_activity
+
+Graph Node Attributes:
+Score: [Positive_tests: -1450.6664774829937;Excess_mortality: -1635.489494775869;Tests_across_all_4_Pillars: -2351.8038270821257;Season: -2400.6194356107394;Leisure_activity: -1856.5319722116324;Work_and_school_activity: -1160.6899267701222;Deaths_with_COVID_on_certificate: -1496.6671701411337;Reinfections: -837.7422727777987;Patients_in_MVBs: -1149.5197767190007;Majority_COVID_19_variant: -1041.7672374875797;Lockdown: -1505.1904214610363;Hospital_admissions: -1312.754192541609;Face_masks: -714.676627399303;Second_dose_uptake: -588.6517482559533;Transportation_activity: -1332.5002764292417;Patients_in_hospital: -1175.9867506194364;New_infections: -289.76408351830133]

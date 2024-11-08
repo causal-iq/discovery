@@ -1,0 +1,8 @@
+Graph Nodes:
+Cancer;Dyspnoea;Pollution;Smoker;Xray
+
+Graph Edges:
+1. Cancer --- Smoker
+2. Cancer --- Pollution
+3. Cancer --- Dyspnoea
+4. Cancer --- Xray

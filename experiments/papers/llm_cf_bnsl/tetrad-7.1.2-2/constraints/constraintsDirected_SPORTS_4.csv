@@ -1,0 +1,20 @@
+/knowledge
+addtemporal
+
+forbiddirect
+
+requiredirect
+ATshots ATshotsOnTarget
+ATshotsOnTarget ATgoals
+HTshotOnTarget HTgoals
+HTgoals HDA
+HTshots HTshotOnTarget
+possession ATshots
+possession HTshots
+RDlevel ATgoals
+RDlevel HTgoals
+RDlevel ATshots
+RDlevel ATshotsOnTarget
+RDlevel HTshotOnTarget
+RDlevel HTshots
+ATgoals HDA

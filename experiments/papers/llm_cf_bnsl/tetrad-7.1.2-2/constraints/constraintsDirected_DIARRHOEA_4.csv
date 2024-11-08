@@ -1,0 +1,40 @@
+/knowledge
+addtemporal
+
+forbiddirect
+
+requiredirect
+BF_BottleFeeding CHI_Weight4Height
+BF_BreastfedMonths CHI_Weight4Height
+BF_BreastfedMonths IMM_Measles
+BF_BreastfedMonths IMM_Diptheria
+BF_BreastfedMonths IMM_VitaminA1
+BF_BreastfedMonths DIA_HadDiarrhoea
+BF_EarlyBreastfeeding CHI_Weight4Height
+BF_EarlyBreastfeeding IMM_Diptheria
+BF_EarlyBreastfeeding IMM_Measles
+BF_EarlyBreastfeeding IMM_VitaminA1
+BF_EarlyBreastfeeding DIA_HadDiarrhoea
+CUL_LanguageGroup IMM_Diptheria
+CUL_LanguageGroup IMM_Measles
+HOU_CookingFuel CHI_Weight4Height
+WSH_ImprovedWaterSource DIA_HadDiarrhoea
+CUL_Religion IMM_Diptheria
+CUL_Religion IMM_Measles
+ECO_WealthQuintile WSH_ImprovedWaterSource
+ECO_WealthQuintile FP_ModernMethod
+ECO_WealthQuintile HOU_ModernWallMaterial
+ECO_WealthQuintile WSH_ImprovedToilet
+ECO_WealthQuintile FP_BirthsLast5Yrs
+GEO_Region SRV_Near
+MTH_Education FP_ModernMethod
+MTH_Education BF_BreastfedMonths
+MTH_Education IMM_Diptheria
+MTH_Education IMM_Measles
+MTH_Education BF_EarlyBreastfeeding
+WSH_ImprovedToilet DIA_HadDiarrhoea
+WSH_SafeStoolDisposal DIA_HadDiarrhoea
+WSH_WashWithAgent DIA_HadDiarrhoea
+WSH_WaterTreated DIA_HadDiarrhoea
+KNW_WatchTV IMM_Diptheria
+KNW_WatchTV IMM_Measles

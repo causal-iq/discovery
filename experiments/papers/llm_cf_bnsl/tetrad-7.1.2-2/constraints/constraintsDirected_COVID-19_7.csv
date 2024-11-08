@@ -1,0 +1,19 @@
+/knowledge
+addtemporal
+
+forbiddirect
+
+requiredirect
+Face_masks New_infections
+New_infections Hospital_admissions
+New_infections Patients_in_hospital
+Lockdown New_infections
+Lockdown Leisure_activity
+Lockdown Work_and_school_activity
+Lockdown Transportation_activity
+Majority_COVID_19_variant New_infections
+Deaths_with_COVID_on_certificate Excess_mortality
+Season New_infections
+Second_dose_uptake New_infections
+Second_dose_uptake Hospital_admissions
+Tests_across_all_4_Pillars Positive_tests

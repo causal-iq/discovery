@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in BNBENCH -->
+<smile version="1.0" id="bnbench" numsamples="100000" discsamples="100000">
+    <nodes>
+        <equation id="G3927">
+            <definition>G3927=Normal(0.388224471,0.7913955278)</definition>
+        </equation>
+        <equation id="G5167">
+            <definition>G5167=Normal(0.1950321987,0.593591601)</definition>
+        </equation>
+        <equation id="G5006">
+            <definition>G5006=Normal(0.776448942,0.9751408705)</definition>
+        </equation>
+        <equation id="G5997">
+            <definition>G5997=Normal(0.8776448942,0.9929432276)</definition>
+        </equation>
+        <equation id="G4382">
+            <definition>G4382=Normal(0.3992640294,0.7998154778)</definition>
+        </equation>
+        <equation id="G1378">
+            <definition>G1378=Normal(0.4599816007,0.8420406238)</definition>
+        </equation>
+        <equation id="G1888">
+            <definition>G1888=Normal(0.141674333,0.5133414825)</definition>
+        </equation>
+        <equation id="G2639">
+            <definition>G2639=Normal(0.9218031279,0.9973968262)</definition>
+        </equation>
+        <equation id="G3092">
+            <definition>G3092=Normal(0.2667893284,0.6803145565)</definition>
+        </equation>
+        <equation id="G3992">
+            <definition>G3992=Normal(0.228150874,0.6360983911)</definition>
+        </equation>
+        <equation id="G2764">
+            <definition>G2764=Normal(0.1122355106,0.4605098341)</definition>
+        </equation>
+        <equation id="G678">
+            <definition>G678=Normal(0.2520699172,0.6640830526)</definition>
+        </equation>
+        <equation id="G1533">
+            <definition>G1533=Normal(0.8003679853,0.9803219736)</definition>
+        </equation>
+        <equation id="G2179">
+            <definition>G2179=Normal(0.4894204232,0.8602262834)</definition>
+        </equation>
+        <equation id="G4668">
+            <definition>G4668=Normal(0.2097516099,0.6130687181)</definition>
+        </equation>
+        <equation id="G1266">
+            <definition>G1266=Normal(0.2336706532,0.6427436401)</definition>
+        </equation>
+        <equation id="G1958">
+            <definition>G1958=Normal(0.2539098436,0.6661514237)</definition>
+        </equation>
+        <equation id="G3049">
+            <definition>G3049=Normal(0.6053357866,0.919248358)</definition>
+        </equation>
+        <equation id="G4553">
+            <definition>G4553=Normal(0.3735050598,0.779784256)</definition>
+        </equation>
+        <equation id="G3872">
+            <definition>G3872=Normal(0.6550137994,0.9390397974)</definition>
+        </equation>
+        <equation id="G1440">
+            <definition>G1440=Normal(0.246550138,0.6578080145)</definition>
+        </equation>
+        <equation id="G3925">
+            <definition>G3925=Normal(0.3459061638,0.7567615908)</definition>
+        </equation>
+        <equation id="G4573">
+            <definition>G4573=Normal(0.1195952162,0.4744412454)</definition>
+        </equation>
+        <equation id="G4744">
+            <definition>G4744=Normal(0.1398344066,0.5102496141)</definition>
+        </equation>
+        <equation id="G2949">
+            <definition>G2949=Normal(0.1766329347,0.5677704096)</definition>
+        </equation>
+        <equation id="G4156">
+            <definition>G4156=Normal(0.7635694572,0.9720956414)</definition>
+        </equation>
+        <equation id="G2815">
+            <definition>G2815=Normal(0.7985280589,0.9799451468)</definition>
+        </equation>
+        <equation id="G3964">
+            <definition>G3964=Normal(0.5096596136,0.8719321774)</definition>
+        </equation>
+        <equation id="G1778">
+            <definition>G1778=Normal(0.862925483,0.9910166929)</definition>
+        </equation>
+        <equation id="G6123">
+            <definition>G6123=Normal(0.1950321987,0.593591601)</definition>
+        </equation>
+        <equation id="G3823">
+            <definition>G3823=Normal(0.739650414,0.9659588444)</definition>
+        </equation>
+        <equation id="G3136">
+            <definition>G3136=Normal(0.8776448942,0.9929432276)</definition>
+        </equation>
+        <equation id="G2089">
+            <definition>G2089=Normal(0.4820607176,0.8558111313)</definition>
+        </equation>
+        <equation id="G457">
+            <parents>G3823</parents>
+            <definition>G457=-0.08983549406*G3823+Normal(0.5080291971,0.8257729549)</definition>
+        </equation>
+        <equation id="G3219">
+            <parents>G4382</parents>
+            <definition>G3219=0.1874251814*G4382+Normal(0.6850574713,0.9599956534)</definition>
+        </equation>
+        <equation id="G4145">
+            <parents>G4156</parents>
+            <definition>G4145=0.5357465577*G4156+Normal(0.3839285714,0.8291196429)</definition>
+        </equation>
+        <equation id="G4432">
+            <parents>G1533</parents>
+            <definition>G4432=-0.07213877724*G1533+Normal(0.282208589,0.6279200964)</definition>
+        </equation>
+        <equation id="G1311">
+            <parents>G1378</parents>
+            <definition>G1311=0.2713787336*G1378+Normal(0.08124253286,0.5639978329)</definition>
+        </equation>
+        <equation id="G2670">
+            <parents>G2815</parents>
+            <definition>G2670=0.0817425424*G2815+Normal(0.2143950995,0.6896284553)</definition>
+        </equation>
+        <equation id="G5794">
+            <parents>G3925</parents>
+            <definition>G5794=0.1421851703*G3925+Normal(0.4071190211,0.833127925)</definition>
+        </equation>
+        <equation id="G4529">
+            <parents>G4573</parents>
+            <definition>G4529=0.5188469065*G4573+Normal(0.3776908023,0.7916592653)</definition>
+        </equation>
+        <equation id="G4109">
+            <parents>G4156 G4145</parents>
+            <definition>G4109=0.1093980931*G4145+0.1153827464*G4156+Normal(-0.009262958357,0.5174082043)</definition>
+        </equation>
+        <equation id="SUB">
+            <parents>G4529 G4573 G1311 G2949 G4553</parents>
+            <definition>SUB=-0.1291808279*G1311-0.1153053266*G2949+0.1539318716*G4529-0.4279655486*G4553-0.3266390753*G4573+Normal(8.903139638,0.8044186947)</definition>
+        </equation>
+        <equation id="GL">
+            <parents>G1778 G3872 G4529 G1440 G5794 G4668 G2764 G3927 G3992</parents>
+            <definition>GL=-0.06567023937*G1440-0.2763302652*G1778-0.09371099721*G2764+0.03784238103*G3872+0.1926792733*G3927-0.08722677909*G3992-0.06712922298*G4529+0.04874962676*G4668+0.04556519924*G5794+Normal(6.480662817,0.3236118714)</definition>
+        </equation>
+        <equation id="G3212">
+            <parents>G4145</parents>
+            <definition>G3212=0.07904193311*G4145+Normal(0.2317073171,0.7050153242)</definition>
+        </equation>
+        <equation id="G6003">
+            <parents>G5794 G5997</parents>
+            <definition>G6003=-0.2708045421*G5794+0.6858489299*G5997+Normal(0.1288124873,0.5819710184)</definition>
+        </equation>
+        <equation id="G3209">
+            <parents>G3219 G3212</parents>
+            <definition>G3209=-0.241535971*G3212+0.5682003228*G3219+Normal(0.1177166919,0.6298396888)</definition>
+        </equation>
+        <equation id="G6010">
+            <parents>G6003 G5997</parents>
+            <definition>G6010=0.06009311667*G5997+0.8905857222*G6003+Normal(0.06337128798,0.3695377436)</definition>
+        </equation>
+        <equation id="BROWN">
+            <parents>G5167 G6003 G6010 G6123 G2815 G3049 G2179</parents>
+            <definition>BROWN=0.2133349052*G2179+0.325779852*G2815+0.3115939248*G3049+0.5363648292*G5167+1.344534217*G6003+1.155573323*G6010-0.5496792225*G6123+Normal(11.43500537,2.95410561)</definition>
+        </equation>
+        <equation id="G317">
+            <parents>G2639 G6010</parents>
+            <definition>G317=0.07594650204*G2639-0.07254107307*G6010+Normal(0.2757092283,0.705968528)</definition>
+        </equation>
+        <equation id="G3486">
+            <parents>G3209</parents>
+            <definition>G3486=-0.1329643754*G3209+Normal(0.6505441354,0.9044415323)</definition>
+        </equation>
+        <equation id="G3105">
+            <parents>G3209</parents>
+            <definition>G3105=-0.2032276067*G3209+Normal(0.9141475212,0.9685796953)</definition>
+        </equation>
+        <equation id="G3222">
+            <parents>G3219 G3209 G3212</parents>
+            <definition>G3222=-0.4273893674*G3209-0.3565161352*G3212-0.4326415995*G3219+Normal(1.767883713,0.669967452)</definition>
+        </equation>
+        <equation id="G3106">
+            <parents>G3105</parents>
+            <definition>G3106=0.9309823042*G3105+Normal(0.08398133748,0.372026101)</definition>
+        </equation>
+        <equation id="G3102">
+            <parents>G3105</parents>
+            <definition>G3102=0.6211907864*G3105+Normal(0.06842923795,0.6693398781)</definition>
+        </equation>
+        <equation id="G3862">
+            <parents>G3486 G3823 G3964</parents>
+            <definition>G3862=0.0702153079*G3486-0.1493727447*G3823+0.2516328111*G3964+Normal(0.1875747405,0.6012637246)</definition>
+        </equation>
+        <equation id="G3098">
+            <parents>G3105</parents>
+            <definition>G3098=-0.3559294131*G3105+Normal(0.7433903577,0.7609222924)</definition>
+        </equation>
+        <equation id="AMY">
+            <parents>G3105 G3102 G3098 G317 G3106 G1266</parents>
+            <definition>AMY=-0.2904808879*G1266+0.3287349557*G3098-0.20646212*G3102-0.8651608757*G3105-0.4447465331*G3106-0.2897060097*G317+Normal(22.68895562,1.53746376)</definition>
+        </equation>
+        <equation id="FT">
+            <parents>G1533 G2639 G3823 G1378 G3098 G3136 G4145</parents>
+            <definition>FT=0.4246829462*G1378+1.144031351*G1533-0.2494168559*G2639-0.255280813*G3098+0.5172712816*G3136+0.3399532473*G3823-0.3111428984*G4145+Normal(91.25986299,2.316142273)</definition>
+        </equation>
+        <equation id="HT">
+            <parents>FT G3486 G1533 G4156 G4382 G678</parents>
+            <definition>HT=1.056361754*FT+1.043027091*G1533-1.07056485*G3486-0.4925613173*G4156-0.5166135896*G4382+4.202375845*G678+Normal(-1.352333418,7.236549359)</definition>
+        </equation>
+        <equation id="GTEMP">
+            <parents>AMY G3219 G3209 G3222 G3212</parents>
+            <definition>GTEMP=-0.2895075878*AMY-0.777421564*G3209+1.549963651*G3212-1.99288858*G3219+1.480958368*G3222+Normal(81.84694528,1.850522458)</definition>
+        </equation>
+        <equation id="GW">
+            <parents>GL GTEMP G4432 G5794 G2764 G3927</parents>
+            <definition>GW=0.09694211939*G2764-0.06735060311*G3927-0.09722248701*G4432+0.01531749232*G5794-0.09538729051*GL-0.002515252344*GTEMP+Normal(2.937106504,0.1289582502)</definition>
+        </equation>
+        <equation id="YLD">
+            <parents>HT FT GW G4432 G2670 G4744 G3092 G1533 G1888 G1958 G5006</parents>
+            <definition>YLD=0.02500981069*FT+0.07243629469*G1533+0.09001893992*G1888-0.08697622268*G1958-0.08169014184*G2670-0.05715724647*G3092-0.09374689118*G4432-0.09754258909*G4744+0.04138812299*G5006+0.363922235*GW+0.0155233329*HT+Normal(1.391584817,0.4667880144)</definition>
+        </equation>
+        <equation id="CHALK">
+            <parents>FT AMY GL GW GTEMP G2764 G3862 G3964 G4109 G2089</parents>
+            <definition>CHALK=-0.4999363686*AMY-0.2876298169*FT+1.264030084*G2089+3.008619653*G2764+1.227218494*G3862+1.565260867*G3964+1.904517031*G4109+4.253515959*GL+0.4558353795*GTEMP+27.06239168*GW+Normal(-73.24467502,8.805930472)</definition>
+        </equation>
+    </nodes>
+    <extensions>
+        <genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="Network1">
+            <node id="G3927">
+                <name>G3927</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 100 100 140</position>
+            </node>
+            <node id="G5167">
+                <name>G5167</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 100 200 140</position>
+            </node>
+            <node id="G5006">
+                <name>G5006</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 100 300 140</position>
+            </node>
+            <node id="G5997">
+                <name>G5997</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 100 400 140</position>
+            </node>
+            <node id="G4382">
+                <name>G4382</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 100 500 140</position>
+            </node>
+            <node id="G1378">
+                <name>G1378</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>520 100 600 140</position>
+            </node>
+            <node id="G1888">
+                <name>G1888</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>620 100 700 140</position>
+            </node>
+            <node id="G2639">
+                <name>G2639</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>720 100 800 140</position>
+            </node>
+            <node id="G3092">
+                <name>G3092</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>820 100 900 140</position>
+            </node>
+            <node id="G3992">
+                <name>G3992</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>920 100 1000 140</position>
+            </node>
+            <node id="G2764">
+                <name>G2764</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1020 100 1100 140</position>
+            </node>
+            <node id="G678">
+                <name>G678</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1120 100 1200 140</position>
+            </node>
+            <node id="G1533">
+                <name>G1533</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1220 100 1300 140</position>
+            </node>
+            <node id="G2179">
+                <name>G2179</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1320 100 1400 140</position>
+            </node>
+            <node id="G4668">
+                <name>G4668</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1420 100 1500 140</position>
+            </node>
+            <node id="G1266">
+                <name>G1266</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1520 100 1600 140</position>
+            </node>
+            <node id="G1958">
+                <name>G1958</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1620 100 1700 140</position>
+            </node>
+            <node id="G3049">
+                <name>G3049</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1720 100 1800 140</position>
+            </node>
+            <node id="G4553">
+                <name>G4553</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1820 100 1900 140</position>
+            </node>
+            <node id="G3872">
+                <name>G3872</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1920 100 2000 140</position>
+            </node>
+            <node id="G1440">
+                <name>G1440</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2020 100 2100 140</position>
+            </node>
+            <node id="G3925">
+                <name>G3925</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2120 100 2200 140</position>
+            </node>
+            <node id="G4573">
+                <name>G4573</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2220 100 2300 140</position>
+            </node>
+            <node id="G4744">
+                <name>G4744</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2320 100 2400 140</position>
+            </node>
+            <node id="G2949">
+                <name>G2949</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2420 100 2500 140</position>
+            </node>
+            <node id="G4156">
+                <name>G4156</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2520 100 2600 140</position>
+            </node>
+            <node id="G2815">
+                <name>G2815</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2620 100 2700 140</position>
+            </node>
+            <node id="G3964">
+                <name>G3964</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2720 100 2800 140</position>
+            </node>
+            <node id="G1778">
+                <name>G1778</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2820 100 2900 140</position>
+            </node>
+            <node id="G6123">
+                <name>G6123</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>2920 100 3000 140</position>
+            </node>
+            <node id="G3823">
+                <name>G3823</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>3020 100 3100 140</position>
+            </node>
+            <node id="G3136">
+                <name>G3136</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>3120 100 3200 140</position>
+            </node>
+            <node id="G2089">
+                <name>G2089</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>3220 100 3300 140</position>
+            </node>
+            <node id="G457">
+                <name>G457</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 200 100 240</position>
+            </node>
+            <node id="G3219">
+                <name>G3219</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 200 200 240</position>
+            </node>
+            <node id="G4145">
+                <name>G4145</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 200 300 240</position>
+            </node>
+            <node id="G4432">
+                <name>G4432</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 200 400 240</position>
+            </node>
+            <node id="G1311">
+                <name>G1311</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 200 500 240</position>
+            </node>
+            <node id="G2670">
+                <name>G2670</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>520 200 600 240</position>
+            </node>
+            <node id="G5794">
+                <name>G5794</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>620 200 700 240</position>
+            </node>
+            <node id="G4529">
+                <name>G4529</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>720 200 800 240</position>
+            </node>
+            <node id="G4109">
+                <name>G4109</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 300 100 340</position>
+            </node>
+            <node id="SUB">
+                <name>SUB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 300 200 340</position>
+            </node>
+            <node id="GL">
+                <name>GL</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 300 300 340</position>
+            </node>
+            <node id="G3212">
+                <name>G3212</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 300 400 340</position>
+            </node>
+            <node id="G6003">
+                <name>G6003</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 300 500 340</position>
+            </node>
+            <node id="G3209">
+                <name>G3209</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 400 100 440</position>
+            </node>
+            <node id="G6010">
+                <name>G6010</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 400 200 440</position>
+            </node>
+            <node id="BROWN">
+                <name>BROWN</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 500 100 540</position>
+            </node>
+            <node id="G317">
+                <name>G317</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 500 200 540</position>
+            </node>
+            <node id="G3486">
+                <name>G3486</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 500 300 540</position>
+            </node>
+            <node id="G3105">
+                <name>G3105</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 500 400 540</position>
+            </node>
+            <node id="G3222">
+                <name>G3222</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 500 500 540</position>
+            </node>
+            <node id="G3106">
+                <name>G3106</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 600 100 640</position>
+            </node>
+            <node id="G3102">
+                <name>G3102</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 600 200 640</position>
+            </node>
+            <node id="G3862">
+                <name>G3862</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 600 300 640</position>
+            </node>
+            <node id="G3098">
+                <name>G3098</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 600 400 640</position>
+            </node>
+            <node id="AMY">
+                <name>AMY</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 700 100 740</position>
+            </node>
+            <node id="FT">
+                <name>FT</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 700 200 740</position>
+            </node>
+            <node id="HT">
+                <name>HT</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 800 100 840</position>
+            </node>
+            <node id="GTEMP">
+                <name>GTEMP</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 800 200 840</position>
+            </node>
+            <node id="GW">
+                <name>GW</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 900 100 940</position>
+            </node>
+            <node id="YLD">
+                <name>YLD</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 1000 100 1040</position>
+            </node>
+            <node id="CHALK">
+                <name>CHALK</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 1000 200 1040</position>
+            </node>
+        </genie>
+    </extensions>
+</smile>

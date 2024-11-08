@@ -1,0 +1,10 @@
+
+# Ignore R Studio Project files
+
+.Rproj.user
+
+.RData
+
+.RHistory
+
+R.Rproj

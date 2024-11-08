@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in BNBENCH -->
+<smile version="1.0" id="bnbench" numsamples="100000" discsamples="100000">
+    <nodes>
+        <equation id="X22">
+            <definition>X22=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X20">
+            <definition>X20=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X13">
+            <definition>X13=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X23">
+            <definition>X23=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X21">
+            <definition>X21=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X16">
+            <definition>X16=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X24">
+            <definition>X24=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X14">
+            <definition>X14=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X19">
+            <definition>X19=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X10">
+            <definition>X10=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X17">
+            <definition>X17=Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X15">
+            <parents>X16 X17</parents>
+            <definition>X15=0.9*X16+0.1*X17+Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X9">
+            <parents>X10</parents>
+            <definition>X9=0.5*X10+Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X18">
+            <parents>X19</parents>
+            <definition>X18=0.5*X19+Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X12">
+            <parents>X21</parents>
+            <definition>X12=0.8*X21+Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X7">
+            <parents>X14 X15 X16 X17</parents>
+            <definition>X7=0.6*X14+0.6*X15+0.4*X16+0.4*X17+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X8">
+            <parents>X18 X19 X20</parents>
+            <definition>X8=0.5*X18+0.9*X19+0.8*X20+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X11">
+            <parents>X12 X21</parents>
+            <definition>X11=0.3*X12+0.7*X21+Normal(0.0,1.0)</definition>
+        </equation>
+        <equation id="X3">
+            <parents>X11 X12 X21</parents>
+            <definition>X3=0.7*X11+0.9*X12+0.5*X21+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X6">
+            <parents>X23 X8</parents>
+            <definition>X6=0.9*X23+0.5*X8+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X5">
+            <parents>X13 X22 X7</parents>
+            <definition>X5=0.7*X13+0.5*X22+0.9*X7+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X4">
+            <parents>X24 X5 X8</parents>
+            <definition>X4=0.7*X24+0.3*X5+0.7*X8+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X2">
+            <parents>X3 X4 X5 X6</parents>
+            <definition>X2=0.7*X3+0.5*X4+0.7*X5+0.3*X6+Normal(0.0,0.01)</definition>
+        </equation>
+        <equation id="X1">
+            <parents>X10 X2 X9</parents>
+            <definition>X1=0.7*X10+2.0*X2+0.3*X9+Normal(0.0,1.0)</definition>
+        </equation>
+    </nodes>
+    <extensions>
+        <genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="Network1">
+            <node id="X22">
+                <name>X22</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 100 100 140</position>
+            </node>
+            <node id="X20">
+                <name>X20</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 100 200 140</position>
+            </node>
+            <node id="X13">
+                <name>X13</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 100 300 140</position>
+            </node>
+            <node id="X23">
+                <name>X23</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 100 400 140</position>
+            </node>
+            <node id="X21">
+                <name>X21</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 100 500 140</position>
+            </node>
+            <node id="X16">
+                <name>X16</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>520 100 600 140</position>
+            </node>
+            <node id="X24">
+                <name>X24</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>620 100 700 140</position>
+            </node>
+            <node id="X14">
+                <name>X14</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>720 100 800 140</position>
+            </node>
+            <node id="X19">
+                <name>X19</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>820 100 900 140</position>
+            </node>
+            <node id="X10">
+                <name>X10</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>920 100 1000 140</position>
+            </node>
+            <node id="X17">
+                <name>X17</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1020 100 1100 140</position>
+            </node>
+            <node id="X15">
+                <name>X15</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 200 100 240</position>
+            </node>
+            <node id="X9">
+                <name>X9</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 200 200 240</position>
+            </node>
+            <node id="X18">
+                <name>X18</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 200 300 240</position>
+            </node>
+            <node id="X12">
+                <name>X12</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 200 400 240</position>
+            </node>
+            <node id="X7">
+                <name>X7</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 300 100 340</position>
+            </node>
+            <node id="X8">
+                <name>X8</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 300 200 340</position>
+            </node>
+            <node id="X11">
+                <name>X11</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 300 300 340</position>
+            </node>
+            <node id="X3">
+                <name>X3</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 400 100 440</position>
+            </node>
+            <node id="X6">
+                <name>X6</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 400 200 440</position>
+            </node>
+            <node id="X5">
+                <name>X5</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 400 300 440</position>
+            </node>
+            <node id="X4">
+                <name>X4</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 500 100 540</position>
+            </node>
+            <node id="X2">
+                <name>X2</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 600 100 640</position>
+            </node>
+            <node id="X1">
+                <name>X1</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 700 100 740</position>
+            </node>
+        </genie>
+    </extensions>
+</smile>

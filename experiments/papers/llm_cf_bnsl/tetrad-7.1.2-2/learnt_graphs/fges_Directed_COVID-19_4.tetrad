@@ -1,0 +1,44 @@
+Graph Nodes:
+Positive_tests;Excess_mortality;Tests_across_all_4_Pillars;Season;Leisure_activity;Work_and_school_activity;Deaths_with_COVID_on_certificate;Reinfections;Patients_in_MVBs;Majority_COVID_19_variant;Lockdown;Hospital_admissions;Face_masks;Second_dose_uptake;Transportation_activity;Patients_in_hospital;New_infections
+
+Graph Edges:
+1. Deaths_with_COVID_on_certificate --> Excess_mortality
+2. Face_masks --> Excess_mortality
+3. Face_masks --> Hospital_admissions
+4. Face_masks --- Lockdown
+5. Face_masks --- Majority_COVID_19_variant
+6. Face_masks --> New_infections
+7. Hospital_admissions --> Patients_in_MVBs
+8. Hospital_admissions --> Patients_in_hospital
+9. Leisure_activity --> New_infections
+10. Lockdown --> Hospital_admissions
+11. Lockdown --> Leisure_activity
+12. Lockdown --> New_infections
+13. Lockdown --> Transportation_activity
+14. Lockdown --> Work_and_school_activity
+15. Majority_COVID_19_variant --> Hospital_admissions
+16. Majority_COVID_19_variant --> New_infections
+17. Majority_COVID_19_variant --> Second_dose_uptake
+18. Majority_COVID_19_variant --- Tests_across_all_4_Pillars
+19. New_infections --> Deaths_with_COVID_on_certificate
+20. New_infections --> Hospital_admissions
+21. New_infections --> Patients_in_MVBs
+22. New_infections --> Patients_in_hospital
+23. Patients_in_hospital --> Deaths_with_COVID_on_certificate
+24. Positive_tests --> New_infections
+25. Reinfections --- Majority_COVID_19_variant
+26. Season --- Majority_COVID_19_variant
+27. Season --> New_infections
+28. Second_dose_uptake --> Deaths_with_COVID_on_certificate
+29. Second_dose_uptake --> Hospital_admissions
+30. Second_dose_uptake --> New_infections
+31. Tests_across_all_4_Pillars --> New_infections
+32. Tests_across_all_4_Pillars --> Positive_tests
+33. Transportation_activity --> New_infections
+34. Work_and_school_activity --> New_infections
+
+Graph Attributes:
+BIC: -49942153.516206
+
+Graph Node Attributes:
+Score: [Positive_tests: -1364.8206992852743;Excess_mortality: -1120.942058550225;Tests_across_all_4_Pillars: -1156.519948008596;Season: -1938.969925567135;Leisure_activity: -2117.437398243812;Work_and_school_activity: -1649.3516774618827;Deaths_with_COVID_on_certificate: -3284.154371406657;Reinfections: -990.9173079628167;Patients_in_MVBs: -1681.7288358573767;Majority_COVID_19_variant: -2151.1931127532016;Lockdown: -1791.6872317762834;Hospital_admissions: -49377.20364833901;Face_masks: -960.4844199547247;Second_dose_uptake: -722.9910466057706;Transportation_activity: -1481.5733818566093;Patients_in_hospital: -1521.8900595382945;New_infections: -4.9868841651082784E7]

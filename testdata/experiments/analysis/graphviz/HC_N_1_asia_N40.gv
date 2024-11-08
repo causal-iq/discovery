@@ -1,0 +1,20 @@
+// {'algorithm': 'HC', 'in': 'experiments/bn/asia.dsc', 'N': 40, 'id': 'HC_N_1/asia/N40', 'params': {'score': 'BIC'}, 'os': 'Windows v10.0.19041', 'cpu': 'Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz', 'python': '3.8.2.final.0 (64 bit)', 'ram': 16, 'software_version': 4}
+digraph {
+	graph [dpi=300 splines=true]
+	asia [label=asia pos="0.375,4.056!"]
+	bronc [label=bronc pos="2.139,2.153!"]
+	dysp [label=dysp pos="2.111,0.250!"]
+	either [label=either pos="1.125,1.403!"]
+	lung [label=lung pos="1.375,2.903!"]
+	smoke [label=smoke pos="1.806,4.056!"]
+	tub [label=tub pos="0.375,2.903!"]
+	xray [label=xray pos="1.056,0.250!"]
+	either -> xray [label="[1*]  " color=darkgreen fontcolor=darkgreen fontsize=12 labelfloat=true penwidth=5.12]
+	either -> lung [label="[2*]  " color="#990000" fontcolor="#990000" fontsize=12 labelfloat=true penwidth=4.84]
+	bronc -> dysp [label="[3*]  " color=darkgreen fontcolor=darkgreen fontsize=12 labelfloat=true penwidth=4.38]
+	bronc -> smoke [label="[4*]  " color=indianred1 fontcolor=indianred1 fontsize=12 labelfloat=true penwidth=2.92]
+	either -> tub [label="[5*]  " color="#990000" fontcolor="#990000" fontsize=12 labelfloat=true penwidth=2.42]
+	asia -> tub [color=lightblue3]
+	either -> dysp [color=lightblue3]
+	smoke -> lung [color=lightblue3]
+}

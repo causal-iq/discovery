@@ -1,0 +1,12 @@
+Graph Nodes:
+asia;bronc;dysp;either;lung;smoke;tub;xray
+
+Graph Edges:
+1. asia --> tub
+2. smoke --> lung
+3. smoke --> bronc
+4. tub --> either
+5. lung --> either
+6. either --> xray
+7. either --> dysp
+8. bronc --> dysp

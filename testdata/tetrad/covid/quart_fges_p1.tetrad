@@ -1,0 +1,34 @@
+Graph Nodes:
+Positive_tests;Excess_mortality;Tests_across_all_4_Pillars;Season;Leisure_activity;Work_and_school_activity;Deaths_with_COVID_on_certificate;Reinfections;Patients_in_MVBs;Majority_COVID_19_variant;Lockdown;Hospital_admissions;Face_masks;Second_dose_uptake;Transportation_activity;Patients_in_hospital;New_infections
+
+Graph Edges:
+1. Deaths_with_COVID_on_certificate --> Patients_in_MVBs
+2. Deaths_with_COVID_on_certificate --> Patients_in_hospital
+3. Face_masks --> Hospital_admissions
+4. Face_masks --> Lockdown
+5. Face_masks --> Patients_in_MVBs
+6. Lockdown --> Deaths_with_COVID_on_certificate
+7. Lockdown --> Leisure_activity
+8. Lockdown --> Transportation_activity
+9. Majority_COVID_19_variant --- Face_masks
+10. Majority_COVID_19_variant --> Patients_in_hospital
+11. Majority_COVID_19_variant --- Reinfections
+12. Majority_COVID_19_variant --- Second_dose_uptake
+13. Patients_in_MVBs --> Excess_mortality
+14. Patients_in_hospital --> Hospital_admissions
+15. Positive_tests --> Deaths_with_COVID_on_certificate
+16. Positive_tests --> New_infections
+17. Reinfections --> Positive_tests
+18. Season --> Excess_mortality
+19. Season --- Face_masks
+20. Season --> Leisure_activity
+21. Season --- Majority_COVID_19_variant
+22. Season --> Positive_tests
+23. Season --- Tests_across_all_4_Pillars
+24. Season --> Transportation_activity
+25. Tests_across_all_4_Pillars --> Lockdown
+26. Tests_across_all_4_Pillars --- Majority_COVID_19_variant
+27. Transportation_activity --> Work_and_school_activity
+
+Graph Node Attributes:
+Score: [Positive_tests: -1450.6664774829937;Excess_mortality: -1635.489494775869;Tests_across_all_4_Pillars: -2351.8038270821257;Season: -2400.6194356107394;Leisure_activity: -1856.5319722116324;Work_and_school_activity: -1160.6899267701222;Deaths_with_COVID_on_certificate: -1496.6671701411337;Reinfections: -837.7422727777987;Patients_in_MVBs: -1149.5197767190007;Majority_COVID_19_variant: -1041.7672374875797;Lockdown: -1505.1904214610363;Hospital_admissions: -1312.754192541609;Face_masks: -714.676627399303;Second_dose_uptake: -588.6517482559533;Transportation_activity: -1332.5002764292417;Patients_in_hospital: -1175.9867506194364;New_infections: -289.76408351830133]

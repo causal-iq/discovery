@@ -1,0 +1,10 @@
+ID,Parent,Child
+1,BF_BreastfedMonths,CHI_Weight4Height
+2,BF_EarlyBreastfeeding,CHI_Weight4Height
+3,WSH_ImprovedWaterSource,DIA_HadDiarrhoea
+4,ECO_WealthQuintile,WSH_ImprovedWaterSource
+5,MTH_Education,FP_ModernMethod
+6,WSH_ImprovedToilet,DIA_HadDiarrhoea
+7,WSH_SafeStoolDisposal,DIA_HadDiarrhoea
+8,WSH_WashWithAgent,DIA_HadDiarrhoea
+9,WSH_WaterTreated,DIA_HadDiarrhoea

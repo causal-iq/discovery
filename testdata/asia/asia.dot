@@ -1,0 +1,18 @@
+digraph {
+  "asia" ;
+  "tub" ;
+  "smoke" ;
+  "lung" ;
+  "bronc" ;
+  "either" ;
+  "xray" ;
+  "dysp" ;
+  edge [dir=forward] "asia" -> "tub" ;
+  edge [dir=forward] "tub" -> "either" ;
+  edge [dir=forward] "smoke" -> "lung" ;
+  edge [dir=forward] "smoke" -> "bronc" ;
+  edge [dir=forward] "lung" -> "either" ;
+  edge [dir=forward] "bronc" -> "dysp" ;
+  edge [dir=forward] "either" -> "xray" ;
+  edge [dir=forward] "either" -> "dysp" ;
+}

@@ -1,0 +1,4 @@
+ID,Variable 1,Dependency,Variable 2
+1,A,-,B
+2,B,-,C
+3,A,-,C

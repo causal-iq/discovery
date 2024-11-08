@@ -1,0 +1,14 @@
+ID,Parent,Child
+1,Face_masks,New_infections
+2,New_infections,Hospital_admissions
+3,New_infections,Patients_in_hospital
+4,Lockdown,New_infections
+5,Lockdown,Leisure_activity
+6,Lockdown,Work_and_school_activity
+7,Lockdown,Transportation_activity
+8,Majority_COVID_19_variant,New_infections
+9,Deaths_with_COVID_on_certificate,Excess_mortality
+10,Season,New_infections
+11,Second_dose_uptake,New_infections
+12,Second_dose_uptake,Hospital_admissions
+13,Tests_across_all_4_Pillars,Positive_tests

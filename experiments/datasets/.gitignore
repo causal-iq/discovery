@@ -1,0 +1,5 @@
+
+# Ignore the cached data files
+
+*.data.gz
+*.data

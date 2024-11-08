@@ -1,0 +1,11 @@
+digraph {
+  "Cancer" ;
+  "Dyspnoea" ;
+  "Pollution" ;
+  "Smoker" ;
+  "Xray" ;
+  edge [dir=forward] "Smoker" -> "Cancer" ;
+  edge [dir=forward] "Pollution" -> "Cancer" ;
+  edge [dir=forward] "Cancer" -> "Dyspnoea" ;
+  edge [dir=forward] "Cancer" -> "Xray" ;
+}

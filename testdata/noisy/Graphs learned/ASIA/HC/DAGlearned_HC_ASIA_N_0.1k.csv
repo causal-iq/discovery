@@ -1,0 +1,7 @@
+"ID","Variable 1","Dependency","Variable 2"
+1,"smoke","->","bronc"
+2,"lung","->","either"
+3,"bronc","->","dysp"
+4,"either","->","tub"
+5,"either","->","xray"
+6,"either","->","dysp"

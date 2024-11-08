@@ -1,0 +1,23 @@
+ID,Variable 1,Dependency,Variable 2
+1,Work_and_school_activity,->,New_infections
+2,Second_dose_uptake,->,Deaths_with_COVID_on_certificate
+3,New_infections,->,Hospital_admissions
+4,Lockdown,->,Hospital_admissions
+5,Tests_across_all_4_Pillars,->,Positive_tests
+6,Lockdown,->,Leisure_activity
+7,New_infections,->,Deaths_with_COVID_on_certificate
+8,Majority_COVID_19_variant,->,New_infections
+9,Deaths_with_COVID_on_certificate,->,Excess_mortality
+10,Face_masks,->,New_infections
+11,Season,->,New_infections
+12,Majority_COVID_19_variant,->,Second_dose_uptake
+13,Second_dose_uptake,->,New_infections
+14,Leisure_activity,->,New_infections
+15,Transportation_activity,->,Season
+16,Lockdown,->,Transportation_activity
+17,Lockdown,->,Work_and_school_activity
+18,Lockdown,->,New_infections
+19,New_infections,->,Patients_in_MVBs
+20,Work_and_school_activity,->,Transportation_activity
+21,New_infections,->,Patients_in_hospital
+22,Second_dose_uptake,->,Hospital_admissions

@@ -1,0 +1,57 @@
+Graph Nodes:
+Positive_tests;Excess_mortality;Tests_across_all_4_Pillars;Season;Leisure_activity;Work_and_school_activity;Deaths_with_COVID_on_certificate;Reinfections;Patients_in_MVBs;Majority_COVID_19_variant;Lockdown;Hospital_admissions;Face_masks;Second_dose_uptake;Transportation_activity;Patients_in_hospital;New_infections
+
+Graph Edges:
+1. Deaths_with_COVID_on_certificate --> Excess_mortality
+2. Hospital_admissions --> Deaths_with_COVID_on_certificate
+3. Hospital_admissions --> Excess_mortality
+4. Hospital_admissions --> Patients_in_MVBs
+5. Leisure_activity --> Patients_in_hospital
+6. Lockdown --> Deaths_with_COVID_on_certificate
+7. Lockdown --> Excess_mortality
+8. Lockdown --> Hospital_admissions
+9. Lockdown --> Leisure_activity
+10. Lockdown --> Patients_in_MVBs
+11. Lockdown --> Patients_in_hospital
+12. Lockdown --> Positive_tests
+13. Lockdown --> Second_dose_uptake
+14. Lockdown --> Transportation_activity
+15. Lockdown --> Work_and_school_activity
+16. Majority_COVID_19_variant --> Excess_mortality
+17. Majority_COVID_19_variant --> Hospital_admissions
+18. Majority_COVID_19_variant --> Leisure_activity
+19. Majority_COVID_19_variant --> Patients_in_MVBs
+20. Majority_COVID_19_variant --> Patients_in_hospital
+21. Majority_COVID_19_variant --> Positive_tests
+22. Majority_COVID_19_variant --> Reinfections
+23. Majority_COVID_19_variant --> Second_dose_uptake
+24. Majority_COVID_19_variant --> Transportation_activity
+25. Majority_COVID_19_variant --> Work_and_school_activity
+26. Patients_in_hospital --> Deaths_with_COVID_on_certificate
+27. Patients_in_hospital --> Excess_mortality
+28. Patients_in_hospital --> Patients_in_MVBs
+29. Positive_tests --> Deaths_with_COVID_on_certificate
+30. Positive_tests --> New_infections
+31. Positive_tests --> Patients_in_hospital
+32. Reinfections --> Hospital_admissions
+33. Season --> Deaths_with_COVID_on_certificate
+34. Season --> Excess_mortality
+35. Season --> Hospital_admissions
+36. Season --> Leisure_activity
+37. Season --> Patients_in_MVBs
+38. Season --> Patients_in_hospital
+39. Season --> Positive_tests
+40. Season --> Second_dose_uptake
+41. Season --> Transportation_activity
+42. Season --> Work_and_school_activity
+43. Second_dose_uptake --> Deaths_with_COVID_on_certificate
+44. Tests_across_all_4_Pillars --> Patients_in_hospital
+45. Tests_across_all_4_Pillars --> Positive_tests
+46. Tests_across_all_4_Pillars --> Reinfections
+47. Tests_across_all_4_Pillars --> Transportation_activity
+48. Tests_across_all_4_Pillars --> Work_and_school_activity
+49. Transportation_activity --> Deaths_with_COVID_on_certificate
+50. Transportation_activity --> Excess_mortality
+51. Transportation_activity --> Hospital_admissions
+52. Work_and_school_activity --> Hospital_admissions
+

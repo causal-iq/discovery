@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in BNBENCH -->
+<smile version="1.0" id="bnbench" numsamples="100000" discsamples="100000">
+    <nodes>
+        <equation id="b1191">
+            <definition>b1191=Normal(1.272988889,0.7801025725)</definition>
+        </equation>
+        <equation id="cspG">
+            <definition>cspG=Normal(2.026077778,1.037081083)</definition>
+        </equation>
+        <equation id="eutG">
+            <definition>eutG=Normal(1.2654,0.8313535229)</definition>
+        </equation>
+        <equation id="fixC">
+            <parents>b1191</parents>
+            <definition>fixC=0.94060517*b1191+Normal(0.3164756254,1.063448432)</definition>
+        </equation>
+        <equation id="yedE">
+            <parents>cspG</parents>
+            <definition>yedE=-0.6420267279*cspG+Normal(-0.1606039138,0.5264419955)</definition>
+        </equation>
+        <equation id="sucA">
+            <parents>eutG</parents>
+            <definition>sucA=-1.089404808*eutG+Normal(0.02428839953,0.8115250209)</definition>
+        </equation>
+        <equation id="cspA">
+            <parents>cspG</parents>
+            <definition>cspA=0.2887115211*cspG+Normal(-0.4264853304,1.239623031)</definition>
+        </equation>
+        <equation id="yecO">
+            <parents>cspG</parents>
+            <definition>yecO=0.7948663077*cspG+Normal(0.2719168154,0.4742209874)</definition>
+        </equation>
+        <equation id="lpdA">
+            <parents>yedE</parents>
+            <definition>lpdA=0.9609476896*yedE+Normal(-0.1007488242,0.3740323355)</definition>
+        </equation>
+        <equation id="dnaJ">
+            <parents>sucA</parents>
+            <definition>dnaJ=-0.8084874383*sucA+Normal(0.1209770449,0.7585577314)</definition>
+        </equation>
+        <equation id="yjbO">
+            <parents>fixC</parents>
+            <definition>yjbO=-0.07064047916*fixC+Normal(1.59101726,1.360589105)</definition>
+        </equation>
+        <equation id="yceP">
+            <parents>eutG fixC</parents>
+            <definition>yceP=1.140867517*eutG-0.3267433436*fixC+Normal(-0.1280448633,0.4090936492)</definition>
+        </equation>
+        <equation id="yfiA">
+            <parents>cspA</parents>
+            <definition>yfiA=0.857226184*cspA+Normal(-1.192819554,0.5617982826)</definition>
+        </equation>
+        <equation id="pspB">
+            <parents>cspG yedE</parents>
+            <definition>pspB=0.2758656842*cspG-0.9886108508*yedE+Normal(-0.2490256742,0.5201656866)</definition>
+        </equation>
+        <equation id="flgD">
+            <parents>sucA</parents>
+            <definition>flgD=0.6361944775*sucA+Normal(-0.5166704966,0.6268254939)</definition>
+        </equation>
+        <equation id="cchB">
+            <parents>fixC</parents>
+            <definition>cchB=0.6179875908*fixC+Normal(1.069522719,0.8003899053)</definition>
+        </equation>
+        <equation id="tnaA">
+            <parents>b1191 fixC sucA</parents>
+            <definition>tnaA=-0.5926133594*b1191-0.2441912511*fixC+0.1105793275*sucA+Normal(-0.3861436116,0.3102184655)</definition>
+        </equation>
+        <equation id="ygbD">
+            <parents>fixC</parents>
+            <definition>ygbD=0.6606881096*fixC+Normal(1.350435857,0.8602440657)</definition>
+        </equation>
+        <equation id="yhdM">
+            <parents>sucA</parents>
+            <definition>yhdM=-0.7770235354*sucA+Normal(0.2084979718,0.7669167536)</definition>
+        </equation>
+        <equation id="atpG">
+            <parents>sucA</parents>
+            <definition>atpG=0.6179975307*sucA+Normal(-0.8907913884,0.6279110689)</definition>
+        </equation>
+        <equation id="gltA">
+            <parents>sucA</parents>
+            <definition>gltA=0.3789963092*sucA+Normal(-0.9572130204,0.8303467585)</definition>
+        </equation>
+        <equation id="sucD">
+            <parents>sucA</parents>
+            <definition>sucD=0.6829936121*sucA+Normal(-0.5907152508,0.6600158752)</definition>
+        </equation>
+        <equation id="ygcE">
+            <parents>b1191 sucA</parents>
+            <definition>ygcE=1.881508069*b1191+0.6326534585*sucA+Normal(0.5239507878,0.5856136678)</definition>
+        </equation>
+        <equation id="asnA">
+            <parents>ygcE</parents>
+            <definition>asnA=0.7974540519*ygcE+Normal(0.3494150099,0.3022863615)</definition>
+        </equation>
+        <equation id="atpD">
+            <parents>sucA ygcE</parents>
+            <definition>atpD=0.2602935541*sucA-0.7252201444*ygcE+Normal(-0.04025016949,0.6427110846)</definition>
+        </equation>
+        <equation id="ibpB">
+            <parents>eutG yceP</parents>
+            <definition>ibpB=1.447146518*eutG+0.1249285077*yceP+Normal(-0.422681345,0.6789090295)</definition>
+        </equation>
+        <equation id="hupB">
+            <parents>cspA yfiA</parents>
+            <definition>hupB=-0.2984208314*cspA+1.386687107*yfiA+Normal(-0.1820572328,0.340371642)</definition>
+        </equation>
+        <equation id="yfaD">
+            <parents>eutG sucA yceP</parents>
+            <definition>yfaD=0.2875756661*eutG-0.243740986*sucA+0.3177723486*yceP+Normal(0.162825259,0.4324095859)</definition>
+        </equation>
+        <equation id="pspA">
+            <parents>cspG pspB yedE</parents>
+            <definition>pspA=0.1079257748*cspG+0.1399003051*pspB-0.7455691487*yedE+Normal(-0.1900509488,0.4151537823)</definition>
+        </equation>
+        <equation id="lacA">
+            <parents>asnA cspG</parents>
+            <definition>lacA=0.2723903753*asnA+0.2539059274*cspG+Normal(0.446869937,1.699122854)</definition>
+        </equation>
+        <equation id="yheI">
+            <parents>atpD yedE</parents>
+            <definition>yheI=-0.9633228172*atpD+0.3381501748*yedE+Normal(-0.2137443279,0.3749967742)</definition>
+        </equation>
+        <equation id="icdA">
+            <parents>asnA ygcE</parents>
+            <definition>icdA=0.522839342*asnA-1.058481385*ygcE+Normal(-0.4154791411,0.5638464642)</definition>
+        </equation>
+        <equation id="nmpC">
+            <parents>pspA</parents>
+            <definition>nmpC=-0.7690483881*pspA+Normal(0.1688145408,0.5685209954)</definition>
+        </equation>
+        <equation id="folK">
+            <parents>yheI</parents>
+            <definition>folK=0.8180528338*yheI+Normal(0.5640817127,0.3666615418)</definition>
+        </equation>
+        <equation id="lacY">
+            <parents>asnA cspG eutG lacA</parents>
+            <definition>lacY=-0.203973524*asnA-0.2240816794*cspG+0.3536548494*eutG+1.046207479*lacA+Normal(-0.1148750724,0.245346463)</definition>
+        </equation>
+        <equation id="aceB">
+            <parents>icdA</parents>
+            <definition>aceB=1.046357576*icdA+Normal(0.1324256926,0.2921168368)</definition>
+        </equation>
+        <equation id="ycgX">
+            <parents>fixC yheI</parents>
+            <definition>ycgX=-0.2716238928*fixC+1.244832482*yheI+Normal(0.1583832094,0.5054621594)</definition>
+        </equation>
+        <equation id="b1963">
+            <parents>yheI</parents>
+            <definition>b1963=1.037575346*yheI+Normal(0.9649125245,0.6138791233)</definition>
+        </equation>
+        <equation id="dnaK">
+            <parents>yheI</parents>
+            <definition>dnaK=1.0797222*yheI+Normal(-0.2469326394,0.5392408518)</definition>
+        </equation>
+        <equation id="dnaG">
+            <parents>ycgX yheI</parents>
+            <definition>dnaG=0.599217928*ycgX+0.1954802383*yheI+Normal(0.1170131737,0.3608202653)</definition>
+        </equation>
+        <equation id="nuoM">
+            <parents>lacY</parents>
+            <definition>nuoM=0.4082614631*lacY+Normal(-2.01756937,0.901857501)</definition>
+        </equation>
+        <equation id="lacZ">
+            <parents>asnA lacA lacY</parents>
+            <definition>lacZ=-0.01611600816*asnA+1.368384389*lacA-0.4375679069*lacY+Normal(0.199960288,0.5838168324)</definition>
+        </equation>
+        <equation id="yaeM">
+            <parents>cspG lacA lacZ</parents>
+            <definition>yaeM=1.472182243*cspG-0.7172944901*lacA+0.7203860463*lacZ+Normal(0.3665119823,0.8100231312)</definition>
+        </equation>
+        <equation id="b1583">
+            <parents>lacA lacZ yceP</parents>
+            <definition>b1583=-0.2456686941*lacA+0.342180487*lacZ+0.2407019249*yceP+Normal(1.381954853,1.052861332)</definition>
+        </equation>
+        <equation id="mopB">
+            <parents>dnaK lacZ</parents>
+            <definition>mopB=0.8957953701*dnaK-0.05902882849*lacZ+Normal(0.03568436734,0.560236969)</definition>
+        </equation>
+        <equation id="ftsJ">
+            <parents>mopB</parents>
+            <definition>ftsJ=0.924118625*mopB+Normal(0.6737550756,0.3954748843)</definition>
+        </equation>
+    </nodes>
+    <extensions>
+        <genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="Network1">
+            <node id="b1191">
+                <name>b1191</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 100 100 140</position>
+            </node>
+            <node id="cspG">
+                <name>cspG</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 100 200 140</position>
+            </node>
+            <node id="eutG">
+                <name>eutG</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 100 300 140</position>
+            </node>
+            <node id="fixC">
+                <name>fixC</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 200 100 240</position>
+            </node>
+            <node id="yedE">
+                <name>yedE</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 200 200 240</position>
+            </node>
+            <node id="sucA">
+                <name>sucA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 200 300 240</position>
+            </node>
+            <node id="cspA">
+                <name>cspA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 200 400 240</position>
+            </node>
+            <node id="yecO">
+                <name>yecO</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 200 500 240</position>
+            </node>
+            <node id="lpdA">
+                <name>lpdA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 300 100 340</position>
+            </node>
+            <node id="dnaJ">
+                <name>dnaJ</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 300 200 340</position>
+            </node>
+            <node id="yjbO">
+                <name>yjbO</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 300 300 340</position>
+            </node>
+            <node id="yceP">
+                <name>yceP</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 300 400 340</position>
+            </node>
+            <node id="yfiA">
+                <name>yfiA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 300 500 340</position>
+            </node>
+            <node id="pspB">
+                <name>pspB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>520 300 600 340</position>
+            </node>
+            <node id="flgD">
+                <name>flgD</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>620 300 700 340</position>
+            </node>
+            <node id="cchB">
+                <name>cchB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>720 300 800 340</position>
+            </node>
+            <node id="tnaA">
+                <name>tnaA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>820 300 900 340</position>
+            </node>
+            <node id="ygbD">
+                <name>ygbD</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>920 300 1000 340</position>
+            </node>
+            <node id="yhdM">
+                <name>yhdM</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1020 300 1100 340</position>
+            </node>
+            <node id="atpG">
+                <name>atpG</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1120 300 1200 340</position>
+            </node>
+            <node id="gltA">
+                <name>gltA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1220 300 1300 340</position>
+            </node>
+            <node id="sucD">
+                <name>sucD</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1320 300 1400 340</position>
+            </node>
+            <node id="ygcE">
+                <name>ygcE</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>1420 300 1500 340</position>
+            </node>
+            <node id="asnA">
+                <name>asnA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 400 100 440</position>
+            </node>
+            <node id="atpD">
+                <name>atpD</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 400 200 440</position>
+            </node>
+            <node id="ibpB">
+                <name>ibpB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 400 300 440</position>
+            </node>
+            <node id="hupB">
+                <name>hupB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 400 400 440</position>
+            </node>
+            <node id="yfaD">
+                <name>yfaD</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 400 500 440</position>
+            </node>
+            <node id="pspA">
+                <name>pspA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>520 400 600 440</position>
+            </node>
+            <node id="lacA">
+                <name>lacA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 500 100 540</position>
+            </node>
+            <node id="yheI">
+                <name>yheI</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 500 200 540</position>
+            </node>
+            <node id="icdA">
+                <name>icdA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 500 300 540</position>
+            </node>
+            <node id="nmpC">
+                <name>nmpC</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 500 400 540</position>
+            </node>
+            <node id="folK">
+                <name>folK</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 600 100 640</position>
+            </node>
+            <node id="lacY">
+                <name>lacY</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 600 200 640</position>
+            </node>
+            <node id="aceB">
+                <name>aceB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 600 300 640</position>
+            </node>
+            <node id="ycgX">
+                <name>ycgX</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 600 400 640</position>
+            </node>
+            <node id="b1963">
+                <name>b1963</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>420 600 500 640</position>
+            </node>
+            <node id="dnaK">
+                <name>dnaK</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>520 600 600 640</position>
+            </node>
+            <node id="dnaG">
+                <name>dnaG</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 700 100 740</position>
+            </node>
+            <node id="nuoM">
+                <name>nuoM</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 700 200 740</position>
+            </node>
+            <node id="lacZ">
+                <name>lacZ</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 700 300 740</position>
+            </node>
+            <node id="yaeM">
+                <name>yaeM</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 800 100 840</position>
+            </node>
+            <node id="b1583">
+                <name>b1583</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 800 200 840</position>
+            </node>
+            <node id="mopB">
+                <name>mopB</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 800 300 840</position>
+            </node>
+            <node id="ftsJ">
+                <name>ftsJ</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 900 100 940</position>
+            </node>
+        </genie>
+    </extensions>
+</smile>

@@ -1,0 +1,99 @@
+Graph Nodes:
+BF_BottleFeeding;BF_BreastfedMonths;BF_EarlyBreastfeeding;CHI_Age;CHI_Weight4Height;CUL_LanguageGroup;CUL_Religion;DEL_SmallBaby;DIA_HadDiarrhoea;ECO_WealthQuintile;FP_BirthsLast5Yrs;FP_ModernMethod;GEO_Region;HOU_CookingFuel;HOU_ModernWallMaterial;IMM_Diptheria;IMM_Measles;IMM_VitaminA1;KNW_WatchTV;MTH_Education;MTH_MaternalAge;SRV_Near;SRV_OKAlone;WSH_ImprovedToilet;WSH_ImprovedWaterSource;WSH_SafeStoolDisposal;WSH_WashWithAgent;WSH_WaterTreated
+
+Graph Edges:
+1. BF_BottleFeeding --> BF_BreastfedMonths
+2. BF_BottleFeeding --> BF_EarlyBreastfeeding
+3. BF_BottleFeeding --> CHI_Age
+4. BF_BottleFeeding --> KNW_WatchTV
+5. BF_BottleFeeding --> MTH_Education
+6. BF_BottleFeeding --> WSH_ImprovedToilet
+7. BF_BottleFeeding --> WSH_WashWithAgent
+8. BF_BreastfedMonths --> IMM_Diptheria
+9. BF_EarlyBreastfeeding --> DEL_SmallBaby
+10. BF_EarlyBreastfeeding --> IMM_VitaminA1
+11. CHI_Age --> BF_BreastfedMonths
+12. CHI_Age --> CHI_Weight4Height
+13. CHI_Age --> DIA_HadDiarrhoea
+14. CHI_Age --> FP_ModernMethod
+15. CHI_Age --> IMM_Diptheria
+16. CHI_Age --> MTH_MaternalAge
+17. CHI_Age --> WSH_SafeStoolDisposal
+18. CHI_Weight4Height --> DEL_SmallBaby
+19. CUL_LanguageGroup --> BF_BottleFeeding
+20. CUL_LanguageGroup --> FP_BirthsLast5Yrs
+21. CUL_LanguageGroup --> FP_ModernMethod
+22. CUL_LanguageGroup --> IMM_Measles
+23. CUL_LanguageGroup --> IMM_VitaminA1
+24. CUL_LanguageGroup --> SRV_Near
+25. CUL_LanguageGroup --> SRV_OKAlone
+26. CUL_LanguageGroup --> WSH_ImprovedWaterSource
+27. CUL_Religion --> IMM_Measles
+28. CUL_Religion --> SRV_Near
+29. CUL_Religion --> WSH_ImprovedWaterSource
+30. ECO_WealthQuintile --> BF_BottleFeeding
+31. ECO_WealthQuintile --> FP_BirthsLast5Yrs
+32. ECO_WealthQuintile --> HOU_CookingFuel
+33. ECO_WealthQuintile --> MTH_MaternalAge
+34. ECO_WealthQuintile --> SRV_Near
+35. ECO_WealthQuintile --> SRV_OKAlone
+36. ECO_WealthQuintile --> WSH_ImprovedWaterSource
+37. FP_BirthsLast5Yrs --> BF_BreastfedMonths
+38. FP_BirthsLast5Yrs --> BF_EarlyBreastfeeding
+39. FP_BirthsLast5Yrs --> FP_ModernMethod
+40. FP_BirthsLast5Yrs --> KNW_WatchTV
+41. FP_BirthsLast5Yrs --> MTH_MaternalAge
+42. FP_BirthsLast5Yrs --> WSH_ImprovedToilet
+43. FP_BirthsLast5Yrs --> WSH_SafeStoolDisposal
+44. GEO_Region --> BF_BottleFeeding
+45. GEO_Region --> CHI_Weight4Height
+46. GEO_Region --> DIA_HadDiarrhoea
+47. GEO_Region --> HOU_CookingFuel
+48. GEO_Region --> IMM_VitaminA1
+49. GEO_Region --> WSH_ImprovedWaterSource
+50. HOU_CookingFuel --> BF_EarlyBreastfeeding
+51. HOU_CookingFuel --> KNW_WatchTV
+52. HOU_CookingFuel --> MTH_Education
+53. HOU_CookingFuel --> WSH_ImprovedToilet
+54. HOU_CookingFuel --> WSH_SafeStoolDisposal
+55. HOU_ModernWallMaterial --> BF_EarlyBreastfeeding
+56. HOU_ModernWallMaterial --- CUL_LanguageGroup
+57. HOU_ModernWallMaterial --- CUL_Religion
+58. HOU_ModernWallMaterial --- ECO_WealthQuintile
+59. HOU_ModernWallMaterial --> GEO_Region
+60. HOU_ModernWallMaterial --> HOU_CookingFuel
+61. HOU_ModernWallMaterial --> KNW_WatchTV
+62. HOU_ModernWallMaterial --> MTH_Education
+63. HOU_ModernWallMaterial --> WSH_ImprovedToilet
+64. HOU_ModernWallMaterial --> WSH_WashWithAgent
+65. HOU_ModernWallMaterial --- WSH_WaterTreated
+66. IMM_Measles --> CHI_Age
+67. IMM_VitaminA1 --> CHI_Age
+68. IMM_VitaminA1 --> IMM_Diptheria
+69. IMM_VitaminA1 --> IMM_Measles
+70. KNW_WatchTV --> FP_ModernMethod
+71. KNW_WatchTV --> IMM_Measles
+72. KNW_WatchTV --> IMM_VitaminA1
+73. MTH_Education --> CHI_Age
+74. MTH_Education --> FP_BirthsLast5Yrs
+75. MTH_Education --> IMM_Diptheria
+76. MTH_Education --> MTH_MaternalAge
+77. MTH_MaternalAge --> BF_BreastfedMonths
+78. SRV_Near --> SRV_OKAlone
+79. SRV_OKAlone --> GEO_Region
+80. SRV_OKAlone --> KNW_WatchTV
+81. SRV_OKAlone --> MTH_Education
+82. SRV_OKAlone --> WSH_ImprovedToilet
+83. SRV_OKAlone --> WSH_SafeStoolDisposal
+84. SRV_OKAlone --> WSH_WashWithAgent
+85. WSH_ImprovedToilet --> CHI_Weight4Height
+86. WSH_ImprovedWaterSource --> HOU_CookingFuel
+87. WSH_WaterTreated --> HOU_CookingFuel
+88. WSH_WaterTreated --> SRV_Near
+89. WSH_WaterTreated --> WSH_ImprovedWaterSource
+
+Graph Attributes:
+BIC: -10328264.824278
+
+Graph Node Attributes:
+Score: [BF_BottleFeeding: -221691.8696845585;BF_BreastfedMonths: -295935.5467377459;BF_EarlyBreastfeeding: -466748.59821832774;CHI_Age: -759480.5665410486;CHI_Weight4Height: -479633.46106052335;CUL_LanguageGroup: -500498.47456152074;CUL_Religion: -323957.1729229363;DEL_SmallBaby: -227338.13096554743;DIA_HadDiarrhoea: -147142.6111066383;ECO_WealthQuintile: -420574.3040140165;FP_BirthsLast5Yrs: -461614.40773309674;FP_ModernMethod: -307694.3499257641;GEO_Region: -503143.1487521464;HOU_CookingFuel: -174351.5419273406;HOU_ModernWallMaterial: -436563.5997603332;IMM_Diptheria: -204259.42087122027;IMM_Measles: -272073.0714023211;IMM_VitaminA1: -325361.7166568012;KNW_WatchTV: -272816.20248591364;MTH_Education: -433960.49132305395;MTH_MaternalAge: -311262.39305074984;SRV_Near: -316315.3121938967;SRV_OKAlone: -221433.553140663;WSH_ImprovedToilet: -353195.1672010127;WSH_ImprovedWaterSource: -291333.0284099328;WSH_SafeStoolDisposal: -403350.8946563634;WSH_WashWithAgent: -258728.67945058466;WSH_WaterTreated: -261174.7937457256]

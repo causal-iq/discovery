@@ -1,0 +1,17 @@
+ID,Variable 1,Dependency,Variable 2
+1,Deaths_with_COVID_on_certificate,-,Lockdown
+2,Deaths_with_COVID_on_certificate,-,Patients_in_MVBs
+3,Face_masks,-,Majority_COVID_19_variant
+4,Hospital_admissions,-,Patients_in_hospital
+5,Leisure_activity,-,Lockdown
+6,Face_masks,-,Lockdown
+7,Lockdown,-,Transportation_activity
+8,Majority_COVID_19_variant,-,Positive_tests
+9,Majority_COVID_19_variant,-,Second_dose_uptake
+10,Majority_COVID_19_variant,-,Tests_across_all_4_Pillars
+11,New_infections,-,Positive_tests
+12,Excess_mortality,-,Patients_in_MVBs
+13,Deaths_with_COVID_on_certificate,-,Patients_in_hospital
+14,Majority_COVID_19_variant,-,Reinfections
+15,Majority_COVID_19_variant,-,Season
+16,Transportation_activity,-,Work_and_school_activity

@@ -1,0 +1,9 @@
+/knowledge
+addtemporal
+1* WSH_ImprovedToilet ECO_WealthQuintile WSH_WashWithAgent WSH_SafeStoolDisposal WSH_WaterTreated BF_BreastfedMonths BF_EarlyBreastfeeding MTH_Education
+2* WSH_ImprovedWaterSource CHI_Weight4Height FP_ModernMethod
+3* DIA_HadDiarrhoea
+
+forbiddirect
+
+requiredirect

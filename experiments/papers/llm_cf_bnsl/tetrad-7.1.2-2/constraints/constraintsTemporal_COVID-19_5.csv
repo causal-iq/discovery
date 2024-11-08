@@ -1,0 +1,11 @@
+/knowledge
+addtemporal
+1* Face_masks Majority_COVID_19_variant Lockdown Season Tests_across_all_4_Pillars
+2* Transportation_activity Second_dose_uptake Leisure_activity Work_and_school_activity Positive_tests
+3* New_infections
+4* Deaths_with_COVID_on_certificate Patients_in_MVBs Patients_in_hospital Hospital_admissions
+5* Excess_mortality
+
+forbiddirect
+
+requiredirect

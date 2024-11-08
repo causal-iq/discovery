@@ -1,0 +1,9 @@
+/knowledge
+addtemporal
+1* SocialWithdraw CannabisAfterRelease CocaineAfterRelease EcstasyAfterRelease LivingCircumstances CocaineDependence EcstasyDependence CriminalNetwork CriminalFamilyBackground GangMember CannabisDependence SymptomsOfMentalIllness ComplianceWithSupervision RefuseFailToAttendTherapy ASPD BPD Impulsivity PCLRfacet3 PCLRfactor1 PCLRfactor2 PriorViolentConvictions pclrscore
+2* Anxiety Depression CriminalAttitude Violence
+3* ResponsivenessToTreatment 
+
+forbiddirect
+
+requiredirect

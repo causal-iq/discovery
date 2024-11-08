@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- This network was created in GeNIe Academic, which can be used for educational and research purposes only -->
+<smile version="1.0" id="Network4" numsamples="10000" discsamples="10000">
+	<nodes>
+		<cpt id="Diet">
+			<state id="Unbalanced" />
+			<state id="Balanced" />
+			<probabilities>0.5 0.5</probabilities>
+		</cpt>
+		<cpt id="Exercise">
+			<state id="yes" />
+			<state id="no" />
+			<probabilities>0.5 0.5</probabilities>
+		</cpt>
+		<cpt id="Smoking">
+			<state id="yes" />
+			<state id="no" />
+			<probabilities>0.5 0.5</probabilities>
+		</cpt>
+		<cpt id="Obesity">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Diet Exercise</parents>
+			<probabilities>0.3 0.7 0.8 0.2 0.05 0.95 0.2 0.8</probabilities>
+		</cpt>
+		<cpt id="High_triglyceride_levels">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Diet</parents>
+			<probabilities>0.8 0.2 0.2 0.8</probabilities>
+		</cpt>
+		<cpt id="Low_protein_concentration">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Diet</parents>
+			<probabilities>0.87 0.13 0.13 0.87</probabilities>
+		</cpt>
+		<cpt id="High_blood_pressure">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Smoking Obesity Exercise</parents>
+			<probabilities>0.8 0.2 0.92 0.08 0.7 0.3 0.75 0.25 0.65 0.35 0.79 0.21 0.1 0.9 0.2 0.8</probabilities>
+		</cpt>
+		<cpt id="High_cholestrol_level">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Diet</parents>
+			<probabilities>0.8 0.2 0.15 0.85</probabilities>
+		</cpt>
+		<cpt id="Atherosclerosis">
+			<state id="yes" />
+			<state id="no" />
+			<parents>High_cholestrol_level High_triglyceride_levels Exercise</parents>
+			<probabilities>0.75 0.25 0.8 0.2 0.65 0.35 0.75 0.25 0.6 0.4 0.7 0.3 0.05 0.95 0.15 0.85</probabilities>
+		</cpt>
+		<cpt id="Family_History">
+			<state id="yes" />
+			<state id="no" />
+			<probabilities>0.5 0.5</probabilities>
+		</cpt>
+		<cpt id="Heart_Disease">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Family_History Atherosclerosis High_blood_pressure Low_protein_concentration</parents>
+			<probabilities>0.9399999999999999 0.06 0.85 0.15 0.84 0.16 0.8 0.2 0.65 0.35 0.6 0.4 0.4 0.6 0.15 0.85 0.88 0.12 0.79 0.21 0.8 0.2 0.73 0.27 0.6 0.4 0.55 0.45 0.28 0.72 0.1 0.9</probabilities>
+		</cpt>
+		<cpt id="ECG">
+			<state id="Normal" />
+			<state id="Abnormal" />
+			<parents>Heart_Disease</parents>
+			<probabilities>0.05 0.95 0.95 0.05</probabilities>
+		</cpt>
+		<cpt id="Angina">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Heart_Disease</parents>
+			<probabilities>0.85 0.15 0.25 0.75</probabilities>
+		</cpt>
+		<cpt id="Heart_Attack">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Heart_Disease</parents>
+			<probabilities>0.9 0.1 0.05 0.95</probabilities>
+		</cpt>
+		<cpt id="Stroke">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Heart_Disease</parents>
+			<probabilities>0.75 0.25 0.18 0.82</probabilities>
+		</cpt>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 2.4.4601.0 ACADEMIC" name="Network4" faultnameformat="nodestate">
+			<node id="Diet">
+				<name>Diet</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>583 52 747 130</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Exercise">
+				<name>Exercise</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>329 111 493 195</position>
+				<barchart active="true" />
+			</node>
+			<node id="Smoking">
+				<name>Excessive Smoking</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>868 399 1032 467</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Obesity">
+				<name>Obesity</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>304 275 468 341</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="High_triglyceride_levels">
+				<name>High triglyceride levels</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>648 281 812 360</position>
+				<barchart active="true" width="155" height="64" />
+			</node>
+			<node id="Low_protein_concentration">
+				<name>Low protein concentration</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>837 220 1001 295</position>
+				<barchart active="true" width="128" height="84" />
+			</node>
+			<node id="High_blood_pressure">
+				<name>High blood pressure</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>604 396 768 481</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Atherosclerosis">
+				<name>Atherosclerosis</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>435 408 599 482</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Heart_Disease">
+				<name>Heart Disease</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>585 542 749 611</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Family_History">
+				<name>Family History of Heart disease</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>235 399 421 477</position>
+				<barchart active="true" width="129" height="85" />
+			</node>
+			<node id="ECG">
+				<name>ECG</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>518 680 699 724</position>
+				<barchart active="true" />
+			</node>
+			<node id="Angina">
+				<name>Angina</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>696 657 867 707</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Heart_Attack">
+				<name>Heart Attack</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>382 624 546 688</position>
+				<barchart active="true" />
+			</node>
+			<node id="Stroke">
+				<name>Stroke</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>872 607 1046 656</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="High_cholestrol_level">
+				<name>High cholestrol level</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>490 203 654 288</position>
+				<barchart active="true" />
+			</node>
+		</genie>
+	</extensions>
+</smile>

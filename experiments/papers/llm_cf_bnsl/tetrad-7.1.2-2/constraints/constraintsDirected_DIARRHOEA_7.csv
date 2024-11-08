@@ -1,0 +1,15 @@
+/knowledge
+addtemporal
+
+forbiddirect
+
+requiredirect
+BF_BreastfedMonths CHI_Weight4Height
+BF_EarlyBreastfeeding CHI_Weight4Height
+WSH_ImprovedWaterSource DIA_HadDiarrhoea
+ECO_WealthQuintile WSH_ImprovedWaterSource
+MTH_Education FP_ModernMethod
+WSH_ImprovedToilet DIA_HadDiarrhoea
+WSH_SafeStoolDisposal DIA_HadDiarrhoea
+WSH_WashWithAgent DIA_HadDiarrhoea
+WSH_WaterTreated DIA_HadDiarrhoea

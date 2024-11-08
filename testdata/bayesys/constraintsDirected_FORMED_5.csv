@@ -1,0 +1,8 @@
+ID,Parent,Child
+1,Impulsivity,Violence
+2,CriminalFamilyBackground,CriminalAttitude
+3,GangMember,CriminalAttitude
+4,PCLRfacet3,Violence
+5,PCLRfactor1,Violence
+6,PCLRfactor2,Violence
+7,PriorViolentConvictions,Violence

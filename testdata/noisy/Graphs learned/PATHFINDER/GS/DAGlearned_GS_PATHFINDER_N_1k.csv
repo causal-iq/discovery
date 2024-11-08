@@ -1,0 +1,10 @@
+ID,Variable 1,Dependency,Variable 2
+1,Fault,-,F52
+2,Fault,-,F91
+3,F97,-,F2
+4,F22,-,F21
+5,F92,-,F29
+6,F96,-,F41
+7,F47,-,F44
+8,F86,-,F20
+9,F87,-,F31

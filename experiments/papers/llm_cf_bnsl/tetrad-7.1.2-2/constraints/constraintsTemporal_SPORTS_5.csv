@@ -1,0 +1,11 @@
+/knowledge
+addtemporal
+1* RDlevel possession
+2* ATshots HTshots
+3* ATshotsOnTarget HTshotOnTarget
+4* ATgoals HTgoals
+5  HDA
+
+forbiddirect
+
+requiredirect

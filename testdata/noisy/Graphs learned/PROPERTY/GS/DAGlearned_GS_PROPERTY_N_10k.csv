@@ -1,0 +1,12 @@
+ID,Variable 1,Dependency,Variable 2
+1,propertyManagement,-,propertyExpenses
+2,propertyManagement,-,otherPropertyExpenses
+3,propertyExpenses,->,rentalGrossProfit
+4,propertyExpenses,-,otherPropertyExpenses
+5,actualRentalIncome,->,rentalGrossProfit
+6,rentalNetProfitBeforeInterest,-,incomeTax
+7,rentalGrossYield,-,propertyPurchaseValue
+8,rentalIncomeT+1,-,actualRentalIncome
+9,LTV,-,borrowing
+10,otherPropertyExpensesT+1,-,otherPropertyExpenses
+11,capitalGrowth,-,capitalGains

@@ -1,0 +1,6 @@
+Cancer,Dyspnoea,Pollution,Smoker,Xray
+False,False,Low,False,Neg
+False,False,High,False,Neg
+True,True,Low,True,Pos
+False,True,Low,False,Neg
+False,True,Low,False,Neg

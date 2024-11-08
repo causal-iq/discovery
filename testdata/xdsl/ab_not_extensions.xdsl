@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="Bayesys" numsamples="10" discsamples="10">
+	<nodes>
+		<cpt id="A">
+			<state id="0" />
+			<state id="1" />
+			<probabilities>0.75 0.25</probabilities>
+		</cpt>
+		<cpt id="B">
+			<state id="0" />
+			<state id="1" />
+            <parents>A</parents>
+			<probabilities>0.5 0.5 0.25 0.75</probabilities>
+		</cpt>
+	</nodes>
+    <invalid>
+		<genie version="1.0" app="GeNIe 3.0.5905.0 ACADEMIC" name="Bayesys_network">
+			<node id="A">
+				<name>asia</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>74 92 74 -8</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="B">
+				<name>tub</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>222 187 222 87</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+		</genie>
+	</invalid>
+</smile>

@@ -1,0 +1,17 @@
+Graph Nodes:
+RDlevel;HTshots;ATshots;HTshotOnTarget;ATshotsOnTarget;possession;HTgoals;ATgoals;HDA
+
+Graph Edges:
+1. ATgoals --> HDA
+2. ATshots --> ATshotsOnTarget
+3. ATshotsOnTarget --> ATgoals
+4. HTgoals --> HDA
+5. HTshotOnTarget --> HTgoals
+6. HTshots --- ATshots
+7. HTshots --> HTshotOnTarget
+8. RDlevel --- possession
+9. possession --> ATshots
+10. possession --> HTshots
+
+Graph Node Attributes:
+Score: [RDlevel: -12384.96261547268;HTshots: -9693.888183146564;ATshots: -10312.510508614088;HTshotOnTarget: -9095.691406990365;ATshotsOnTarget: -8601.635163615001;possession: -9960.252796078948;HTgoals: -10135.866773081749;ATgoals: -9343.413087910738;HDA: -839.1321364304553]

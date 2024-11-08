@@ -1,0 +1,91 @@
+Graph Nodes:
+TimeAtRisk;prioracq;PriorViolentConvictions;Gender;Age;Education;Intelligence;ResponsivenessToTreatment;Impulsivity;BPD;ASPD;AbuseNeglectAsChild;PCLRfacet3;PCLRfactor1;PCLRfactor2;pclrscore;Anger;CannabisBeforePrisonSentence;CannabisDuringPrisonSentence;CannabisAfterRelease;CocaineBeforePrisonSentence;CocaineDuringPrisonSentence;CocaineAfterRelease;EcstasyBeforePrisonSentence;EcstasyDuringPrisonSentence;EcstasyAfterRelease;HazardousDrinkingAfterRelease;AlcoholDependence;CannabisDependence;CocaineDependence;EcstasyDependence;GangMember;ViolentThoughts;NegativeAttitude;CriminalAttitude;ComplianceWithSupervision;CriminalNetwork;CriminalFamilyBackground;Victimisation;LivingCircumstances;SocialWithdraw;EmploymentOrTraining;AbilityToCope;Stress;DomesticStability;FinancialDifficulties;ProblematicLifeEvents;Anxiety;Depression;SymptomsOfMentalIllness;StrangeExperiences;ThoughtInsertion;Hallucinations;ParanoidDelusions;RefuseFailToAttendTherapy;Violence
+
+Graph Edges:
+1. ASPD --> BPD
+2. ASPD --> GangMember
+3. ASPD --> Violence
+4. AlcoholDependence --- HazardousDrinkingAfterRelease
+5. Anxiety --> AbilityToCope
+6. Anxiety --> Anger
+7. Anxiety --> ParanoidDelusions
+8. Anxiety --> ResponsivenessToTreatment
+9. Anxiety --> StrangeExperiences
+10. Anxiety --> Stress
+11. Anxiety --> SymptomsOfMentalIllness
+12. Anxiety --> ViolentThoughts
+13. BPD --> Violence
+14. CannabisAfterRelease --> Anxiety
+15. CannabisAfterRelease --> CannabisDependence
+16. CannabisAfterRelease --> CriminalAttitude
+17. CannabisAfterRelease --> Depression
+18. CannabisBeforePrisonSentence --> Age
+19. CannabisBeforePrisonSentence --> CannabisAfterRelease
+20. CannabisBeforePrisonSentence --> CannabisDuringPrisonSentence
+21. CannabisBeforePrisonSentence --> FinancialDifficulties
+22. CannabisBeforePrisonSentence --> PCLRfactor2
+23. CannabisDependence --> CriminalAttitude
+24. CannabisDuringPrisonSentence --> EcstasyDuringPrisonSentence
+25. CocaineAfterRelease --> Anxiety
+26. CocaineAfterRelease --> CannabisAfterRelease
+27. CocaineAfterRelease --> CocaineBeforePrisonSentence
+28. CocaineAfterRelease --> CriminalAttitude
+29. CocaineAfterRelease --> Depression
+30. CocaineBeforePrisonSentence --> CannabisBeforePrisonSentence
+31. CocaineBeforePrisonSentence --> CocaineDuringPrisonSentence
+32. CocaineBeforePrisonSentence --> EcstasyBeforePrisonSentence
+33. CocaineDependence --> CocaineAfterRelease
+34. CocaineDependence --> CriminalAttitude
+35. ComplianceWithSupervision --> ResponsivenessToTreatment
+36. CriminalFamilyBackground --> CriminalAttitude
+37. CriminalFamilyBackground --> CriminalNetwork
+38. CriminalNetwork --> CriminalAttitude
+39. Depression --> EmploymentOrTraining
+40. Depression --> ResponsivenessToTreatment
+41. EcstasyAfterRelease --> Anxiety
+42. EcstasyAfterRelease --> CocaineAfterRelease
+43. EcstasyAfterRelease --> CriminalAttitude
+44. EcstasyAfterRelease --> Depression
+45. EcstasyAfterRelease --> EcstasyDependence
+46. EcstasyAfterRelease --- HazardousDrinkingAfterRelease
+47. EcstasyBeforePrisonSentence --- CannabisBeforePrisonSentence
+48. EcstasyDependence --> CocaineDependence
+49. EcstasyDependence --> CriminalAttitude
+50. FinancialDifficulties --> DomesticStability
+51. GangMember --> CriminalAttitude
+52. GangMember --> CriminalFamilyBackground
+53. Gender --- AbuseNeglectAsChild
+54. Gender --> EcstasyDependence
+55. Gender --- Intelligence
+56. Gender --- TimeAtRisk
+57. Impulsivity --> Violence
+58. LivingCircumstances --> Anxiety
+59. LivingCircumstances --> CriminalAttitude
+60. NegativeAttitude --> ComplianceWithSupervision
+61. PCLRfacet3 --> Impulsivity
+62. PCLRfacet3 --> Violence
+63. PCLRfactor1 --> Violence
+64. PCLRfactor2 --> ASPD
+65. PCLRfactor2 --> PCLRfacet3
+66. PCLRfactor2 --> Violence
+67. PCLRfactor2 --> pclrscore
+68. ParanoidDelusions --> ThoughtInsertion
+69. ParanoidDelusions --> Victimisation
+70. PriorViolentConvictions --> Violence
+71. RefuseFailToAttendTherapy --> Violence
+72. SocialWithdraw --> Anxiety
+73. SocialWithdraw --> Depression
+74. Stress --> FinancialDifficulties
+75. SymptomsOfMentalIllness --> Hallucinations
+76. SymptomsOfMentalIllness --> ResponsivenessToTreatment
+77. pclrscore --> NegativeAttitude
+78. pclrscore --> PCLRfactor1
+79. pclrscore --> Violence
+80. prioracq --- Gender
+81. prioracq --- PriorViolentConvictions
+
+Graph Attributes:
+BIC: -8136889.737745
+
+Graph Node Attributes:
+Score: [TimeAtRisk: -2276.428917738273;prioracq: -2652.745894543758;PriorViolentConvictions: -2269.338699084042;Gender: -64.87329257586379;Age: -3995.409634096746;Education: -1731.0197878148838;Intelligence: -2819.1082274262617;ResponsivenessToTreatment: -3365.583925625816;Impulsivity: -1637.7624721913958;BPD: -994.4284778247726;ASPD: -1201.878840141906;AbuseNeglectAsChild: -1223.9127625604385;PCLRfacet3: -2538.211610673121;PCLRfactor1: -3355.9913261002494;PCLRfactor2: -4019.6348268077672;pclrscore: -1792.271806588658;Anger: -931.5359746969162;CannabisBeforePrisonSentence: -618.9676126480667;CannabisDuringPrisonSentence: -1226.6786216318083;CannabisAfterRelease: -1261.8274265708963;CocaineBeforePrisonSentence: -1158.578143343217;CocaineDuringPrisonSentence: -558.4795030088145;CocaineAfterRelease: -774.7442922561315;EcstasyBeforePrisonSentence: -987.6633546868233;EcstasyDuringPrisonSentence: -470.1441311365033;EcstasyAfterRelease: -1017.3854003018332;HazardousDrinkingAfterRelease: -1379.902181271587;AlcoholDependence: -502.2146121568812;CannabisDependence: -684.169281022875;CocaineDependence: -986.0951629502783;EcstasyDependence: -381.0591212099223;GangMember: -1207.893054752392;ViolentThoughts: -829.6599126411131;NegativeAttitude: -1868.2262111164728;CriminalAttitude: -373989.9961631902;ComplianceWithSupervision: -1726.9156711290702;CriminalNetwork: -1107.6820860654964;CriminalFamilyBackground: -1081.6813561071049;Victimisation: -906.061204733733;LivingCircumstances: -3353.977126697275;SocialWithdraw: -170.04723105697548;EmploymentOrTraining: -1251.7492113356295;AbilityToCope: -1879.1817219130974;Stress: -847.6045025305035;DomesticStability: -796.2818327258741;FinancialDifficulties: -1302.239773811263;ProblematicLifeEvents: -681.073576733381;Anxiety: -4598.981116338125;Depression: -1460.2585874712804;SymptomsOfMentalIllness: -1160.5313071596686;StrangeExperiences: -977.2607683336256;ThoughtInsertion: -1123.189707146844;Hallucinations: -1090.056649449269;ParanoidDelusions: -1639.268291278822;RefuseFailToAttendTherapy: -1779.2019989474595;Violence: -7681182.673361655]

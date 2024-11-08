@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="bnbench" numsamples="oracle" discsamples="oracle">
+	<nodes>
+		<cpt id="A">
+			<state id="0" />
+			<state id="1" />
+			<probabilities>0.75 0.25</probabilities>
+		</cpt>
+        <cpt id="B">
+			<state id="1" />
+			<state id="0" />
+            <parents>A</parents>
+			<probabilities>0.5 0.5 0.75 0.25</probabilities>
+		</cpt>
+        <cpt id="C">
+			<state id="1" />
+			<state id="0" />
+            <parents>B</parents>
+			<probabilities>0.9 0.1 0.2 0.8</probabilities>
+		</cpt>
+	</nodes>
+</smile>

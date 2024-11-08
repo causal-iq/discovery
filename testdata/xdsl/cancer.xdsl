@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="cancer" numsamples="oracle" discsamples="oracle">
+	<nodes>
+		<cpt id="Pollution">
+			<state id="low" />
+			<state id="high" />
+			<probabilities>0.9 0.1</probabilities>
+		</cpt>
+        <cpt id="Smoker">
+			<state id="True" />
+			<state id="False" />
+			<probabilities>0.3 0.7</probabilities>
+		</cpt>
+        <cpt id="Cancer">
+			<state id="True" />
+			<state id="False" />
+            <parents>Pollution Smoker</parents>
+			<probabilities>0.03 0.97 0.001 0.999 0.05 0.95 0.02 0.98</probabilities>
+		</cpt>
+        <cpt id="Xray">
+			<state id="positive" />
+			<state id="negative" />
+            <parents>Cancer</parents>
+			<probabilities>0.9 0.1 0.2 0.8</probabilities>
+		</cpt>
+        <cpt id="Dyspnoea">
+			<state id="True" />
+			<state id="False" />
+            <parents>Cancer</parents>
+			<probabilities>0.65 0.35 0.3 0.7</probabilities>
+		</cpt>
+	</nodes>
+</smile>

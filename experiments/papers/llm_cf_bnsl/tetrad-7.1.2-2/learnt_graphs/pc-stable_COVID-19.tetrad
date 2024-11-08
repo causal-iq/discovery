@@ -1,0 +1,44 @@
+Graph Nodes:
+Positive_tests;Excess_mortality;Tests_across_all_4_Pillars;Season;Leisure_activity;Work_and_school_activity;Deaths_with_COVID_on_certificate;Reinfections;Patients_in_MVBs;Majority_COVID_19_variant;Lockdown;Hospital_admissions;Face_masks;Second_dose_uptake;Transportation_activity;Patients_in_hospital;New_infections
+
+Graph Edges:
+1. Deaths_with_COVID_on_certificate --> Excess_mortality
+2. Deaths_with_COVID_on_certificate --> Lockdown
+3. Deaths_with_COVID_on_certificate --> Patients_in_hospital
+4. Excess_mortality --> Patients_in_MVBs
+5. Excess_mortality --> Season
+6. Face_masks --> Lockdown
+7. Face_masks --> Season
+8. Hospital_admissions --> Deaths_with_COVID_on_certificate
+9. Hospital_admissions --> Excess_mortality
+10. Hospital_admissions --> Lockdown
+11. Hospital_admissions --> Patients_in_MVBs
+12. Hospital_admissions --> Patients_in_hospital
+13. Hospital_admissions --> Season
+14. Leisure_activity --> Season
+15. Lockdown --> Leisure_activity
+16. Lockdown --> Patients_in_MVBs
+17. Lockdown --> Season
+18. Majority_COVID_19_variant --> Excess_mortality
+19. Majority_COVID_19_variant --> Leisure_activity
+20. Majority_COVID_19_variant --> Season
+21. Majority_COVID_19_variant --> Tests_across_all_4_Pillars
+22. Patients_in_hospital --> Excess_mortality
+23. Patients_in_hospital --> Majority_COVID_19_variant
+24. Patients_in_hospital --> Patients_in_MVBs
+25. Positive_tests --- New_infections
+26. Reinfections --- Hospital_admissions
+27. Reinfections --> Majority_COVID_19_variant
+28. Reinfections --> Tests_across_all_4_Pillars
+29. Season --> Tests_across_all_4_Pillars
+30. Second_dose_uptake --> Deaths_with_COVID_on_certificate
+31. Second_dose_uptake --> Lockdown
+32. Second_dose_uptake --> Season
+33. Transportation_activity --> Lockdown
+34. Transportation_activity --> Majority_COVID_19_variant
+35. Transportation_activity --> Patients_in_MVBs
+36. Transportation_activity --> Season
+37. Transportation_activity --> Tests_across_all_4_Pillars
+38. Work_and_school_activity --> Tests_across_all_4_Pillars
+39. Work_and_school_activity --- Transportation_activity
+

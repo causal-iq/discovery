@@ -1,0 +1,5 @@
+
+# Ignore generated image files
+
+*.png
+*.gv

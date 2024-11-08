@@ -1,0 +1,69 @@
+Graph Nodes:
+TimeAtRisk;prioracq;PriorViolentConvictions;Gender;Age;Education;Intelligence;ResponsivenessToTreatment;Impulsivity;BPD;ASPD;AbuseNeglectAsChild;PCLRfacet3;PCLRfactor1;PCLRfactor2;pclrscore;Anger;CannabisBeforePrisonSentence;CannabisDuringPrisonSentence;CannabisAfterRelease;CocaineBeforePrisonSentence;CocaineDuringPrisonSentence;CocaineAfterRelease;EcstasyBeforePrisonSentence;EcstasyDuringPrisonSentence;EcstasyAfterRelease;HazardousDrinkingAfterRelease;AlcoholDependence;CannabisDependence;CocaineDependence;EcstasyDependence;GangMember;ViolentThoughts;NegativeAttitude;CriminalAttitude;ComplianceWithSupervision;CriminalNetwork;CriminalFamilyBackground;Victimisation;LivingCircumstances;SocialWithdraw;EmploymentOrTraining;AbilityToCope;Stress;DomesticStability;FinancialDifficulties;ProblematicLifeEvents;Anxiety;Depression;SymptomsOfMentalIllness;StrangeExperiences;ThoughtInsertion;Hallucinations;ParanoidDelusions;RefuseFailToAttendTherapy;Violence
+
+Graph Edges:
+1. ASPD --> BPD
+2. ASPD --> GangMember
+3. AlcoholDependence --- HazardousDrinkingAfterRelease
+4. Anxiety --> AbilityToCope
+5. Anxiety --> Anger
+6. Anxiety --> Depression
+7. Anxiety --> ParanoidDelusions
+8. Anxiety --> StrangeExperiences
+9. Anxiety --> Stress
+10. Anxiety --> SymptomsOfMentalIllness
+11. CannabisAfterRelease --> CannabisDependence
+12. CannabisBeforePrisonSentence --> Age
+13. CannabisBeforePrisonSentence --> CannabisAfterRelease
+14. CannabisBeforePrisonSentence --> CannabisDuringPrisonSentence
+15. CannabisBeforePrisonSentence --> FinancialDifficulties
+16. CannabisBeforePrisonSentence --> PCLRfactor2
+17. CannabisDuringPrisonSentence --> EcstasyDuringPrisonSentence
+18. CocaineAfterRelease --> CannabisAfterRelease
+19. CocaineAfterRelease --> CocaineBeforePrisonSentence
+20. CocaineAfterRelease --> ViolentThoughts
+21. CocaineBeforePrisonSentence --> CannabisBeforePrisonSentence
+22. CocaineBeforePrisonSentence --> CocaineDuringPrisonSentence
+23. CocaineBeforePrisonSentence --> EcstasyBeforePrisonSentence
+24. CocaineDependence --> CocaineAfterRelease
+25. ComplianceWithSupervision --> ResponsivenessToTreatment
+26. CriminalFamilyBackground --> CriminalAttitude
+27. CriminalFamilyBackground --> CriminalNetwork
+28. Depression --> EmploymentOrTraining
+29. EcstasyAfterRelease --> CocaineAfterRelease
+30. EcstasyAfterRelease --> EcstasyDependence
+31. EcstasyAfterRelease --- HazardousDrinkingAfterRelease
+32. EcstasyBeforePrisonSentence --- CannabisBeforePrisonSentence
+33. EcstasyDependence --> CocaineDependence
+34. FinancialDifficulties --> DomesticStability
+35. GangMember --> CriminalAttitude
+36. GangMember --> CriminalFamilyBackground
+37. Gender --- AbuseNeglectAsChild
+38. Gender --> EcstasyDependence
+39. Gender --- Intelligence
+40. Gender --- TimeAtRisk
+41. Impulsivity --> Violence
+42. NegativeAttitude --> ComplianceWithSupervision
+43. PCLRfacet3 --> Impulsivity
+44. PCLRfacet3 --> Violence
+45. PCLRfactor1 --> Violence
+46. PCLRfactor2 --> ASPD
+47. PCLRfactor2 --> PCLRfacet3
+48. PCLRfactor2 --> Violence
+49. PCLRfactor2 --> pclrscore
+50. ParanoidDelusions --> ThoughtInsertion
+51. ParanoidDelusions --> Victimisation
+52. PriorViolentConvictions --> Violence
+53. Stress --> FinancialDifficulties
+54. SymptomsOfMentalIllness --> Hallucinations
+55. ViolentThoughts --> Anxiety
+56. pclrscore --> NegativeAttitude
+57. pclrscore --> PCLRfactor1
+58. prioracq --- Gender
+59. prioracq --- PriorViolentConvictions
+
+Graph Attributes:
+BIC: -148611.495998
+
+Graph Node Attributes:
+Score: [TimeAtRisk: -2276.428917738273;prioracq: -2652.745894543758;PriorViolentConvictions: -2269.338699084042;Gender: -64.87329257586379;Age: -3995.409634096746;Education: -1731.0197878148838;Intelligence: -2819.1082274262617;ResponsivenessToTreatment: -3365.583925625816;Impulsivity: -1637.7624721913958;BPD: -994.4284778247726;ASPD: -1201.878840141906;AbuseNeglectAsChild: -1223.9127625604385;PCLRfacet3: -2538.211610673121;PCLRfactor1: -3355.9913261002494;PCLRfactor2: -4019.6348268077672;pclrscore: -1792.271806588658;Anger: -931.5359746969162;CannabisBeforePrisonSentence: -618.9676126480667;CannabisDuringPrisonSentence: -1226.6786216318083;CannabisAfterRelease: -1261.8274265708963;CocaineBeforePrisonSentence: -1158.578143343217;CocaineDuringPrisonSentence: -558.4795030088145;CocaineAfterRelease: -774.7442922561315;EcstasyBeforePrisonSentence: -987.6633546868233;EcstasyDuringPrisonSentence: -470.1441311365033;EcstasyAfterRelease: -1017.3854003018332;HazardousDrinkingAfterRelease: -1379.902181271587;AlcoholDependence: -502.2146121568812;CannabisDependence: -684.169281022875;CocaineDependence: -986.0951629502783;EcstasyDependence: -381.0591212099223;GangMember: -1207.893054752392;ViolentThoughts: -829.6599126411131;NegativeAttitude: -1868.2262111164728;CriminalAttitude: -373989.9961631902;ComplianceWithSupervision: -1726.9156711290702;CriminalNetwork: -1107.6820860654964;CriminalFamilyBackground: -1081.6813561071049;Victimisation: -906.061204733733;LivingCircumstances: -3353.977126697275;SocialWithdraw: -170.04723105697548;EmploymentOrTraining: -1251.7492113356295;AbilityToCope: -1879.1817219130974;Stress: -847.6045025305035;DomesticStability: -796.2818327258741;FinancialDifficulties: -1302.239773811263;ProblematicLifeEvents: -681.073576733381;Anxiety: -4598.981116338125;Depression: -1460.2585874712804;SymptomsOfMentalIllness: -1160.5313071596686;StrangeExperiences: -977.2607683336256;ThoughtInsertion: -1123.189707146844;Hallucinations: -1090.056649449269;ParanoidDelusions: -1639.268291278822;RefuseFailToAttendTherapy: -1779.2019989474595;Violence: -7681182.673361655]

@@ -1,0 +1,12 @@
+ID,Tier 1,Tier 2,Tier 3,END
+1,MTH_Education,FP_ModernMethod,IMM_Diptheria,
+2,ECO_WealthQuintile,BF_BreastfedMonths,IMM_Measles,
+3,WSH_WashWithAgent,WSH_ImprovedWaterSource,DIA_HadDiarrhoea,
+4,WSH_SafeStoolDisposal,IMM_VitaminA1,CHI_Weight4Height,
+5,WSH_WaterTreated,SRV_Near,,
+6,KNW_WatchTV,,,
+7,CUL_Religion,,,
+8,CUL_LanguageGroup,,,
+9,BF_EarlyBreastfeeding,,,
+10,WSH_ImprovedToilet,,,
+11,GEO_Region,,,

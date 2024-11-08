@@ -1,0 +1,4 @@
+
+#   Ignore environment file as this is different on each machine
+
+environment.json

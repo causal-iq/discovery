@@ -1,0 +1,1277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="Bayesys" numsamples="1000000" discsamples="1000000">
+	<nodes>
+		<cpt id="AbuseNeglectAsChild">
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.344519 0.655481</probabilities>
+		</cpt>
+		<cpt id="TimeAtRisk">
+			<state id="x_5_2kd" />
+			<state id="x_2_6kd" />
+			<state id="x_1_5kd" />
+			<state id="lessThan1kd" />
+			<probabilities>0.541873 0.337611 0.07545399999999999 0.045062</probabilities>
+		</cpt>
+		<cpt id="CriminalFamilyBackground">
+			<state id="No" />
+			<state id="Yes" />
+			<probabilities>0.734836 0.265164</probabilities>
+		</cpt>
+		<cpt id="Education">
+			<state id="No" />
+			<state id="GCSE_O_Level" />
+			<state id="Other" />
+			<state id="A_Level_" />
+			<probabilities>0.635555 0.288624 0.05199 0.023831</probabilities>
+		</cpt>
+		<cpt id="ComplianceWithSupervision">
+			<state id="Partly" />
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.313537 0.5160979999999999 0.170365</probabilities>
+		</cpt>
+		<cpt id="SymptomsOfMentalIllness">
+			<state id="No" />
+			<state id="Yes" />
+			<state id="Partial" />
+			<probabilities>0.814392 0.041486 0.144122</probabilities>
+		</cpt>
+		<cpt id="RefuseFailToAttendTherapy">
+			<state id="No" />
+			<state id="Yes" />
+			<probabilities>0.748144 0.251856</probabilities>
+		</cpt>
+		<cpt id="HazardousDrinkingAfterRelease">
+			<state id="No" />
+			<state id="Yes" />
+			<probabilities>0.603143 0.396857</probabilities>
+		</cpt>
+		<cpt id="CannabisBeforePrisonSentence">
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.248535 0.751465</probabilities>
+		</cpt>
+		<cpt id="CocaineBeforePrisonSentence">
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.33666 0.66334</probabilities>
+		</cpt>
+		<cpt id="EcstasyBeforePrisonSentence">
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.6053230000000001 0.394677</probabilities>
+		</cpt>
+		<cpt id="DrugTreatment">
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.230881 0.769119</probabilities>
+		</cpt>
+		<cpt id="AlcoholTreatment">
+			<state id="No" />
+			<state id="Yes" />
+			<probabilities>0.942696 0.057304</probabilities>
+		</cpt>
+		<cpt id="Anger">
+			<state id="No" />
+			<state id="Yes" />
+			<probabilities>0.760068 0.239932</probabilities>
+		</cpt>
+		<cpt id="AngerManagement">
+			<state id="Yes" />
+			<state id="No" />
+			<probabilities>0.247861 0.752139</probabilities>
+		</cpt>
+		<cpt id="PsychiatricTreatment">
+			<state id="No" />
+			<state id="Yes" />
+			<probabilities>0.6629620000000001 0.337038</probabilities>
+		</cpt>
+		<cpt id="Intelligence">
+			<state id="Average" />
+			<state id="Borderline" />
+			<state id="Extremely_Low" />
+			<state id="Low_Average" />
+			<state id="High_Average" />
+			<state id="Superior" />
+			<parents>Education</parents>
+			<probabilities>0.3713337162008009 0.1911227195128667 0.09848400217133058 0.2848172070080481 0.03724461297606029 0.01699774213089347 0.4545567936138367 0.09769111369809856 0.01836645601197406 0.2317340207328566 0.1322066079050945 0.06544500803813959 0.4537988074629736 0.09249855741488748 0.0131756106943643 0.2018080400076938 0.1728216964800923 0.06589728793998846 0.3281020519491419 0.02580672233645252 0.07280433049389451 0.07460870294993915 0.1756535604884394 0.3230246317821325</probabilities>
+		</cpt>
+		<cpt id="EmploymentOrTraining">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>Education</parents>
+			<probabilities>0.7206473082581366 0.2793526917418634 0.5510248627972726 0.4489751372027274 0.6321023273706482 0.3678976726293518 0.5019092778313961 0.4980907221686039</probabilities>
+		</cpt>
+		<cpt id="EcstasyDuringPrisonSentence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>EcstasyBeforePrisonSentence</parents>
+			<probabilities>0.9242685310156726 0.07573146898432738 0.9985608484912979 0.001439151508702053</probabilities>
+		</cpt>
+		<cpt id="CannabisDuringPrisonSentence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CannabisBeforePrisonSentence</parents>
+			<probabilities>0.4520932665419358 0.5479067334580643 0.9965454146234356 0.003454585376564444</probabilities>
+		</cpt>
+		<cpt id="CocaineDuringPrisonSentence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CocaineBeforePrisonSentence</parents>
+			<probabilities>0.8366601318837997 0.1633398681162003 0.995940241806615 0.004059758193384991</probabilities>
+		</cpt>
+		<cpt id="CannabisAfterRelease">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CannabisBeforePrisonSentence CannabisDuringPrisonSentence</parents>
+			<probabilities>0.5644663183844928 0.4355336816155072 0.2187568845741478 0.7812431154258522 0.9634649050768559 0.0365350949231441 0.5065485362095532 0.4934514637904469</probabilities>
+		</cpt>
+		<cpt id="CocaineAfterRelease">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>CocaineBeforePrisonSentence CocaineDuringPrisonSentence</parents>
+			<probabilities>0.3904746689388292 0.6095253310611709 0.5217857792325877 0.4782142207674123 0.06376779127128405 0.9362322087287159 0.2369105087263275 0.7630894912736725</probabilities>
+		</cpt>
+		<cpt id="EcstasyAfterRelease">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>EcstasyBeforePrisonSentence EcstasyDuringPrisonSentence</parents>
+			<probabilities>0.7559130694339933 0.2440869305660067 0.4424108895772436 0.5575891104227564 0.9713860886201533 0.02861391137984669 0.4894366197183099 0.5105633802816901</probabilities>
+		</cpt>
+		<cpt id="EcstasyDependence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>EcstasyDuringPrisonSentence</parents>
+			<probabilities>0.9561090195996182 0.04389098040038172 0.8006033182503771 0.1993966817496229</probabilities>
+		</cpt>
+		<cpt id="CannabisDependence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CannabisDuringPrisonSentence</parents>
+			<probabilities>0.9555101424706525 0.04448985752934756 0.7690278878720185 0.2309721121279815</probabilities>
+		</cpt>
+		<cpt id="CocaineDependence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CocaineDuringPrisonSentence</parents>
+			<probabilities>0.8817361885649946 0.1182638114350054 0.6532947315500234 0.3467052684499766</probabilities>
+		</cpt>
+		<cpt id="AlcoholDependence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>HazardousDrinkingAfterRelease</parents>
+			<probabilities>0.999175983141643 0.0008240168583569734 0.7608534056347752 0.2391465943652248</probabilities>
+		</cpt>
+		<cpt id="AlcoholTreatmentGivenRFAT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>RefuseFailToAttendTherapy AlcoholTreatment</parents>
+			<probabilities>1 0 0 1 1 0 1 0</probabilities>
+		</cpt>
+		<cpt id="DrugTreatmentGivenRFAT">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>RefuseFailToAttendTherapy DrugTreatment</parents>
+			<probabilities>1 0 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="ResponsivenessToTreatment">
+			<state id="Yes" />
+			<state id="Partly" />
+			<state id="No" />
+			<parents>Intelligence</parents>
+			<probabilities>0.5691212736226546 0.2733266267112548 0.1575520996660905 0.4612061461483407 0.2783562986414252 0.2604375552102342 0.3572881259511044 0.362166313483993 0.2805455605649027 0.5328956724615733 0.2838056508988319 0.1832986766395947 0.4969866666666667 0.3176533333333333 0.18536 0.5828841630733046 0.1906115248921991 0.2265043120344963</probabilities>
+		</cpt>
+		<cpt id="ResponseToTreatGivenAlcDep">
+			<state id="Responsive" />
+			<state id="Partial_responsive" />
+			<state id="Non_responsive" />
+			<parents>AlcoholDependence ResponsivenessToTreatment</parents>
+			<probabilities>1 0 0 0 1 0 0 0 1 0.8432505950357021 0.07874472468348101 0.07800468028081685 0 0.8414180492522878 0.1585819507477122 0 0 1</probabilities>
+		</cpt>
+		<cpt id="AngerManagementGivenRFAT">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>RefuseFailToAttendTherapy AngerManagement</parents>
+			<probabilities>1 0 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="HazardousDrinkingPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>HazardousDrinkingAfterRelease AlcoholTreatmentGivenRFAT ResponseToTreatGivenAlcDep</parents>
+			<probabilities>1 0 1 0 1 0 1 0 1 0 1 0 0 1 0 1 0 1 0.5256560449859419 0.4743439550140581 0.3842812823164426 0.6157187176835573 0 1</probabilities>
+		</cpt>
+		<cpt id="Depression">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>SymptomsOfMentalIllness</parents>
+			<probabilities>0.8378667766873937 0.1621332233126062 0.4660608398013788 0.5339391601986212 0.6845172839677496 0.3154827160322505</probabilities>
+		</cpt>
+		<cpt id="Anxiety">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>SymptomsOfMentalIllness</parents>
+			<probabilities>0.7232720851874773 0.2767279148125227 0.3591814105963457 0.6408185894036542 0.3858328360694412 0.6141671639305588</probabilities>
+		</cpt>
+		<cpt id="ThoughtInsertion">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>SymptomsOfMentalIllness</parents>
+			<probabilities>0.7967907346830519 0.2032092653169481 0.56498577833486 0.43501422166514 0.6543067678772151 0.3456932321227849</probabilities>
+		</cpt>
+		<cpt id="Hallucinations">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>SymptomsOfMentalIllness</parents>
+			<probabilities>0.2127120600398825 0.7872879399601175 0.7908451043725594 0.2091548956274406 0.4352076712785002 0.5647923287214999</probabilities>
+		</cpt>
+		<cpt id="StrangeExperiences">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>SymptomsOfMentalIllness</parents>
+			<probabilities>0.9021233018006071 0.09787669819939292 0.6344308923492262 0.3655691076507738 0.7337672249899391 0.2662327750100609</probabilities>
+		</cpt>
+		<cpt id="ParanoidDelusions">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>SymptomsOfMentalIllness</parents>
+			<probabilities>0.8613407302625763 0.1386592697374237 0.6222581111700333 0.3777418888299667 0.7065402922523972 0.2934597077476027</probabilities>
+		</cpt>
+		<cpt id="PsychiatricTreatmentGivenRFAT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>RefuseFailToAttendTherapy PsychiatricTreatment</parents>
+			<probabilities>1 0 0 1 1 0 1 0</probabilities>
+		</cpt>
+		<cpt id="AbilityToCope">
+			<state id="Low" />
+			<state id="High" />
+			<parents>Intelligence</parents>
+			<probabilities>0.2887376414599697 0.7112623585400303 0.4117184326419024 0.5882815673580976 0.3405060230682804 0.6594939769317196 0.296189813622579 0.703810186377421 0.2568933333333333 0.7431066666666667 0.1366865934927479 0.8633134065072521</probabilities>
+		</cpt>
+		<cpt id="PCLRfactor1">
+			<state id="lessThan5" />
+			<state id="xto8" />
+			<state id="xto12" />
+			<state id="x3_16" />
+			<parents>ResponsivenessToTreatment</parents>
+			<probabilities>0.5968785417904999 0.2943960154199883 0.09400115057423593 0.01472429221527588 0.3488559435815538 0.3841386717921902 0.2192327260907048 0.04777265853555125 0.1456581765631855 0.3756083713968672 0.3651105777915409 0.1136228742484065</probabilities>
+		</cpt>
+		<cpt id="AnyDrugDependence">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>EcstasyDependence CannabisDependence CocaineDependence</parents>
+			<probabilities>1 0 0 1 0 1 0 1 0 1 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="ResponseToTreatGivenDrugDep">
+			<state id="Responsive" />
+			<state id="Partial_responsive" />
+			<state id="Non_responsive" />
+			<parents>AnyDrugDependence ResponsivenessToTreatment</parents>
+			<probabilities>1 0 0 0 1 0 0 0 1 0.8933067227234432 0.05286404868432892 0.05382922859222785 0 0.893080620295638 0.106919379704362 0 0 1</probabilities>
+		</cpt>
+		<cpt id="AngerPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>ResponsivenessToTreatment Anger AngerManagementGivenRFAT</parents>
+			<probabilities>1 0 1 0 0.7531333736710174 0.2468666263289826 0 1 1 0 1 0 0.7131603336422614 0.2868396663577387 0 1 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="DepressionPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>ResponsivenessToTreatment Depression PsychiatricTreatmentGivenRFAT</parents>
+			<probabilities>1 0 1 0 0 1 0.7664326004374352 0.2335673995625648 1 0 1 0 0 1 0.7670486305198435 0.2329513694801565 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="AnxietyPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>ResponsivenessToTreatment Anxiety PsychiatricTreatmentGivenRFAT</parents>
+			<probabilities>1 0 1 0 0 1 0.586496472959355 0.413503527040645 1 0 1 0 0 1 0.4892862962359459 0.5107137037640541 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="ThoughtInsertionPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>ResponsivenessToTreatment ThoughtInsertion PsychiatricTreatmentGivenRFAT</parents>
+			<probabilities>1 0 1 0 0 1 0.7392237873710921 0.2607762126289079 1 0 1 0 0 1 0.6780838468043977 0.3219161531956023 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="HallucinationsPT">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>ResponsivenessToTreatment Hallucinations PsychiatricTreatmentGivenRFAT</parents>
+			<probabilities>1 0 0.3747336117978007 0.6252663882021993 0 1 0 1 1 0 0.3091318934787167 0.6908681065212833 0 1 0 1 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="StrangeExperiencesPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>ResponsivenessToTreatment StrangeExperiences PsychiatricTreatmentGivenRFAT</parents>
+			<probabilities>1 0 1 0 0 1 0.8824303449854111 0.1175696550145889 1 0 1 0 0 1 0.7235120303925707 0.2764879696074293 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="ParanoidDelusionsPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>ResponsivenessToTreatment ParanoidDelusions PsychiatricTreatmentGivenRFAT</parents>
+			<probabilities>1 0 1 0 0 1 0.8591888636059429 0.140811136394057 1 0 1 0 0 1 0.7768384766907419 0.223161523309258 1 0 1 0 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="MentalIllnessSymptomCount">
+			<state id="MentalNPD" />
+			<state id="None" />
+			<state id="ParanoidDelusions" />
+			<parents>DepressionPT AnxietyPT ThoughtInsertionPT HallucinationsPT StrangeExperiencesPT ParanoidDelusionsPT</parents>
+			<probabilities>1 0 0 0 0 1 1 0 0 0 0 1 0 1 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1</probabilities>
+		</cpt>
+		<cpt id="MentalIllnessDL">
+			<state id="High" />
+			<state id="Low" />
+			<parents>MentalIllnessSymptomCount</parents>
+			<probabilities>0.3241092469821223 0.6758907530178777 0 1 1 0</probabilities>
+		</cpt>
+		<cpt id="BPD">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>AngerPT AbuseNeglectAsChild</parents>
+			<probabilities>0.2720303969307953 0.7279696030692047 0.1306782921683008 0.8693217078316992 0.3541442557769033 0.6458557442230968 0.2317407192865776 0.7682592807134224</probabilities>
+		</cpt>
+		<cpt id="ASPD">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>AbuseNeglectAsChild AngerPT</parents>
+			<probabilities>0.6046923417441346 0.3953076582558654 0.6970819319435178 0.3029180680564822 0.5774966643912126 0.4225033356087874 0.7246215128045598 0.2753784871954403</probabilities>
+		</cpt>
+		<cpt id="FinancialDifficulties">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>EmploymentOrTraining AnxietyPT DepressionPT</parents>
+			<probabilities>0.4756033578174187 0.5243966421825813 0.4731332665476138 0.5268667334523861 0.577421094369548 0.422578905630452 0.7215696368401348 0.2784303631598652 0.406828234380986 0.593171765619014 0.4037861156837146 0.5962138843162854 0.6605199705158478 0.3394800294841523 0.7683440073193046 0.2316559926806953</probabilities>
+		</cpt>
+		<cpt id="EcstasyPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>EcstasyAfterRelease DrugTreatmentGivenRFAT ResponseToTreatGivenDrugDep</parents>
+			<probabilities>1 0 1 0 1 0 1 0 1 0 1 0 0.8752756518355169 0.1247243481644831 0.8238663484486873 0.1761336515513126 0 1 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="CannabisPT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CannabisAfterRelease DrugTreatmentGivenRFAT ResponseToTreatGivenDrugDep</parents>
+			<probabilities>1 0 1 0 1 0 1 0 1 0 1 0 0.443317459335766 0.5566825406642341 0.3461031833150384 0.6538968166849616 0 1 0 1 0 1 0 1</probabilities>
+		</cpt>
+		<cpt id="CocainePT">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CocaineAfterRelease DrugTreatmentGivenRFAT ResponseToTreatGivenDrugDep</parents>
+			<probabilities>0.6475435420438229 0.352456457956177 0.6755431754874652 0.3244568245125348 0 1 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1 0 1 0</probabilities>
+		</cpt>
+		<cpt id="SubstanceUse">
+			<state id="None" />
+			<state id="Drugs" />
+			<state id="Alcohol" />
+			<state id="DrugsANDalcohol" />
+			<parents>HazardousDrinkingPT EcstasyPT CannabisPT CocainePT</parents>
+			<probabilities>1 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1</probabilities>
+		</cpt>
+		<cpt id="SubstanceMisuseDL">
+			<state id="Low" />
+			<state id="High" />
+			<parents>SubstanceUse</parents>
+			<probabilities>1 0 0.7392776793834666 0.2607223206165334 0.6168449594155136 0.3831550405844864 0 1</probabilities>
+		</cpt>
+		<cpt id="LivingCircumstances">
+			<state id="Living_alone" />
+			<state id="Living_with_partner" />
+			<state id="Living_with_family_friends" />
+			<state id="Bail_Hostel_Shelter" />
+			<state id="Homeless" />
+			<state id="Other" />
+			<parents>FinancialDifficulties</parents>
+			<probabilities>0.1963929516357201 0.2031583869497535 0.3033416791459255 0.2052162315203387 0.06625943836429965 0.02563131238396262 0.1836142096159656 0.2702536098905221 0.2910521758702568 0.231649427466598 0.01913784398135287 0.004292733175304517</probabilities>
+		</cpt>
+		<cpt id="SocialWithdraw">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>LivingCircumstances DepressionPT</parents>
+			<probabilities>0.9596687915830522 0.04033120841694784 0.498785954426597 0.5012140455734031 0.9968594209747992 0.00314057902520086 0.5035218404783622 0.4964781595216378 0.9976563258961821 0.002343674103817881 0.5019608623813031 0.4980391376186969 0.97115686414872 0.02884313585127999 0.4997953559442277 0.5002046440557724 0.8845179807529968 0.1154820192470032 0.4927168248028865 0.5072831751971134 0.9546043049037061 0.0453956950962939 0.5112727272727273 0.4887272727272727</probabilities>
+		</cpt>
+		<cpt id="Impulsivity">
+			<state id="Yes" />
+			<state id="Partly" />
+			<state id="No" />
+			<parents>BPD ASPD</parents>
+			<probabilities>0.7172883575700949 0.2538990441053161 0.02881259832458893 0.3069460143172399 0.5732816620916088 0.1197723235911513 0.4541872102511038 0.4858067774912526 0.06000601225764365 0.1297758941758171 0.5326558787645284 0.3375682270596546</probabilities>
+		</cpt>
+		<cpt id="PCLRfactor2">
+			<state id="x0to14" />
+			<state id="x5_18" />
+			<state id="lessThan5" />
+			<state id="xto9" />
+			<parents>ASPD</parents>
+			<probabilities>0.5920706452369168 0.0973488499309698 0.02669710073198052 0.2838834041001329 0.1374631910746132 0.006897785243249969 0.4781116502841027 0.3775273733980341</probabilities>
+		</cpt>
+		<cpt id="CriminalNetwork">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>LivingCircumstances SocialWithdraw CriminalFamilyBackground</parents>
+			<probabilities>0.6040071049115145 0.3959928950884855 0.9291331565932229 0.07086684340677701 0.5072569381186616 0.4927430618813384 0.7557035803497085 0.2442964196502914 0.6238922479353387 0.3761077520646613 0.84195826306914 0.15804173693086 0.502526103065005 0.4974738969349949 0.5050298062593145 0.4949701937406856 0.6993673897690447 0.3006326102309553 0.8845838828347331 0.1154161171652669 0.5006654953947719 0.4993345046052282 0.5071910771940124 0.4928089228059876 0.5654430512381684 0.4345569487618316 0.8870689153259457 0.1129310846740544 0.6946314517521146 0.3053685482478854 0.5004038119851397 0.4995961880148603 0.8972725153469578 0.1027274846530422 0.8231908771181925 0.1768091228818075 0.2438482570061517 0.7561517429938482 0.81201171875 0.18798828125 0.6516148940547213 0.3483851059452788 0.7362826773915542 0.2637173226084458 0.4566761363636364 0.5433238636363636 0.4527162977867203 0.5472837022132797</probabilities>
+		</cpt>
+		<cpt id="DomesticStability">
+			<state id="High" />
+			<state id="Low" />
+			<parents>EmploymentOrTraining LivingCircumstances SocialWithdraw</parents>
+			<probabilities>0.7635563268884852 0.2364436731115148 0.8738245044313646 0.1261754955686354 0.8525773412395601 0.1474226587604399 0.501719240544177 0.498280759455823 0.8522037065877589 0.1477962934122411 0.4973341232227488 0.5026658767772512 0.8907463196471831 0.1092536803528169 0.8691499522445081 0.1308500477554919 0.2373455222617234 0.7626544777382767 0.5008534041342689 0.4991465958657311 0.590274651058082 0.409725348941918 0.5042536736272235 0.4957463263727765 0.8470028777988349 0.1529971222011652 0.5018853205044858 0.4981146794955142 0.9292555299004003 0.07074447009959969 0.5054864667154353 0.4945135332845648 0.880702098023853 0.119297901976147 0.5020075714121831 0.4979924285878169 0.9091212627105782 0.09087873728942177 0.7458359821996186 0.2541640178003814 0.4108587836074132 0.5891412163925868 0.2573277502854968 0.7426722497145032 0.9178050474646909 0.0821949525353091 0.4607843137254902 0.5392156862745098</probabilities>
+		</cpt>
+		<cpt id="GangMember">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>CriminalNetwork</parents>
+			<probabilities>0.4675458925679192 0.5324541074320808 0.2927340982325319 0.7072659017674681</probabilities>
+		</cpt>
+		<cpt id="NegativeAttitude">
+			<state id="Partly" />
+			<state id="No" />
+			<state id="Yes" />
+			<parents>CriminalNetwork GangMember ComplianceWithSupervision</parents>
+			<probabilities>0.4725129721310012 0.1683450239599972 0.3591420039090016 0.3194431045294486 0.5686471950219478 0.1119097004486035 0.1729586078852525 0.07377407259092067 0.7532673195238269 0.4566855647623201 0.2964326210204972 0.2468818142171827 0.2731598348102536 0.666039987748075 0.06080017744167133 0.3291810656594069 0.08859599774973881 0.5822229365908543 0.5091270117745419 0.1704870062007943 0.3203859820246638 0.381429298930572 0.5054744525547445 0.1130962485146834 0.4556148357652504 0.09095583981487433 0.4534293244198753 0.367023116389001 0.4449760765550239 0.1880008070559751 0.1659312260469041 0.8126296543722091 0.02143911958088675 0.3081928030806002 0.2734298233966272 0.4183773735227725</probabilities>
+		</cpt>
+		<cpt id="CriminalAttitude">
+			<state id="Yes" />
+			<state id="No" />
+			<parents>CriminalNetwork GangMember ComplianceWithSupervision</parents>
+			<probabilities>0.4521147301895965 0.5478852698104035 0.2689691765954368 0.7310308234045633 0.5018202337180094 0.4981797662819906 0.315621456607065 0.684378543392935 0.2073374243496446 0.7926625756503554 0.3792333038656273 0.6207666961343727 0.288023409740124 0.711976590259876 0.2101935155321677 0.7898064844678323 0.2931156392620685 0.7068843607379315 0.1922666743529141 0.807733325647086 0.06434372912344855 0.9356562708765515 0.2414553180188554 0.7585446819811446</probabilities>
+		</cpt>
+		<cpt id="AttitudeDL">
+			<state id="High" />
+			<state id="Low" />
+			<parents>NegativeAttitude CriminalAttitude</parents>
+			<probabilities>0.7404999629421792 0.2595000370578208 0.1165179858555365 0.8834820141444635 0.2810738451562974 0.7189261548437026 0 1 1 0 0.7175790332869205 0.2824209667130795</probabilities>
+		</cpt>
+		<cpt id="SocialProtectiveObs">
+			<state id="None" />
+			<state id="SW" />
+			<state id="BH" />
+			<state id="Both" />
+			<parents>LivingCircumstances SocialWithdraw</parents>
+			<probabilities>1 0 0 0 0 1 0 0 1 0 0 0 0 1 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1 0 0 0 0 1 0 0 1 0 0 0 0 1 0 0</probabilities>
+		</cpt>
+		<cpt id="PCLRfacet3">
+			<state id="xto8" />
+			<state id="xto5" />
+			<state id="lessThan3" />
+			<state id="xto10" />
+			<state id="x1_" />
+			<parents>Impulsivity</parents>
+			<probabilities>0.5397760895641743 0.2773290683726509 0.0290177262428362 0.1078715180594429 0.04600559776089564 0.2634856725519452 0.4970796825004866 0.1799547565285994 0.007822391123741522 0.05165749729522726 0.030328387452293 0.1997401201434101 0.7216972467702104 0.003646481757386507 0.04458776387669994</probabilities>
+		</cpt>
+		<cpt id="Victimisation">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>GangMember</parents>
+			<probabilities>0.7815022883018137 0.2184977116981863 0.8100710355518458 0.1899289644481543</probabilities>
+		</cpt>
+		<cpt id="ViolentThoughts">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>Victimisation AngerPT</parents>
+			<probabilities>0.8865337353446642 0.1134662646553358 0.7804025112949599 0.2195974887050402 0.7604808509299179 0.2395191490700821 0.5381634844311657 0.4618365155688343</probabilities>
+		</cpt>
+		<cpt id="AggressionDL">
+			<state id="High" />
+			<state id="Low" />
+			<parents>ViolentThoughts Impulsivity</parents>
+			<probabilities>0.513148595512837 0.486851404487163 0.27714686646453 0.72285313353547 0 1 1 0 0.3556460927286804 0.6443539072713196 0.04669684775318578 0.9533031522468142</probabilities>
+		</cpt>
+		<cpt id="ViolentConvictionsRate">
+			<state id="Low" />
+			<state id="VeryLow" />
+			<state id="VeryHigh" />
+			<state id="High" />
+			<parents>SubstanceMisuseDL AttitudeDL AggressionDL MentalIllnessDL</parents>
+			<probabilities>0.2273073989321129 0.02860411899313501 0.4192728197304856 0.3248156623442665 0.4288925941885082 0.3532982370684002 0.06999269348221145 0.1478164752608802 0.4389594331098112 0.1698054881818614 0.150663432729348 0.2405716459789794 0.3588940151916241 0.4728420006266815 0.0543268036001772 0.1139371805815172 0.2501768231396345 0.03908722034024495 0.3959163161225477 0.3148196403975729 0.2839755908431948 0.6130103502916288 0.0296095883483362 0.07340447051684029 0.3859738387500265 0.4385295427081346 0.05407153003031652 0.1214250885115224 0.03460466282759884 0.9570130509014093 0.001827897869220901 0.006554388401770987 0.1067250156291864 0.003840314369920514 0.6645530052692685 0.2248816647316245 0.1391523289970625 0.007721359630717583 0.5883759966428871 0.2647503147293327 0.216371863430687 0.02699506375976964 0.4379884821061292 0.3186445907034142 0.3993391494520646 0.1168849692157748 0.2092851879145173 0.2744906934176433 0.3706557508628301 0.4490328276747733 0.05815073440886107 0.1221606870535356 0.3489869553150153 0.08848182070496809 0.2698677028402258 0.2926635211397909 0.4460081005011327 0.2334729182398572 0.1153978169835931 0.205121164275417 0.4085473498381741 0.3333718633096549 0.09354377705855155 0.1645370097936194</probabilities>
+		</cpt>
+		<cpt id="ViolentConvRateGivenProt">
+			<state id="Low" />
+			<state id="VeryLow" />
+			<state id="VeryHigh" />
+			<state id="High" />
+			<parents>SocialProtectiveObs ViolentConvictionsRate</parents>
+			<probabilities>0.991895167398879 0.003236883300510024 0 0.004867949300611019 0 1 0 0 0 0 0.9982890964579673 0.001710903542032738 0.008635322911732196 0 0.001608637296699826 0.989756039791568 0.8977869139258222 0.1022130860741777 0 0 0 1 0 0 0 0 0.689586870401811 0.310413129598189 0.3197385837193911 0 0 0.6802614162806089 0.3109540636042403 0.6890459363957597 0 0 0 1 0 0 0.6200303234501348 0 0.03293463611859838 0.3470350404312669 1 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0</probabilities>
+		</cpt>
+		<cpt id="ProblematicLifeEvents">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>Victimisation</parents>
+			<probabilities>0.9025107951790928 0.09748920482090713 0.8311678654815666 0.1688321345184333</probabilities>
+		</cpt>
+		<cpt id="ViolentConvictions">
+			<state id="x" />
+			<state id="x2" />
+			<state id="x3" />
+			<state id="x4" />
+			<state id="x5" />
+			<state id="x6" />
+			<parents>TimeAtRisk ViolentConvRateGivenProt</parents>
+			<probabilities>0.2713004631606609 0.645652530959498 0.01339552606510528 0.06716815031370102 0 0.00248332950103472 0.03472667162151772 0.9633768164227684 0 0.001896511955713883 0 0 0.1790019897780032 0.08253677187780423 0.1877999297725411 0.2202020990207171 0.195641996020444 0.1348172135304904 0.3498153624565221 0.2968450730122734 0.09185909320748356 0.2176118168027826 0.01169115731731609 0.03217749720362226 0.3220913464068799 0.4444269007694656 0.05677834970158209 0.1499036852243661 0.007789391690613783 0.01901032620709256 0.03455663629066528 0.9635547004107843 0 0.001888663298550451 0 0 0.05120265240374089 0.01460698758249664 0.1237684151262081 0.09214600731913296 0.5849050702198868 0.1333708673485346 0.2186764384691921 0.1092532822093334 0.1913267163346034 0.2316111340306259 0.1283034435896814 0.1208289853665639 0.218834751706724 0.7340783690264659 0.005377349668007107 0.04063405966520153 9.351912466099317e-05 0.0009819508089404284 0.02490952796048287 0.9742716010249095 0 0.0008188710146076023 0 0 0.2658623136976579 0.1550035486160397 0.159971611071682 0.2393186657203691 0.09169623846699787 0.08814762242725337 0.363190050185468 0.4203578442068514 0.04996727034693432 0.1518655902247436 0.001854680340388392 0.01276456469561423 0.103863002787734 0.8849860613301473 0 0.01115093588211868 0 0 0.009667593696199179 0.9903324063038008 0 0 0 0 0.2757268112598062 0.5159206275957545 0.05168435625288417 0.1282879556991232 0.007383479464697739 0.02099676972773419 0.2210144927536232 0.7170289855072464 0.007427536231884058 0.05289855072463768 0.0001811594202898551 0.001449275362318841</probabilities>
+		</cpt>
+		<cpt id="Stress">
+			<state id="No" />
+			<state id="Yes" />
+			<parents>AbilityToCope FinancialDifficulties ProblematicLifeEvents</parents>
+			<probabilities>0.6027101535948189 0.3972898464051811 0.4031819496673416 0.5968180503326583 0.857072268681076 0.142927731318924 0.6457057949479941 0.3542942050520059 0.8167922586747965 0.1832077413252034 0.6891761967412205 0.3108238032587795 0.9013089624190519 0.09869103758094813 0.7893429550030068 0.2106570449969932</probabilities>
+		</cpt>
+		<cpt id="Violence">
+			<state id="x" />
+			<state id="x2" />
+			<parents>ViolentConvictions</parents>
+			<probabilities>1 0 0 1 1 0 1 0 1 0 1 0</probabilities>
+		</cpt>
+		<cpt id="prioracq">
+			<state id="xto12" />
+			<state id="x3_" />
+			<state id="xto2" />
+			<parents>Violence</parents>
+			<probabilities>0.3589976405499959 0.4091025953950045 0.2318997640549996 0.300671983831968 0.2631188422534195 0.4362091739146126</probabilities>
+		</cpt>
+		<cpt id="Age">
+			<state id="x8_19" />
+			<state id="x5_39" />
+			<state id="x2_25" />
+			<state id="x6_29" />
+			<state id="x0_21" />
+			<state id="x0_49" />
+			<state id="x0_59" />
+			<state id="x0_34" />
+			<state id="x0_" />
+			<parents>Violence</parents>
+			<probabilities>0.1780359612724758 0.09135139532991619 0.2437555935237165 0.1213408184850704 0.1864063135627695 0.05519160361239932 0.01424456919697339 0.1077536408754373 0 0.07007831390522935 0.1009809087300155 0.1821328810133891 0.1243538200584648 0.1242859720668375 0.1332505684073767 0.07477859179328016 0.1476300119094879 0.04238478472698401</probabilities>
+		</cpt>
+		<cpt id="Gender">
+			<state id="Male" />
+			<state id="Female" />
+			<parents>Violence</parents>
+			<probabilities>0.8440387275242047 0.1559612724757953 0.806311306795626 0.193688693204374</probabilities>
+		</cpt>
+		<cpt id="PriorViolentConvictions">
+			<state id="x_" />
+			<state id="One" />
+			<state id="xto5" />
+			<state id="None" />
+			<parents>Violence</parents>
+			<probabilities>0.1756049141648361 0.1522610039866569 0.3988674639980473 0.2732666178504597 0.03952506405860912 0.1770760402757227 0.1964329279295536 0.5869659677361146</probabilities>
+		</cpt>
+		<cpt id="pclrscore">
+			<state id="x7to26" />
+			<state id="x0to16" />
+			<state id="xto9" />
+			<state id="x7_" />
+			<parents>Violence</parents>
+			<probabilities>0.5256561711821658 0.2090472703604263 0.06024570824180295 0.2050508502156049 0.3899974737449926 0.3103439315745787 0.2202894366451333 0.07936915803529539</probabilities>
+		</cpt>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 3.0.5905.0 ACADEMIC" name="Bayesys_network">
+			<node id="PCLRfacet3">
+				<name>PCLRfacet3</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>128 1816 128 1716</position>
+				<barchart active="true" width="128" height="108" />
+			</node>
+			<node id="AbilityToCope">
+				<name>AbilityToCope</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>539 1471 539 1371</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Stress">
+				<name>Stress</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>830 1641 830 1541</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ProblematicLifeEvents">
+				<name>ProblematicLifeEvents</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>627 1900 627 1800</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Victimisation">
+				<name>Victimisation</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>590 1697 590 1597</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ViolentThoughts">
+				<name>ViolentThoughts</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>765 1511 765 1411</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Impulsivity">
+				<name>Impulsivity</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>405 1600 405 1500</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="BPD">
+				<name>BPD</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>498 1248 498 1148</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AbuseNeglectAsChild">
+				<name>AbuseNeglectAsChild</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>208 1301 208 1201</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="PCLRfactor2">
+				<name>PCLRfactor2</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>142 1479 142 1379</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="ASPD">
+				<name>ASPD</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>502 1341 502 1241</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CriminalNetwork">
+				<name>CriminalNetwork</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>968 1365 968 1265</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="prioracq">
+				<name>prioracq</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1239 3461 1239 3361</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="Age">
+				<name>Age</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1382 3663 1382 3563</position>
+				<barchart active="true" width="128" height="180" />
+			</node>
+			<node id="Gender">
+				<name>Gender</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1485 3485 1485 3385</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="PriorViolentConvictions">
+				<name>PriorViolentConvictions</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1639 3591 1639 3491</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="pclrscore">
+				<name>pclrscore</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1742 3413 1742 3313</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="TimeAtRisk">
+				<name>TimeAtRisk</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1536 3037 1536 2937</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="CriminalFamilyBackground">
+				<name>CriminalFamilyBackground</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>768 1021 768 921</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Education">
+				<name>Education</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>399 1108 399 1008</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="Intelligence">
+				<name>Intelligence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>625 1075 625 975</position>
+				<barchart active="true" width="128" height="126" />
+			</node>
+			<node id="EmploymentOrTraining">
+				<name>EmploymentOrTraining</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>792 1223 792 1123</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="FinancialDifficulties">
+				<name>FinancialDifficulties</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1176 1358 1176 1258</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="DomesticStability">
+				<name>DomesticStability</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1103 1470 1103 1370</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="GangMember">
+				<name>GangMember</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>721 1401 721 1301</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ComplianceWithSupervision">
+				<name>ComplianceWithSupervision</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>823 623 823 523</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="NegativeAttitude">
+				<name>NegativeAttitude</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>668 1237 668 1137</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="CriminalAttitude">
+				<name>CriminalAttitude</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>935 1183 935 1083</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="SymptomsOfMentalIllness">
+				<name>SymptomsOfMentalIllness</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1388 381 1388 281</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="PCLRfactor1">
+				<name>PCLRfactor1</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1029 587 1029 487</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="RefuseFailToAttendTherapy">
+				<name>RefuseFailToAttendTherapy</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1244 589 1244 489</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="HazardousDrinkingAfterRelease">
+				<name>HazardousDrinkingAfterRelease</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1168 668 1168 568</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CannabisBeforePrisonSentence">
+				<name>CannabisBeforePrisonSentence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>456 518 456 418</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CocaineBeforePrisonSentence">
+				<name>CocaineBeforePrisonSentence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>74 722 74 622</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="EcstasyBeforePrisonSentence">
+				<name>EcstasyBeforePrisonSentence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1513 369 1513 269</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="EcstasyDuringPrisonSentence">
+				<name>EcstasyDuringPrisonSentence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1127 307 1127 207</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CannabisDuringPrisonSentence">
+				<name>CannabisDuringPrisonSentence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>478 380 478 280</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CocaineDuringPrisonSentence">
+				<name>CocaineDuringPrisonSentence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>165 568 165 468</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CannabisAfterRelease">
+				<name>CannabisAfterRelease</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>733 670 733 570</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CocaineAfterRelease">
+				<name>CocaineAfterRelease</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>409 832 409 732</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="EcstasyAfterRelease">
+				<name>EcstasyAfterRelease</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1094 720 1094 620</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="EcstasyDependence">
+				<name>EcstasyDependence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>856 137 856 37</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AnyDrugDependence">
+				<name>AnyDrugDependence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>651 359 651 259</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CannabisDependence">
+				<name>CannabisDependence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>463 156 463 56</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CocaineDependence">
+				<name>CocaineDependence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>267 324 267 224</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AlcoholDependence">
+				<name>AlcoholDependence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1427 918 1427 818</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="DrugTreatment">
+				<name>DrugTreatment</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1397 587 1397 487</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AlcoholTreatment">
+				<name>AlcoholTreatment</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1203 397 1203 297</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AlcoholTreatmentGivenRFAT">
+				<name>AlcoholTreatmentGivenRFAT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1303 689 1303 589</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="DrugTreatmentGivenRFAT">
+				<name>DrugTreatmentGivenRFAT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1011 823 1011 723</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="EcstasyPT">
+				<name>EcstasyPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>773 1119 773 1019</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CannabisPT">
+				<name>CannabisPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>873 909 873 809</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="CocainePT">
+				<name>CocainePT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>893 1097 893 997</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="SubstanceUse">
+				<name>SubstanceUse</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1083 1220 1083 1120</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="SubstanceMisuseDL">
+				<name>SubstanceMisuseDL</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1063 1617 1063 1517</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Violence">
+				<name>Violence</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1472 3315 1472 3215</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ViolentConvictions">
+				<name>ViolentConvictions</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1416 2831 1416 2731</position>
+				<barchart active="true" width="128" height="126" />
+			</node>
+			<node id="ResponsivenessToTreatment">
+				<name>ResponsivenessToTreatment</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1259 951 1259 851</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="ResponseToTreatGivenAlcDep">
+				<name>ResponseToTreatGivenAlcDep</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1286 863 1286 763</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="ResponseToTreatGivenDrugDep">
+				<name>ResponseToTreatGivenDrugDep</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>824 799 824 699</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="Anger">
+				<name>Anger</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1576 676 1576 576</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AngerPT">
+				<name>AngerPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1044 1089 1044 989</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AngerManagementGivenRFAT">
+				<name>AngerManagementGivenRFAT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1446 826 1446 726</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="HazardousDrinkingPT">
+				<name>HazardousDrinkingPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1115 912 1115 812</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AngerManagement">
+				<name>AngerManagement</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1915 748 1915 648</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AttitudeDL">
+				<name>AttitudeDL</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>925 1512 925 1412</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AggressionDL">
+				<name>AggressionDL</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>753 1785 753 1685</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="LivingCircumstances">
+				<name>LivingCircumstances</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1233 1635 1233 1535</position>
+				<barchart active="true" width="128" height="126" />
+			</node>
+			<node id="SocialProtectiveObs">
+				<name>SocialProtectiveObs</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1375 1909 1375 1809</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="SocialWithdraw">
+				<name>SocialWithdraw</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1318 1499 1318 1399</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ViolentConvictionsRate">
+				<name>ViolentConvictionsRate</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1167 1835 1167 1735</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="ViolentConvRateGivenProt">
+				<name>ViolentConvRateGivenProt</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1328 2279 1328 2179</position>
+				<barchart active="true" width="128" height="90" />
+			</node>
+			<node id="Depression">
+				<name>Depression</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1247 759 1247 659</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="DepressionPT">
+				<name>DepressionPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1390 1148 1390 1048</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Anxiety">
+				<name>Anxiety</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1431 647 1431 547</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="AnxietyPT">
+				<name>AnxietyPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1454 1039 1454 939</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ThoughtInsertion">
+				<name>ThoughtInsertion</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1453 724 1453 624</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ThoughtInsertionPT">
+				<name>ThoughtInsertionPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1626 979 1626 879</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="Hallucinations">
+				<name>Hallucinations</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1651 455 1651 355</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="HallucinationsPT">
+				<name>HallucinationsPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1600 762 1600 662</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="StrangeExperiences">
+				<name>StrangeExperiences</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1780 537 1780 437</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="StrangeExperiencesPT">
+				<name>StrangeExperiencesPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1767 874 1767 774</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ParanoidDelusions">
+				<name>ParanoidDelusions</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1776 381 1776 281</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="ParanoidDelusionsPT">
+				<name>ParanoidDelusionsPT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1714 734 1714 634</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="PsychiatricTreatment">
+				<name>PsychiatricTreatment</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>2002 942 2002 842</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="PsychiatricTreatmentGivenRFAT">
+				<name>PsychiatricTreatmentGivenRFAT</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1588 873 1588 773</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+			<node id="MentalIllnessSymptomCount">
+				<name>MentalIllnessSymptomCount</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1672 1093 1672 993</position>
+				<barchart active="true" width="128" height="72" />
+			</node>
+			<node id="MentalIllnessDL">
+				<name>MentalIllnessDL</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>1535 1537 1535 1437</position>
+				<barchart active="true" width="128" height="64" />
+			</node>
+		</genie>
+	</extensions>
+</smile>

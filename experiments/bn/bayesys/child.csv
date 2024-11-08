@@ -1,0 +1,26 @@
+ID,Variable 1,Dependency,Variable 2
+1,DuctFlow,->,HypDistrib
+2,CardiacMixing,->,HypDistrib
+3,CardiacMixing,->,HypoxiaInO2
+4,LungParench,->,HypoxiaInO2
+5,LungParench,->,CO2
+6,LungParench,->,ChestXray
+7,LungFlow,->,ChestXray
+8,LungParench,->,Grunting
+9,Sick,->,Grunting
+10,LVH,->,LVHreport
+11,HypDistrib,->,LowerBodyO2
+12,HypoxiaInO2,->,LowerBodyO2
+13,HypoxiaInO2,->,RUQO2
+14,CO2,->,CO2Report
+15,ChestXray,->,XrayReport
+16,BirthAsphyxia,->,Disease
+17,Grunting,->,GruntingReport
+18,Disease,->,Age
+19,Sick,->,Age
+20,Disease,->,LVH
+21,Disease,->,DuctFlow
+22,Disease,->,CardiacMixing
+23,Disease,->,LungParench
+24,Disease,->,LungFlow
+25,Disease,->,Sick

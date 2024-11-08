@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in BNBENCH -->
+<smile version="1.0" id="bnbench" numsamples="100000" discsamples="100000">
+    <nodes>
+        <equation id="Plcg">
+            <definition>Plcg=Normal(54.85364151,173.8481445)</definition>
+        </equation>
+        <equation id="PKC">
+            <definition>PKC=Normal(30.34165764,92.86381531)</definition>
+        </equation>
+        <equation id="PKA">
+            <parents>PKC</parents>
+            <definition>PKA=-1.106007934*PKC+Normal(659.3166504,636.1786533)</definition>
+        </equation>
+        <equation id="PIP3">
+            <parents>Plcg</parents>
+            <definition>PIP3=0.02153034322*Plcg+Normal(25.85394669,42.88222959)</definition>
+        </equation>
+        <equation id="Jnk">
+            <parents>PKA PKC</parents>
+            <definition>Jnk=-0.016745409*PKA+1.871729612*PKC+Normal(26.95470428,124.8077096)</definition>
+        </equation>
+        <equation id="P38">
+            <parents>PKA PKC</parents>
+            <definition>P38=-0.02257006057*PKA+5.083726406*PKC+Normal(-5.11076355,139.6069259)</definition>
+        </equation>
+        <equation id="PIP2">
+            <parents>PIP3 Plcg</parents>
+            <definition>PIP2=0.80238837*PIP3+1.577490568*Plcg+Normal(42.89709473,107.4572237)</definition>
+        </equation>
+        <equation id="Raf">
+            <parents>PKA PKC</parents>
+            <definition>Raf=-0.04578408971*PKA+0.4665537775*PKC+Normal(138.5657043,241.0536208)</definition>
+        </equation>
+        <equation id="Mek">
+            <parents>PKA PKC Raf</parents>
+            <definition>Mek=-0.006526452489*PKA+0.105956316*PKC+1.498203754*Raf+Normal(-39.63497925,51.38509062)</definition>
+        </equation>
+        <equation id="Erk">
+            <parents>Mek PKA</parents>
+            <definition>Erk=0.009360200725*Mek+0.01662404276*PKA+Normal(14.86776352,44.54981229)</definition>
+        </equation>
+        <equation id="Akt">
+            <parents>Erk PKA</parents>
+            <definition>Akt=2.181560993*Erk-0.0370198451*PKA+Normal(46.23511505,97.31778153)</definition>
+        </equation>
+    </nodes>
+    <extensions>
+        <genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="Network1">
+            <node id="Plcg">
+                <name>Plcg</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 100 100 140</position>
+            </node>
+            <node id="PKC">
+                <name>PKC</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 100 200 140</position>
+            </node>
+            <node id="PKA">
+                <name>PKA</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 200 100 240</position>
+            </node>
+            <node id="PIP3">
+                <name>PIP3</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 200 200 240</position>
+            </node>
+            <node id="Jnk">
+                <name>Jnk</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 300 100 340</position>
+            </node>
+            <node id="P38">
+                <name>P38</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>120 300 200 340</position>
+            </node>
+            <node id="PIP2">
+                <name>PIP2</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>220 300 300 340</position>
+            </node>
+            <node id="Raf">
+                <name>Raf</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>320 300 400 340</position>
+            </node>
+            <node id="Mek">
+                <name>Mek</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 400 100 440</position>
+            </node>
+            <node id="Erk">
+                <name>Erk</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 500 100 540</position>
+            </node>
+            <node id="Akt">
+                <name>Akt</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
+                <position>20 600 100 640</position>
+            </node>
+        </genie>
+    </extensions>
+</smile>

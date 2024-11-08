@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="genie1" numsamples="10000" discsamples="10000">
+	<nodes>
+		<equation id="A">
+			<definition lower="-inf" upper="inf">A=Normal(1,1)</definition>
+		</equation>
+		<equation id="B">
+			<definition lower="-20" upper="20">B=Normal(2,3)</definition>
+		</equation>
+		<equation id="E">
+			<definition>E=Normal(3.5,2)</definition>
+		</equation>
+		<equation id="G">
+			<definition>G=Normal(5,2)</definition>
+		</equation>
+		<equation id="C">
+			<parents>A B</parents>
+			<definition>C=B*2+Normal(2,0.5)+2*A</definition>
+		</equation>
+		<equation id="D">
+			<parents>B</parents>
+			<definition>D=Normal(6,0.33)+1.5*B</definition>
+		</equation>
+		<equation id="F">
+			<parents>E G A D</parents>
+			<definition>F=E+Normal(0,1)+G*1.5+A*2+D</definition>
+		</equation>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="genie1">
+			<node id="A">
+				<name>A</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>480 105 599 185</position>
+				<barchart active="true" width="180" height="246" />
+			</node>
+			<node id="B">
+				<name>B</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>711 105 830 185</position>
+				<barchart active="true" width="185" height="246" />
+			</node>
+			<node id="E">
+				<name>E</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>53 107 172 187</position>
+				<barchart active="true" width="182" height="246" />
+			</node>
+			<node id="G">
+				<name>G</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>266 108 385 188</position>
+				<barchart active="true" width="181" height="246" />
+			</node>
+			<node id="C">
+				<name>C</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>599 396 718 476</position>
+				<barchart active="true" width="179" height="246" />
+			</node>
+			<node id="D">
+				<name>D</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>923 539 1042 619</position>
+				<barchart active="true" width="184" height="246" />
+			</node>
+			<node id="F">
+				<name>F</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" width="2" />
+				<font color="000000" name="Arial" size="24" bold="true" />
+				<position>204 643 323 723</position>
+				<barchart active="true" width="186" height="246" />
+			</node>
+		</genie>
+	</extensions>
+</smile>

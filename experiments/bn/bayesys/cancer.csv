@@ -1,0 +1,5 @@
+ID,Variable 1,Dependency,Variable 2
+1,Pollution,->,Cancer
+2,Smoker,->,Cancer
+3,Cancer,->,Xray
+4,Cancer,->,Dyspnoea

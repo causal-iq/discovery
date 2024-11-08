@@ -1,0 +1,9 @@
+ID,Tier 1,Tier 2,Tier 3,END
+1,WSH_ImprovedToilet,WSH_ImprovedWaterSource,DIA_HadDiarrhoea,
+2,ECO_WealthQuintile,CHI_Weight4Height,,
+3,WSH_WashWithAgent,FP_ModernMethod,,
+4,WSH_SafeStoolDisposal,,,
+5,WSH_WaterTreated,,,
+6,BF_BreastfedMonths,,,
+7,BF_EarlyBreastfeeding,,,
+8,MTH_Education,,,

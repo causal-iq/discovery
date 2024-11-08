@@ -1,0 +1,72 @@
+ID,Variable 1,Dependency,Variable 2
+1,ASPD,->,BPD
+2,ASPD,->,Gang member
+3,Ability to cope,->,Financial difficulties
+4,Alcohol dependence,-,Hazardous drinking after release
+5,Anxiety,->,Ability to cope
+6,Anxiety,->,Anger
+7,Anxiety,->,Depression
+8,Anxiety,->,Paranoid delusions
+9,Anxiety,->,Strange experiences
+10,Anxiety,->,Stress
+11,Anxiety,->,Violent thoughts
+12,BPD,->,Symptoms of mental illness
+13,Cannabis after release,->,Cannabis dependence
+14,Cannabis after release,->,Cannabis during prison sentence
+15,Cannabis before prison sentence,->,Age
+16,Cannabis before prison sentence,->,Cannabis after release
+17,Cannabis before prison sentence,->,Cannabis during prison sentence
+18,Cannabis before prison sentence,->,Financial difficulties
+19,Cannabis before prison sentence,->,PCLR factor 2
+20,Cannabis during prison sentence,->,Ecstasy during prison sentence
+21,Cocaine after release,->,Cocaine before prison sentence
+22,Cocaine after release,->,Criminal family background
+23,Cocaine after release,->,Violent thoughts
+24,Cocaine before prison sentence,->,Cannabis before prison sentence
+25,Cocaine before prison sentence,->,Cocaine during prison sentence
+26,Cocaine before prison sentence,->,Ecstasy before prison sentence
+27,Cocaine before prison sentence,->,Living circumstances
+28,Cocaine dependence,->,Cocaine after release
+29,Compliance with supervision,->,Responsiveness to treatment
+30,Criminal family background,->,Criminal network
+31,Depression,->,Anger
+32,Depression,->,Employment or training
+33,Ecstasy after release,->,Cannabis after release
+34,Ecstasy after release,->,Cocaine after release
+35,Ecstasy after release,->,Ecstasy before prison sentence
+36,Ecstasy after release,->,Ecstasy dependence
+37,Ecstasy after release,-,Hazardous drinking after release
+38,Ecstasy before prison sentence,->,Cannabis before prison sentence
+39,Ecstasy before prison sentence,->,Criminal network
+40,Ecstasy dependence,->,Cocaine dependence
+41,Financial difficulties,->,Domestic stability
+42,Gang member,->,Criminal family background
+43,Gender,->,Cannabis dependence
+44,Gender,->,Cocaine after release
+45,Gender,->,Cocaine dependence
+46,Gender,->,Ecstasy dependence
+47,Gender,-,Intelligence
+48,Gender,-,Time at risk
+49,Hazardous drinking after release,-,Violence
+50,Negative attitude,->,Compliance with supervision
+51,PCLR facet 3,->,Impulsivity
+52,PCLR factor 2,->,ASPD
+53,PCLR factor 2,->,PCLR facet 3
+54,PCLR factor 2,->,pclrscore
+55,Paranoid delusions,->,Strange experiences
+56,Paranoid delusions,->,Thought insertion
+57,Paranoid delusions,->,Victimisation
+58,Prior violent convictions,->,Cocaine before prison sentence
+59,Prior violent convictions,-,Violence
+60,Stress,->,Depression
+61,Symptoms of mental illness,->,Abuse or neglect as a child
+62,Symptoms of mental illness,->,Anxiety
+63,Symptoms of mental illness,->,Hallucinations
+64,Victimisation,->,Stress
+65,Violent thoughts,->,Paranoid delusions
+66,pclrscore,->,Criminal attitude
+67,pclrscore,->,Education
+68,pclrscore,->,Negative attitude
+69,pclrscore,->,PCLR factor 1
+70,Gender,-,prioracq
+71,Prior violent convictions,-,prioracq

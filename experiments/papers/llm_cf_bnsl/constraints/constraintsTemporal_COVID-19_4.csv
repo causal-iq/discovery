@@ -1,0 +1,6 @@
+ID,Tier 1,Tier 2,Tier 3,Tier 4,Tier 5,Tier 6,END
+1,Lockdown,Transportation_activity,New_infections,Patients_in_hospital,Patients_in_MVBs,Excess_mortality,
+2,Tests_across_all_4_Pillars,Leisure_activity,,Hospital_admissions,Deaths_with_COVID_on_certificate,,
+3,Majority_COVID_19_variant,Work_and_school_activity,,,,,
+4,Season,Second_dose_uptake,,,,,
+5,Face_masks,Positive_tests,,,,,

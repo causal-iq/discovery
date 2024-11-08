@@ -1,0 +1,10 @@
+ID,Variable 1,Dependency,Variable 2
+1,Lockdown,->,Face_masks
+2,Hospital_admissions,->,Patients_in_hospital
+3,Patients_in_hospital,->,Deaths_with_COVID_on_certificate
+4,Majority_COVID_19_variant,->,Season
+5,Season,->,Face_masks
+6,Work_and_school_activity,->,Transportation_activity
+7,Transportation_activity,->,Lockdown
+8,Tests_across_all_4_Pillars,->,Majority_COVID_19_variant
+9,Positive_tests,->,New_infections

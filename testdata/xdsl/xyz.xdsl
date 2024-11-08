@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This network was created in GeNIe Academic, which can be used for academic teaching and research purposes only -->
+<smile version="1.0" id="xyz" numsamples="10000" discsamples="10000">
+	<nodes>
+		<equation id="X">
+			<definition>X=Normal(0,1)</definition>
+		</equation>
+        <equation id="Y">
+			<parents>X</parents>
+			<definition>Y=1.5*X+Normal(0.5,0.5)</definition>
+		</equation>
+		<equation id="Z">
+            <parents>Y</parents>
+			<definition>Z=-2*Y+Normal(-2,0.2)</definition>
+		</equation>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="gaussian">
+			<node id="X">
+				<name>X</name>
+				<interior color="e5f6f7" />
+				<outline color="ff0000" />
+				<font color="000000" name="Arial" size="8" />
+				<position>149 96 246 174</position>
+			</node>
+			<node id="Y">
+				<name>Y</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>290 226 419 312</position>
+			</node>
+			<node id="Z">
+				<name>Z</name>
+				<interior color="e5f6f7" />
+				<outline color="ff0000" />
+				<font color="000000" name="Arial" size="8" />
+				<position>422 86 519 164</position>
+			</node>
+		</genie>
+	</extensions>
+</smile>

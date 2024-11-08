@@ -1,0 +1,15 @@
+ID,Parent,Child
+1,ATshots,ATshotsOnTarget
+2,ATshotsOnTarget,ATgoals
+3,HTshotOnTarget,HTgoals
+4,HTgoals,HDA
+5,HTshots,HTshotOnTarget
+6,possession,ATshots
+7,possession,HTshots
+8,RDlevel,ATgoals
+9,RDlevel,HTgoals
+10,RDlevel,ATshots
+11,RDlevel,ATshotsOnTarget
+12,RDlevel,HTshotOnTarget
+13,RDlevel,HTshots
+14,ATgoals,HDA

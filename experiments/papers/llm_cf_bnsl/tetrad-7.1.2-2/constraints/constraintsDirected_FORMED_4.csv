@@ -1,0 +1,38 @@
+/knowledge
+addtemporal
+
+forbiddirect
+
+requiredirect
+Anxiety ResponsivenessToTreatment
+ComplianceWithSupervision ResponsivenessToTreatment
+RefuseFailToAttendTherapy Violence
+ASPD Violence
+CriminalNetwork CriminalAttitude
+BPD Violence
+CannabisAfterRelease CriminalAttitude
+CannabisAfterRelease Anxiety
+CannabisAfterRelease Depression
+Impulsivity Violence
+CocaineAfterRelease CriminalAttitude
+CocaineAfterRelease Anxiety
+CocaineAfterRelease Depression
+CriminalFamilyBackground CriminalAttitude
+Depression ResponsivenessToTreatment
+EcstasyAfterRelease CriminalAttitude
+EcstasyAfterRelease Anxiety
+EcstasyAfterRelease Depression
+GangMember CriminalAttitude
+LivingCircumstances CriminalAttitude
+LivingCircumstances Anxiety
+PCLRfacet3 Violence
+PCLRfactor1 Violence
+PCLRfactor2 Violence
+PriorViolentConvictions Violence
+SymptomsOfMentalIllness ResponsivenessToTreatment
+SocialWithdraw Anxiety
+SocialWithdraw Depression
+pclrscore Violence
+CannabisDependence CriminalAttitude
+CocaineDependence CriminalAttitude
+EcstasyDependence CriminalAttitude

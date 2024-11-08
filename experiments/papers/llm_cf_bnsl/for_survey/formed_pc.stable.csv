@@ -1,0 +1,34 @@
+ID,Variable 1,Dependency,Variable 2
+1,Depression,->,Anger
+2,Depression,->,Anxiety
+3,Cannabis before prison sentence,->,Cocaine before prison sentence
+4,Cocaine during prison sentence,-,Ecstasy during prison sentence
+5,Depression,-,Stress
+6,Cocaine after release,->,Ecstasy after release
+7,Alcohol dependence,-,Hazardous drinking after release
+8,Compliance with supervision,-,Responsiveness to treatment
+9,Living circumstances,->,Domestic stability
+10,Cannabis after release,-,Cannabis dependence
+11,Cannabis during prison sentence,-,Ecstasy during prison sentence
+12,Symptoms of mental illness,->,BPD
+13,Cocaine after release,-,Cocaine dependence
+14,Criminal family background,-,Criminal network
+15,PCLR facet 3,-,PCLR factor 2
+16,ASPD,->,BPD
+17,Ecstasy dependence,->,Ecstasy after release
+18,Cocaine after release,->,Cocaine before prison sentence
+19,Anxiety,->,Paranoid delusions
+20,Hallucinations,-,Symptoms of mental illness
+21,Violence,->,Domestic stability
+22,Paranoid delusions,->,Thought insertion
+23,Stress,->,Anger
+24,Victimisation,->,Financial difficulties
+25,Stress,->,Anxiety
+26,Education,-,Intelligence
+27,Cannabis during prison sentence,-,Cocaine during prison sentence
+28,Ecstasy before prison sentence,->,Cocaine before prison sentence
+29,Criminal attitude,->,Anger
+30,Gender,-,prioracq
+31,Anger,->,Anxiety
+32,Ability to cope,->,Financial difficulties
+33,Criminal attitude,-,Violent thoughts
