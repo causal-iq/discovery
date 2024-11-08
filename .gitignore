@@ -1,0 +1,7 @@
+
+# Ignore Python cached files
+
+__pycache__/
+
+.pytest_cache/
+.Rproj.user
