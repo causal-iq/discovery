@@ -2,14 +2,14 @@
 # Does some NumPy benchmark timings
 
 import pytest
-from numpy import unique, arange, prod as npprod, array, sum as npsum, prod, \
-    bincount
+from numpy import unique, arange
 from numpy.random import choice
 
 from fileio.common import EXPTS_DIR
 from fileio.numpy import NumPy
 from fileio.pandas import Pandas
 from core.timing import Timing
+from learn.hc import hc
 
 
 @pytest.fixture(scope="module")  # covid, 1M rows
@@ -27,8 +27,126 @@ def data():
     return data
 
 
+def do_expt(network, N, id, params=None):
+    """
+        Do an individual timings experiment.
+
+        :param str network: network to use
+        :param int N: sample size
+        :param int id: experiment id
+
+        :returns dict: of requests counts {size: count}
+    """
+    Timing.on(True)
+
+    dstype = 'continuous' if network.endswith('_c') else 'categorical'
+    data = Pandas.read(EXPTS_DIR + '/datasets/' + network + '.data.gz',
+                       dstype=dstype, N=N)
+    data = NumPy.from_df(data.df, dstype='categorical', keep_df=False)
+
+    context = {'id': 'timings/{}_{}'.format(network, id), 'in': network}
+
+    start = Timing.now()
+    dag, trace = hc(data=data, params=params, context=context)
+    Timing.record('learning', N, start)
+
+    print('\n\n{}\n\n{}\n'.format(dag, trace))
+
+    print(Timing)
+
+    return (Timing.times)
+
+
+def test_numpy_tabu_asia_1_timings():  # Tabu, Asia, 1K
+    timing = do_expt(network='asia', N=1000, id=1, params={'tabu': 10})
+    assert timing['marginals'][1]['count'] == 8
+    assert timing['marginals'][2]['count'] == 56
+
+
+def test_numpy_tabu_asia_2_timings():  # Tabu-Stable, Asia, 1K
+    timing = do_expt(network='asia', N=1000, id=2,
+                     params={'tabu': 10, 'stable': 'score+'})
+    assert timing['marginals'][1]['count'] == 8
+    assert timing['marginals'][2]['count'] == 56
+
+
 @pytest.mark.slow
-def test_numpy_covid_1_ok(data):  # Simple np.unique
+def test_numpy_tabu_asia_3_timings():  # Tabu, Asia, 1M
+    timing = do_expt(network='asia', N=1000000, id=3, params={'tabu': 10})
+    assert timing['marginals'][1]['count'] == 8
+    assert timing['marginals'][2]['count'] == 56
+
+
+@pytest.mark.slow
+def test_numpy_tabu_asia_4_timings():  # Tabu-Stable, Asia, 1M
+    timing = do_expt(network='asia', N=1000000, id=4,
+                     params={'tabu': 10, 'stable': 'score+'})
+    assert timing['marginals'][1]['count'] == 8
+    assert timing['marginals'][2]['count'] == 56
+
+
+@pytest.mark.slow
+def test_numpy_tabu_covid_1_timings():  # Tabu, Covid, 1K
+    timing = do_expt(network='covid', N=1000, id=1, params={'tabu': 10})
+    assert timing['marginals'][1]['count'] == 17
+    assert timing['marginals'][2]['count'] == 272
+
+
+@pytest.mark.slow
+def test_numpy_tabu_covid_2_timings():  # Tabu-Stable, Covid, 1K
+    timing = do_expt(network='covid', N=1000, id=2,
+                     params={'tabu': 10, 'stable': 'score+'})
+    assert timing['marginals'][1]['count'] == 17
+    assert timing['marginals'][2]['count'] == 272
+
+
+@pytest.mark.slow
+def test_numpy_tabu_covid_3_timings():  # Tabu, Covid, 1M
+    timing = do_expt(network='covid', N=1000000, id=3, params={'tabu': 10})
+    assert timing['marginals'][1]['count'] == 17
+    assert timing['marginals'][2]['count'] == 272
+
+
+@pytest.mark.slow
+def test_numpy_tabu_covid_4_timings():  # Tabu-Stable, Covid, 1M
+    timing = do_expt(network='covid', N=1000000, id=4,
+                     params={'tabu': 10, 'stable': 'score+'})
+    assert timing['marginals'][1]['count'] == 17
+    assert timing['marginals'][2]['count'] == 272
+
+
+@pytest.mark.slow
+def test_numpy_tabu_diarrhoea_1_timings():  # Tabu, diarrhoea, 1K
+    timing = do_expt(network='diarrhoea', N=1000, id=1, params={'tabu': 10})
+    assert timing['marginals'][1]['count'] == 28
+    assert timing['marginals'][2]['count'] == 756
+
+
+@pytest.mark.slow
+def test_numpy_tabu_diarrhoea_2_timings():  # Tabu-Stable, diarrhoea, 1K
+    timing = do_expt(network='diarrhoea', N=1000, id=2,
+                     params={'tabu': 10, 'stable': 'score+'})
+    assert timing['marginals'][1]['count'] == 28
+    assert timing['marginals'][2]['count'] == 756
+
+
+@pytest.mark.slow
+def test_numpy_tabu_diarrhoea_3_timings():  # Tabu, diarrhoea, 1M
+    timing = do_expt(network='diarrhoea', N=1000000, id=3, params={'tabu': 10})
+    assert timing['marginals'][1]['count'] == 28
+    assert timing['marginals'][2]['count'] == 756
+
+
+@pytest.mark.slow
+def test_numpy_tabu_diarrhoea_4_timings():  # Tabu-Stable, diarrhoea, 1M
+    timing = do_expt(network='diarrhoea', N=1000000, id=4,
+                     params={'tabu': 10, 'stable': 'score+'})
+    assert timing['marginals'][1]['count'] == 28
+    assert timing['marginals'][2]['count'] == 756
+
+
+@pytest.mark.slow
+def xtest_numpy_covid_1_ok(data):  # Simple np.unique
 
     for j in range(5):
         for n in range(1, 8):
@@ -38,72 +156,6 @@ def test_numpy_covid_1_ok(data):  # Simple np.unique
             combos, counts = unique(data.data[:, cols], axis=0,
                                     return_counts=True)
             Timing.record('np.unique', n, start)
-
-    print(Timing)
-
-
-@pytest.mark.slow
-def test_unique_covid_2_ok(data):  # using hashes
-
-    for j in range(5):
-        for n in range(1, 8):
-            cols = choice(arange(0, data.data.shape[1]), size=n, replace=False)
-
-            # Compute unique 'hash' for each combo - each variable has 4 values
-
-            start0 = Timing.now()
-            multipliers = 4 ** arange(n)
-            hash_values = data.data[:, cols] @ multipliers
-            Timing.record('hash_vals', n, start0)
-
-            # Count unique integers, returning index to these integers
-
-            start = Timing.now()
-            uniques, indices, counts = unique(hash_values, return_index=True,
-                                              return_counts=True)
-            Timing.record('uniq_hash', n, start)
-            print('Cols: {}, {} unique'.format(cols, len(uniques)))
-            print(indices[:5])
-
-            # Code to recover original rows from hashes via indices ...
-
-            Timing.record('marginals', n, start0)
-
-    print(Timing)
-
-
-@pytest.mark.slow
-def test_unique_covid_3_ok(data):  # using binning
-
-    for j in range(5):
-        for n in range(1, 8):
-            cols = choice(arange(0, data.data.shape[1]), size=n, replace=False)
-
-            # Compute unique 'hash' for each combo - each variable has 4 values
-
-            start0 = Timing.now()
-
-            # Create vector of number of values in each bin, bin_sizes
-
-            # bin_sizes = [4] * n
-
-            # Vector of multipliers for values in each bin
-
-            # bin_mult = array([npprod(bin_sizes[i+1:]) for i in range(n)])
-            multipliers = 4 ** arange(n)
-
-            # create vector of hash values for each row using bin_mult
-
-            # hashes = npsum(data.sample[:, cols] * bin_mult, axis=1)
-            hashes = data.sample[:, cols] @ multipliers
-
-            # count each integer value using bin counts
-
-            start = Timing.now()
-            counts = bincount(hashes, minlength=prod(multipliers))
-            Timing.record('bincount', n, start)
-
-            Timing.record('marginals', n, start0)
 
     print(Timing)
 

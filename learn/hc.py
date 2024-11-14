@@ -12,6 +12,7 @@ from learn.common import TreeStats
 from learn.hc_worker import HCWorker, Prefer
 from fileio.data import Data
 from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from core.graph import DAG, SDG
 from core.score import check_score_params, SCORE_PARAMS
 from core.metrics import values_same
@@ -591,7 +592,7 @@ def hc(data, params=None, knowledge=False, context=None,
 
     # Set stable node order if required
 
-    if ('stable' in params and isinstance(data, Pandas)):
+    if 'stable' in params and isinstance(data, (Pandas, NumPy)):
         data, pretime = set_stable_order(data, params)
         if context is not None:
             context.update({'pretime': pretime})

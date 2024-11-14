@@ -2,22 +2,22 @@
 <!-- This network was created in BNBENCH -->
 <smile version="1.0" id="bnbench" numsamples="100000" discsamples="100000">
     <nodes>
-        <equation id="Season">
-            <definition>Season=Normal(2.653579712,1.148386598)</definition>
-        </equation>
         <equation id="Tests_across_all_4_Pillars">
             <definition>Tests_across_all_4_Pillars=Normal(608611.125,414554.25)</definition>
         </equation>
         <equation id="Majority_COVID_19_variant">
             <definition>Majority_COVID_19_variant=Normal(2.346362591,1.332238913)</definition>
         </equation>
-        <equation id="New_infections">
-            <parents>Majority_COVID_19_variant Season</parents>
-            <definition>New_infections=12251.72266*Majority_COVID_19_variant-1640.482422*Season+Normal(516.5605469,27367.34951)</definition>
+        <equation id="Season">
+            <definition>Season=Normal(2.653579712,1.148386598)</definition>
         </equation>
         <equation id="Reinfections">
             <parents>Majority_COVID_19_variant Season</parents>
             <definition>Reinfections=1253.005493*Majority_COVID_19_variant+416.3622437*Season+Normal(-2538.644287,2793.400709)</definition>
+        </equation>
+        <equation id="New_infections">
+            <parents>Majority_COVID_19_variant Season</parents>
+            <definition>New_infections=12251.72266*Majority_COVID_19_variant-1640.482422*Season+Normal(516.5605469,27367.34951)</definition>
         </equation>
         <equation id="Positive_tests">
             <parents>New_infections Reinfections Tests_across_all_4_Pillars</parents>
@@ -47,21 +47,21 @@
             <parents>Deaths_with_COVID_on_certificate Majority_COVID_19_variant Positive_tests</parents>
             <definition>Second_dose_uptake=-0.02410616912*Deaths_with_COVID_on_certificate+16.17470169*Majority_COVID_19_variant+0.0001354217529*Positive_tests+Normal(9.345661163,16.65104577)</definition>
         </equation>
-        <equation id="Excess_mortality">
-            <parents>Deaths_with_COVID_on_certificate Lockdown</parents>
-            <definition>Excess_mortality=0.05584656447*Deaths_with_COVID_on_certificate-1.171786427*Lockdown+Normal(-0.4592809677,11.89302828)</definition>
-        </equation>
-        <equation id="Leisure_activity">
-            <parents>Lockdown Season</parents>
-            <definition>Leisure_activity=-0.2964703143*Lockdown-0.3072581291*Season+Normal(4.04975605,0.6194804621)</definition>
+        <equation id="Face_masks">
+            <parents>Deaths_with_COVID_on_certificate Lockdown Patients_in_MVBs Patients_in_hospital</parents>
+            <definition>Face_masks=-0.003179745283*Deaths_with_COVID_on_certificate+0.5117633343*Lockdown+0.0005133040249*Patients_in_MVBs+0.000007808208466*Patients_in_hospital+Normal(1.244655609,0.6451629825)</definition>
         </equation>
         <equation id="Work_and_school_activity">
             <parents>Lockdown Season</parents>
             <definition>Work_and_school_activity=-0.5091350079*Lockdown-0.002862490015*Season+Normal(4.009604454,0.5199887979)</definition>
         </equation>
-        <equation id="Face_masks">
-            <parents>Deaths_with_COVID_on_certificate Lockdown Patients_in_MVBs Patients_in_hospital</parents>
-            <definition>Face_masks=-0.003179745283*Deaths_with_COVID_on_certificate+0.5117633343*Lockdown+0.0005133040249*Patients_in_MVBs+0.000007808208466*Patients_in_hospital+Normal(1.244655609,0.6451629825)</definition>
+        <equation id="Leisure_activity">
+            <parents>Lockdown Season</parents>
+            <definition>Leisure_activity=-0.2964703143*Lockdown-0.3072581291*Season+Normal(4.04975605,0.6194804621)</definition>
+        </equation>
+        <equation id="Excess_mortality">
+            <parents>Deaths_with_COVID_on_certificate Lockdown</parents>
+            <definition>Excess_mortality=0.05584656447*Deaths_with_COVID_on_certificate-1.171786427*Lockdown+Normal(-0.4592809677,11.89302828)</definition>
         </equation>
         <equation id="Transportation_activity">
             <parents>Leisure_activity Lockdown Season Work_and_school_activity</parents>
@@ -70,36 +70,36 @@
     </nodes>
     <extensions>
         <genie version="1.0" app="GeNIe 4.0.1922.0 ACADEMIC" name="Network1">
-            <node id="Season">
-                <name>Season</name>
-                <interior color="e5f6f7" />
-                <outline color="000080" />
-                <font color="000000" name="Arial" size="8" />
-                <position>20 100 100 140</position>
-            </node>
             <node id="Tests_across_all_4_Pillars">
                 <name>Tests_across_all_4_Pillars</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />
-                <position>120 100 200 140</position>
+                <position>20 100 100 140</position>
             </node>
             <node id="Majority_COVID_19_variant">
                 <name>Majority_COVID_19_variant</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />
+                <position>120 100 200 140</position>
+            </node>
+            <node id="Season">
+                <name>Season</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
                 <position>220 100 300 140</position>
             </node>
-            <node id="New_infections">
-                <name>New_infections</name>
+            <node id="Reinfections">
+                <name>Reinfections</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />
                 <position>20 200 100 240</position>
             </node>
-            <node id="Reinfections">
-                <name>Reinfections</name>
+            <node id="New_infections">
+                <name>New_infections</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />
@@ -154,29 +154,29 @@
                 <font color="000000" name="Arial" size="8" />
                 <position>120 800 200 840</position>
             </node>
-            <node id="Excess_mortality">
-                <name>Excess_mortality</name>
+            <node id="Face_masks">
+                <name>Face_masks</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />
                 <position>20 900 100 940</position>
-            </node>
-            <node id="Leisure_activity">
-                <name>Leisure_activity</name>
-                <interior color="e5f6f7" />
-                <outline color="000080" />
-                <font color="000000" name="Arial" size="8" />
-                <position>120 900 200 940</position>
             </node>
             <node id="Work_and_school_activity">
                 <name>Work_and_school_activity</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />
+                <position>120 900 200 940</position>
+            </node>
+            <node id="Leisure_activity">
+                <name>Leisure_activity</name>
+                <interior color="e5f6f7" />
+                <outline color="000080" />
+                <font color="000000" name="Arial" size="8" />
                 <position>220 900 300 940</position>
             </node>
-            <node id="Face_masks">
-                <name>Face_masks</name>
+            <node id="Excess_mortality">
+                <name>Excess_mortality</name>
                 <interior color="e5f6f7" />
                 <outline color="000080" />
                 <font color="000000" name="Arial" size="8" />

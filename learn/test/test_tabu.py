@@ -5,6 +5,7 @@ import pytest
 from pandas import set_option
 
 from fileio.common import TESTDATA_DIR
+from fileio.pandas import Pandas
 from core.bn import BN
 from learn.hc import hc
 from call.bnlearn import bnlearn_learn
@@ -103,7 +104,7 @@ def test_tabu_ab_10_2_ok(showall):  # A->B 10 rows, no trace, tabu=10
     data = bn.generate_cases(10)
     dag, _ = hc(data, params={'tabu': 10, 'bnlearn': False})
     print('\nLearning DAG from 10 rows of A->B produces:\n{}'.format(dag))
-    dag_bnlearn, _ = bnlearn_learn('tabu', data)
+    dag_bnlearn, _ = bnlearn_learn('tabu', Pandas(data))
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -118,7 +119,8 @@ def test_tabu_ab_10_3_ok(showall):  # A->B 10 rows
     dag, trace = hc(data, context=context,
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -155,8 +157,8 @@ def test_tabu_ab_10_5_ok(showall):  # A->B 10 rows, BDeu score
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -176,8 +178,8 @@ def test_tabu_ab_10_6_ok(showall):  # A->B 10 rows, BDeu score, iss=5
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -201,8 +203,8 @@ def test_tabu_ab_10_7_ok(showall):  # A->B 10 rows, BDS score
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag_bnlearn.to_string() == '[A|B][B]'
@@ -222,8 +224,8 @@ def test_tabu_ab_10_8_ok(showall):  # A->B 10 rows, BDS score, ISS=0.1
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -243,8 +245,8 @@ def test_tabu_ab_10_9_ok(showall):  # A->B 10 rows, Loglik score
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -264,7 +266,8 @@ def test_tabu_ab_100_1_ok(showall):  # A->B 100 rows
     dag, trace = hc(data, context=context,
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -286,8 +289,8 @@ def test_tabu_ab_100_2_ok(showall):  # A->B 100 rows, BDeu score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -309,8 +312,8 @@ def test_tabu_ab_100_3_ok(showall):  # A->B 100 rows, BDS score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -332,8 +335,8 @@ def test_tabu_ab_100_4_ok(showall):  # A->B 100 rows, Log likelihood score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -354,7 +357,8 @@ def test_tabu_ab_1k_1_ok(showall):  # A->B 1k rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -376,8 +380,8 @@ def test_tabu_ab_1k_2_ok(showall):  # A->B 1k rows, k = 0.5
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -399,8 +403,8 @@ def test_tabu_ab_1k_3_ok(showall):  # A->B 1k rows, BDeu score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -422,8 +426,8 @@ def test_tabu_ab_1k_4_ok(showall):  # A->B 1k rows, BDS score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -445,8 +449,8 @@ def test_tabu_ab_1k_5_ok(showall):  # A->B 1k rows, Log-Likelihood score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -469,7 +473,8 @@ def test_tabu_ba_10_ok(showall):  # A<-B 10 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -491,7 +496,8 @@ def test_tabu_ba_100_ok(showall):  # A<-B 100 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -513,7 +519,8 @@ def test_tabu_ba_1k_ok(showall):  # A<-B 1k rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -537,7 +544,8 @@ def test_tabu_abc_10_1_ok(showall):  # A->B->C 10 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     assert dag.to_string() == '[A][B|A][C|B]'
@@ -561,7 +569,8 @@ def test_tabu_abc_10_2_ok(showall):  # A->B->C 10 rows, noinc=5
                     params={'tabu': 10, 'bnlearn': False, 'noinc': 5})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     assert dag.to_string() == '[A][B|A][C|B]'
@@ -597,7 +606,8 @@ def test_tabu_abc_10_3_ok(showall):  # A->B->C 10 rows, noinc=2
                     params={'tabu': 10, 'bnlearn': False, 'noinc': 2})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     assert dag.to_string() == '[A][B|A][C|B]'
@@ -639,7 +649,8 @@ def test_tabu_abc_100_ok(showall):  # A->B->C 100 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert PDAG.fromDAG(dag) == PDAG.fromDAG(dag_bnlearn)
@@ -665,7 +676,8 @@ def test_tabu_abc_1k_1_ok(showall):  # A->B->C 1k rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -687,8 +699,8 @@ def test_tabu_abc_1k_2_ok(showall):  # A->B->C 1k rows, BDeu score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -713,8 +725,8 @@ def test_tabu_abc_1k_3_ok(showall):  # A->B->C 1k rows, BDS score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert PDAG.fromDAG(dag) == PDAG.fromDAG(dag_bnlearn)
@@ -739,8 +751,8 @@ def test_tabu_abc_1k_4_ok(showall):  # A->B->C 1k rows, Log-likelihood score
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -764,7 +776,8 @@ def test_tabu_abc_3_1k_ok(showall):  # A->B->C 1k rows
                     params={'tabu': 10, 'bnlearn': False, 'maxiter': 40})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     assert dag.to_string() == '[A][B|A][C|B]'
@@ -788,7 +801,8 @@ def test_tabu_ab_cb_10_ok(showall):  # A->B<-C 10 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A|C][B][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -812,7 +826,8 @@ def test_tabu_ab_cb_100_1_ok(showall):  # A->B<-C 100 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B][C|B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -836,7 +851,8 @@ def test_tabu_ab_cb_100_2_ok(showall):  # A->B<-C 100 rows, noinc=10
                     params={'tabu': 10, 'bnlearn': False, 'noinc': 10})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B][C|B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -860,7 +876,8 @@ def test_tabu_ab_cb_100_3_ok(showall):  # A->B<-C 100 rows, noinc=5
                     params={'tabu': 10, 'bnlearn': False, 'noinc': 5})
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B][C|B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -890,7 +907,8 @@ def test_tabu_ab_cb_1k_1_ok(showall):  # A->B<-C 1k rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -924,7 +942,8 @@ def test_tabu_ab_cb_1k_2_ok(showall):  # A->B<-C 1k rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -954,8 +973,8 @@ def test_tabu_ab_cb_1k_3_ok(showall):  # A->B<-C 1k rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     print('Blocked differences:')
@@ -996,8 +1015,8 @@ def test_tabu_ab_cb_1k_4_ok(showall):  # A->B<-C 1k rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     print('Blocked differences:')
@@ -1031,8 +1050,8 @@ def test_tabu_ab_cb_1k_5_ok(showall):  # A->B<-C 1k rows, BDS score
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1067,8 +1086,8 @@ def test_tabu_ab_cb_1k_6_ok(showall):  # A->B<-C 1k rows, BDS score
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1098,8 +1117,8 @@ def test_tabu_ab_cb_1k_7_ok(showall):  # A->B<-C 1k rows, Log-likelihood score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1126,7 +1145,8 @@ def test_tabu_ab_cb_10k_1_ok(showall):  # A->B<-C 10k rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1161,7 +1181,8 @@ def test_tabu_ab_cb_10k_2_ok(showall):  # A->B<-C 10k rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1193,7 +1214,8 @@ def test_tabu_and4_10_1_ok(showall):  # X1->X2->X4, X3->X2 10 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1224,7 +1246,8 @@ def test_tabu_and4_10_2_ok(showall):  # X1->X2->X4, X3->X2 10 rows
                     params={'tabu': 10, 'bnlearn': True})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1253,7 +1276,8 @@ def test_tabu_and4_10_3_ok(showall):  # X1->X2->X4, X3->X2 100 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1280,7 +1304,8 @@ def test_tabu_and4_10_4_ok(showall):  # X1->X2->X4, X3->X2 200 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1307,7 +1332,8 @@ def test_tabu_and4_10_5_ok(showall):  # X1->X2->X4, X3->X2 1K rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1337,8 +1363,8 @@ def test_tabu_and4_10_6_ok(showall):  # X1->X2->X4, X3->X2 1K rows, BDeu
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1369,8 +1395,8 @@ def test_tabu_and4_10_7_ok(showall):  # X1->X2->X4, X3->X2 1K rows, BDS
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1398,8 +1424,8 @@ def test_tabu_and4_10_8_ok(showall):  # X1->X2->X4, X3->X2 1K rows, Loglik
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1426,7 +1452,8 @@ def test_tabu_cancer_1_ok(showall):  # Cancer 1K rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1455,8 +1482,8 @@ def test_tabu_cancer_2_ok(showall):  # Cancer 1K rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1497,8 +1524,8 @@ def test_tabu_cancer_3_ok(showall):  # Cancer 1K rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1529,8 +1556,8 @@ def test_tabu_cancer_4_ok(showall):  # Cancer 1K rows, BDeu score, noinc=15
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1562,8 +1589,8 @@ def test_tabu_cancer_5_ok(showall):  # Cancer 1K rows, BDS score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1601,8 +1628,8 @@ def test_tabu_cancer_6_ok(showall):  # Cancer 1K rows, BDS score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1630,8 +1657,8 @@ def test_tabu_cancer_7_ok(showall):  # Cancer 1K rows, Log-likelihood score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               params=params, context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1662,7 +1689,8 @@ def test_tabu_asia_1_ok(showall):  # Asia 500 rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1695,7 +1723,8 @@ def test_tabu_asia_2_ok(showall):  # Asia 500 rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1722,7 +1751,8 @@ def test_tabu_asia_3_ok(showall):  # Asia 1K rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1755,7 +1785,8 @@ def test_tabu_asia_4_ok(showall):  # Asia 1K rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1783,8 +1814,8 @@ def test_tabu_asia_5_ok(showall):  # Asia 1K rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1815,8 +1846,8 @@ def test_tabu_asia_6_ok(showall):  # Asia 1K rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1848,8 +1879,8 @@ def test_tabu_asia_7_ok(showall):  # Asia 1K rows, BDS score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1881,8 +1912,8 @@ def test_tabu_asia_8_ok(showall):  # Asia 1K rows, BDS score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1914,8 +1945,8 @@ def test_tabu_asia_9_ok(showall):  # Asia 1K rows, Loglik score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1946,8 +1977,8 @@ def test_tabu_asia_10_ok(showall):  # Asia 1K rows, Loglik score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context, params=params)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -1976,7 +2007,8 @@ def test_tabu_child_1_ok(showall):  # Child 1K rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -2014,7 +2046,8 @@ def test_tabu_child_2_ok(showall):  # Child 1K rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -2050,7 +2083,8 @@ def test_tabu_child_3_ok(showall):  # Child 10K rows
                     params={'tabu': 10, 'bnlearn': False})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -2084,7 +2118,8 @@ def test_tabu_child_4_ok(showall):  # Child 10K rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -2120,7 +2155,8 @@ def test_tabu_child_5_ok(showall):  # Child 10K rows, BDeu score
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
     del params['tabu']
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
     assert dag.number_components() == 1
@@ -2145,7 +2181,8 @@ def test_tabu_insurance_1_ok(showall):  # Insuranc1K rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace_bnlearn,
                                                      dag_bnlearn))
 
@@ -2175,7 +2212,8 @@ def test_tabu_insurance_10k_ok(showall):  # Insuranc1K rows
     dag, trace = hc(data, context=context, params={'tabu': 10})
     print('\n\n{}\n\nbnbench produces:\n\n{}'.format(trace, dag))
 
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('tabu', Pandas(data),
+                                               context=context)
     print('\n\n{}\n\nbnlearn produces:\n\n{}'.format(trace, dag))
 
     print(dag.to_string())

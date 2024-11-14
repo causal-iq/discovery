@@ -2,7 +2,6 @@
 #  Module to call Tetrad algorithms using dispatch_cmd method
 #
 
-from pandas import DataFrame
 from os import remove
 from random import random
 from re import compile
@@ -12,6 +11,7 @@ from core.graph import SDG, PDAG, DAG
 from learn.trace import Trace, Activity, Detail, CONTEXT_FIELDS
 from call.cmd import dispatch_cmd
 from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 
 
 TETRAD_ALGORITHMS = {
@@ -152,16 +152,14 @@ def process_output(id, nodes):
     return (graph, elapsed)
 
 
-def tetrad_learn(algorithm, data, context=None, params=None,
-                 dstype='categorical'):
+def tetrad_learn(algorithm, data, context=None, params=None):
     """
         Return graph learnt from data using tetrad algorithms
 
         :param str algorithm: algorithm to use, e.g. 'fges'
-        :param DataFrame/str data: data or data filename to learn from
+        :param Numpy/Pandas/str data: data or data filename to learn from
         :param dict context: context information about the test/experiment
         :param dict params: parameters for algorithm e.g. score to use
-        :param str dstype: dataset type: categorical, continuous or mixed
 
         :raises TypeError: if arg types incorrect
         :raises ValueError: if invalid params supplied
@@ -170,7 +168,8 @@ def tetrad_learn(algorithm, data, context=None, params=None,
 
         :returns tuple: (DAG/PDAG learnt from data, learning trace)
     """
-    if (not isinstance(algorithm, str) or not isinstance(data, DataFrame)
+    if (not isinstance(algorithm, str)
+            or not isinstance(data, (NumPy, Pandas))
             or (context is not None and not isinstance(context, dict))
             or (params is not None and not isinstance(params, dict))):
         raise TypeError('tetrad_learn bad arg types')
@@ -187,15 +186,20 @@ def tetrad_learn(algorithm, data, context=None, params=None,
     # the Tetrad executable itself, and Tetrad version to use.
 
     params, tetrad_v, tetrad_p = _validate_learn_params(algorithm, params,
-                                                        dstype)
+                                                        data.dstype)
 
     # Generate or copy data file in Java tmp folder
 
     id = '{}'.format(int(random() * 10000000))
     tmpfile = 'call/java/tmp/{}.csv'.format(id)
-    Pandas(df=data).write(tmpfile)
 
-    nodes = list(data.columns)
+    # Write out data with current column names, order. A bug means that
+    # Pandas.write() does not do this, so for now have to use as_df() in
+    # this convoluted way at the moment.
+
+    Pandas(df=data.as_df()).write(tmpfile)
+
+    nodes = list(data.get_order())  # gives external node names as required
     if len(nodes) < 2:
         remove(tmpfile)
         raise ValueError('tetrad_learn data < 2 columns')
@@ -217,7 +221,7 @@ def tetrad_learn(algorithm, data, context=None, params=None,
 
             context = context.copy()
             context.update({'algorithm': algorithm.upper(), 'params': params,
-                            'N': len(data), 'external': 'TETRAD',
+                            'N': data.N, 'external': 'TETRAD',
                             'dataset': True})
             trace = Trace(context)
             trace.add(Activity.INIT, {Detail.DELTA: 0.0})
@@ -234,4 +238,4 @@ def tetrad_learn(algorithm, data, context=None, params=None,
         remove(tmpfile)
         remove(tmpfile.replace('.csv', '.txt'))  # _out for v1.10
 
-    return(graph, trace)
+    return (graph, trace)

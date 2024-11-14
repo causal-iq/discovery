@@ -28,7 +28,7 @@ def tmpfile():
 def test_score_bnlearn_a_b_3_ok():  # A, B unconnected
     data = Pandas(DataFrame({'A': ['1', '0', '1'],
                              'B': ['1', '0', '1']}, dtype='category'))
-    bnlearn = bnlearn_score(dag.a_b(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.a_b().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -37,7 +37,7 @@ def test_score_bnlearn_a_b_3_ok():  # A, B unconnected
 def test_score_bnlearn_a_b_4_ok():  # A, B unconnected
     data = Pandas(DataFrame({'A': ['1', '1', '1', '0'],
                              'B': ['1', '0', '1', '1']}, dtype='category'))
-    bnlearn = bnlearn_score(dag.a_b(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.a_b().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -46,7 +46,7 @@ def test_score_bnlearn_a_b_4_ok():  # A, B unconnected
 def test_score_bnlearn_a_b_5_ok():  # A, B unconnected
     data = Pandas(DataFrame({'A': ['1', '0', '1', '0'],
                              'B': ['1', '0', '1', '0']}, dtype='category'))
-    bnlearn = bnlearn_score(dag.a_b(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.a_b().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -56,7 +56,7 @@ def test_score_bnlearn_a_b_6_ok():  # A, B unconnected
     data = Pandas(DataFrame({'A': ['1', '0', '1', '0', '0', '0', '0'],
                              'B': ['0', '0', '0', '1', '0', '1', '0']},
                             dtype='category'))
-    bnlearn = bnlearn_score(dag.a_b(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.a_b().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -65,7 +65,7 @@ def test_score_bnlearn_a_b_6_ok():  # A, B unconnected
 def test_score_bnlearn_ab_1_ok():  # A --> B, 2 rows
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
-    bnlearn = bnlearn_score(dag.ab(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.ab().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -74,7 +74,7 @@ def test_score_bnlearn_ab_1_ok():  # A --> B, 2 rows
 def test_score_bnlearn_ab_2_ok():  # A --> B, 4 rows
     data = Pandas(DataFrame({'A': ['0', '1', '0', '1'],
                              'B': ['0', '1', '0', '1']}, dtype='category'))
-    bnlearn = bnlearn_score(dag.ab(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.ab().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -83,7 +83,7 @@ def test_score_bnlearn_ab_2_ok():  # A --> B, 4 rows
 def test_score_bnlearn_ab_3_ok():  # A --> B, 3 rows
     data = Pandas(DataFrame({'A': ['0', '1', '1'], 'B': ['0', '1', '1']},
                             dtype='category'))
-    bnlearn = bnlearn_score(dag.ab(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.ab().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -92,7 +92,7 @@ def test_score_bnlearn_ab_3_ok():  # A --> B, 3 rows
 def test_score_bnlearn_ab_4_ok():  # A --> B, 4 rows
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
                              'B': ['0', '1', '0', '1']}, dtype='category'))
-    bnlearn = bnlearn_score(dag.ab(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.ab().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -102,7 +102,7 @@ def test_score_bnlearn_ac_bc_1_ok():  # A --> C <-- B, 2 parent combos
     data = Pandas(DataFrame({'A': ['0', '1', '1'],
                              'B': ['0', '1', '1'],
                              'C': ['0', '1', '1']}, dtype='category'))
-    bnlearn = bnlearn_score(dag.ac_bc(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.ac_bc(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.ac_bc().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -113,7 +113,7 @@ def test_score_bnlearn_ac_bc_2_ok():  # A --> C <-- B, all parent combo
                              'B': ['0', '1', '1', '1', '0'],
                              'C': ['0', '1', '1', '1', '1']},
                             dtype='category'))
-    bnlearn = bnlearn_score(dag.ac_bc(), data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag.ac_bc(), data, TYPES, DEFAULT_PARAMS)
     scores = dag.ac_bc().score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -123,7 +123,7 @@ def test_score_bnlearn_heckerman_1_ok():  # N1 --> N2, 12 rows
     data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
                        dstype='categorical')
     dag = DAG(['N1', 'N2'], [('N1', '->', 'N2')])
-    bnlearn = bnlearn_score(dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag, data, TYPES, DEFAULT_PARAMS)
     scores = dag.score(data, TYPES, DEFAULT_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
@@ -132,7 +132,7 @@ def test_score_bnlearn_heckerman_2_ok():  # N1 _|_ N2, 12 rows
     data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
                        dstype='categorical')
     dag = DAG(['N1', 'N2'], [])
-    bnlearn = bnlearn_score(dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag, data, TYPES, DEFAULT_PARAMS)
     scores = dag.score(data, TYPES, DEFAULT_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
@@ -140,7 +140,7 @@ def test_score_bnlearn_heckerman_2_ok():  # N1 _|_ N2, 12 rows
 def test_score_bnlearn_asia_1k():  # bnlearn score for ASIA, 1K
     asia = BN.read(TESTDATA_DIR + '/asia/asia.dsc')
     data = Pandas(asia.generate_cases(1000))
-    bnlearn = bnlearn_score(asia.dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(asia.dag, data, TYPES, DEFAULT_PARAMS)
     scores = asia.dag.score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -149,7 +149,7 @@ def test_score_bnlearn_asia_1k():  # bnlearn score for ASIA, 1K
 def test_score_bnlearn_asia_10k():  # bnlearn score ASIA, 1000K
     asia = BN.read(TESTDATA_DIR + '/asia/asia.dsc')
     data = Pandas(asia.generate_cases(10000))
-    bnlearn = bnlearn_score(asia.dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(asia.dag, data, TYPES, DEFAULT_PARAMS)
     scores = asia.dag.score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -167,7 +167,7 @@ def test_score_bnlearn_alarm_press():  # ALARM subset
                             dtype='category'))
     scores = dag.score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
-    bnlearn = bnlearn_score(dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(dag, data, TYPES, DEFAULT_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
@@ -175,7 +175,7 @@ def test_score_bnlearn_alarm_press():  # ALARM subset
 def test_score_bnlearn_alarm_10k():  # bnlearn score ALARM, 10K
     alarm = BN.read(TESTDATA_DIR + '/alarm/alarm.dsc')
     data = Pandas(alarm.generate_cases(10000))
-    bnlearn = bnlearn_score(alarm.dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(alarm.dag, data, TYPES, DEFAULT_PARAMS)
     scores = alarm.dag.score(data, TYPES, DEFAULT_PARAMS)
     print(scores)
     assert dicts_same(bnlearn, dict(scores.sum()))
@@ -185,7 +185,7 @@ def test_score_bnlearn_alarm_10k():  # bnlearn score ALARM, 10K
 def test_score_bnlearn_pathfinder_25k():  # bnlearn PATHFINDER
     pathfinder = BN.read(TESTDATA_DIR + '/pathfinder/pathfinder.dsc')
     data = Pandas(pathfinder.generate_cases(25000))
-    bnlearn = bnlearn_score(pathfinder.dag, data.sample, TYPES, DEFAULT_PARAMS)
+    bnlearn = bnlearn_score(pathfinder.dag, data, TYPES, DEFAULT_PARAMS)
     scores = pathfinder.dag.score(data, TYPES, DEFAULT_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
@@ -196,8 +196,7 @@ def test_score_bnlearn_x_y_score():  # score X --> Y Gaussian Network
     x_y = BN.read(TESTDATA_DIR + '/xdsl/x_y.xdsl')
     print('\n\n{}'.format(x_y.dag))
     data = Pandas(x_y.generate_cases(3))
-    print(data.sample)
-    bnlearn = bnlearn_score(x_y.dag, data.sample, ['bic-g'], {'k': 1})
+    bnlearn = bnlearn_score(x_y.dag, data, ['bic-g'], {'k': 1})
     scores = x_y.dag.score(data, ['bic-g'], {'k': 1})
     print(bnlearn)
     print(scores)

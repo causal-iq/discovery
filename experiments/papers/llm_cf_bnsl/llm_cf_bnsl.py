@@ -47,6 +47,7 @@ def learn_graph(netw, algo):
     print('{} rows of {} data read OK:'.format(len(data), netw))
     data.columns = [c.replace(' ', '_') for c in data.columns]  # for FGES
     print(data.head())
+    data = Pandas(data)
 
     # Run the appropriate bnlearn or Tetrad structure learning algorithm
 
@@ -69,7 +70,7 @@ def learn_graph(netw, algo):
         return
 
     if graph.is_DAG():
-        bn = BN.fit(graph, Pandas(df=data))
+        bn = BN.fit(graph, data)
         print('Writing graph (DAG) in Genie format ...')
         write_xdsl(bn, OUTPUT.format(netw, algo, 'xdsl'), True)
         cpdag = PDAG.fromDAG(graph)
@@ -135,7 +136,7 @@ def constrained_graph(netw, algo, type, level='0'):
     # Use bnlearn to learn graph from real world data with constraints
 
     id = '{}_{}_{}'.format(algo, netw, level)
-    pdag, _ = bnlearn_learn(algo, data.sample, knowledge=knowledge,
+    pdag, _ = bnlearn_learn(algo, data, knowledge=knowledge,
                             context={'in': d_file, 'id': id})
     print('\nGraph learnt by {} for {} with level {} {}:\n{}'
           .format(algo, netw, level, type, pdag))

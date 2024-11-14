@@ -5,8 +5,15 @@ import pytest
 
 from call.bnlearn import bnlearn_learn
 from fileio.common import TESTDATA_DIR
-from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from core.bn import BN
+
+
+@pytest.fixture(scope="module")  # AB, 10 categorical rows
+def ab10():
+    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
+    return NumPy.from_df(df=bn.generate_cases(10), dstype='categorical',
+                         keep_df=False)
 
 
 def test_bnlearn_h2pc_type_error_1():  # no arguments
@@ -14,92 +21,45 @@ def test_bnlearn_h2pc_type_error_1():  # no arguments
         bnlearn_learn()
 
 
-def test_bnlearn_h2pc_type_error_2():  # single argument
+def test_bnlearn_h2pc_type_error_2():  # only one argument
+    with pytest.raises(TypeError):
+        bnlearn_learn(32.23)
     with pytest.raises(TypeError):
         bnlearn_learn('h2pc')
-    with pytest.raises(TypeError):
-        bnlearn_learn(6)
-    with pytest.raises(TypeError):
-        bnlearn_learn([['A', 'B'], [1, 2]])
 
 
-def test_bnlearn_h2pc_type_error_3():  # bad algorithm type
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
+def test_bnlearn_h2pc_type_error_3(ab10):  # bad algorithm type
     with pytest.raises(TypeError):
-        bnlearn_learn(True, data)
+        bnlearn_learn(True, ab10)
     with pytest.raises(TypeError):
-        bnlearn_learn(6, data)
+        bnlearn_learn(6, ab10)
     with pytest.raises(TypeError):
-        bnlearn_learn(data, data)
+        bnlearn_learn(ab10, ab10)
 
 
-def test_bnlearn_h2pc_type_error_4():  # bad data argument type
+def test_bnlearn_h2pc_type_error_4(ab10):  # bad data argument type
     with pytest.raises(TypeError):
         bnlearn_learn('h2pc', 32.23)
     with pytest.raises(TypeError):
         bnlearn_learn('h2pc', [['A', 'B'], [1, 2]])
-
-
-def test_bnlearn_h2pc_type_error_5():  # bad context argument type
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
     with pytest.raises(TypeError):
-        bnlearn_learn('h2pc', data, context=True)
-    with pytest.raises(TypeError):
-        bnlearn_learn('h2pc', data, context='test/ab/10')
+        bnlearn_learn('h2pc', ab10.as_df())
 
 
-def test_bnlearn_h2pc_type_error_6():  # bad params argument type
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
-    with pytest.raises(TypeError):
-        bnlearn_learn('h2pc', data, params=True)
-    with pytest.raises(TypeError):
-        bnlearn_learn('h2pc', data, params='bic')
-
-
-def test_bnlearn_h2pc_value_error_1():  # bad context values
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
-    with pytest.raises(ValueError):
-        bnlearn_learn('h2pc', data, context={})
-    with pytest.raises(ValueError):
-        bnlearn_learn('h2pc', data, context={'invalid': 'bic'})
-
-
-def test_bnlearn_h2pc_value_error_2():  # bad param name
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
-    with pytest.raises(ValueError):
-        bnlearn_learn('h2pc', data, {'invalid': 'bic'})
-
-
-def test_bnlearn_h2pc_value_error_3():  # bad score specified
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
-    with pytest.raises(ValueError):
-        bnlearn_learn('h2pc', data, {'score': 'invalid'})
-
-
-def test_bnlearn_h2pc_filenotfound_error_1():  # bad primary arg types
+def test_bnlearn_h2pc_filenotfound_error_1():  # non-existent data file
     with pytest.raises(FileNotFoundError):
         bnlearn_learn('h2pc', 'nonexistent.txt')
 
 
-def test_bnlearn_h2pc_ab_10_ok_1():  # default BIC score
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    id = 'test/ab_10_ok_1'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
-    dag, trace = bnlearn_learn('h2pc', data, context={'in': _in, 'id': id})
+def test_bnlearn_h2pc_ab_10_ok_1(ab10):  # default BIC score
+    dag, trace = bnlearn_learn('h2pc', ab10, context={'in': 'in', 'id': 'id'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
     print(trace)
     assert trace.context['N'] == 10
-    assert trace.context['id'] == id
+    assert trace.context['id'] == 'id'
     assert trace.context['algorithm'] == 'H2PC'
-    assert trace.context['in'] == _in
+    assert trace.context['in'] == 'in'
     assert trace.context['external'] == 'BNLEARN'
     assert trace.context['params'] == {'score': 'bic', 'k': 1, 'base': 'e',
                                        'test': 'mi', 'alpha': 0.05}
@@ -122,30 +82,23 @@ def test_bnlearn_h2pc_ab_10_ok_1():  # default BIC score
     assert trace.result == dag
 
 
-def test_bnlearn_h2pc_ab_10_ok_2():  # default BIC score, no trace
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
-    dag, trace = bnlearn_learn('h2pc', data)
+def test_bnlearn_h2pc_ab_10_ok_2(ab10):  # default BIC score, no trace
+    dag, trace = bnlearn_learn('h2pc', ab10)
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
     assert trace is None
 
 
-def test_bnlearn_h2pc_ab_10_ok_3():  # BDE score
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    id = 'test/ab_10_ok_3'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
-    dag, trace = bnlearn_learn('h2pc', data, context={'in': _in, 'id': id},
+def test_bnlearn_h2pc_ab_10_ok_3(ab10):  # BDE score
+    dag, trace = bnlearn_learn('h2pc', ab10, context={'in': 'in', 'id': 'id'},
                                params={'score': 'bde'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
     print(trace)
     assert trace.context['N'] == 10
-    assert trace.context['id'] == id
+    assert trace.context['id'] == 'id'
     assert trace.context['algorithm'] == 'H2PC'
-    assert trace.context['in'] == _in
+    assert trace.context['in'] == 'in'
     assert trace.context['external'] == 'BNLEARN'
     assert trace.context['params'] == {'score': 'bde', 'iss': 1, 'alpha': 0.05,
                                        'prior': 'uniform', 'test': 'mi'}
@@ -169,20 +122,16 @@ def test_bnlearn_h2pc_ab_10_ok_3():  # BDE score
     assert trace.result == dag
 
 
-def test_bnlearn_h2pc_ab_10_ok_4():  # Loglik score
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    id = 'test/ab_10_ok_3'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
-    dag, trace = bnlearn_learn('h2pc', data, context={'in': _in, 'id': id},
+def test_bnlearn_h2pc_ab_10_ok_4(ab10):  # Loglik score
+    dag, trace = bnlearn_learn('h2pc', ab10, context={'in': 'in', 'id': 'id'},
                                params={'score': 'loglik'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
     print(trace)
     assert trace.context['N'] == 10
-    assert trace.context['id'] == id
+    assert trace.context['id'] == 'id'
     assert trace.context['algorithm'] == 'H2PC'
-    assert trace.context['in'] == _in
+    assert trace.context['in'] == 'in'
     assert trace.context['external'] == 'BNLEARN'
     assert trace.context['params'] == {'score': 'loglik', 'base': 'e',
                                        'test': 'mi', 'alpha': 0.05}
@@ -207,15 +156,17 @@ def test_bnlearn_h2pc_ab_10_ok_4():  # Loglik score
 
 def test_bnlearn_h2pc_ab_100_ok():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(100)
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=False)
     dag, _ = bnlearn_learn('h2pc', data)
     print('\nDAG learnt from 100 rows of A->B: {}'.format(dag))
-    assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
+    assert dag.to_string() == '[A][B|A]'  # H2PC learns correct answer
 
 
 def test_bnlearn_h2pc_abc_100_ok():
     bn = BN.read(TESTDATA_DIR + '/dsc/abc.dsc')
-    data = bn.generate_cases(100)
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=False)
     dag, _ = bnlearn_learn('h2pc', data)
     print('\nDAG learnt from 100 rows of A->B->C: {}'.format(dag))
     assert dag.to_string() == '[A][B][C|B]'  # H2PC has missing arc
@@ -223,7 +174,8 @@ def test_bnlearn_h2pc_abc_100_ok():
 
 def test_bnlearn_h2pc_ab_cb_1k_ok():  # A -> B <- C, 1k Rows
     bn = BN.read(TESTDATA_DIR + '/dsc/ab_cb.dsc')
-    data = bn.generate_cases(1000)
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
     dag, _ = bnlearn_learn('h2pc', data)
     print('\nDAG learnt from 1K rows of A->B<-C: {}'.format(dag))
     assert dag.to_string() == '[A][B|A:C][C]'  # H2PC correct
@@ -232,7 +184,8 @@ def test_bnlearn_h2pc_ab_cb_1k_ok():  # A -> B <- C, 1k Rows
 def test_bnlearn_h2pc_and4_10_1k_ok():  # 1->2->4, 3->2, 1K rows
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/and4_10.dsc')
     print(bn.global_distribution())
-    data = bn.generate_cases(1000)
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
     dag, _ = bnlearn_learn('h2pc', data)
     print('\nDAG learnt from 1K rows of 1->2->4, 3->2: {}'.format(dag))
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'  # only equivalent
@@ -241,7 +194,8 @@ def test_bnlearn_h2pc_and4_10_1k_ok():  # 1->2->4, 3->2, 1K rows
 def test_bnlearn_h2pc_cancer_1k_ok():  # Cancer, 1K rows
     bn = BN.read(TESTDATA_DIR + '/discrete/small/cancer.dsc')
     print(bn.global_distribution())
-    data = bn.generate_cases(1000)
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
     dag, _ = bnlearn_learn('h2pc', data)
     print('\nDAG learnt from 1K rows of Cancer: {}'.format(dag))
     assert '[Cancer][Dyspnoea|Cancer][Pollution][Smoker|Cancer][Xray|Cancer]' \
@@ -251,7 +205,8 @@ def test_bnlearn_h2pc_cancer_1k_ok():  # Cancer, 1K rows
 def test_bnlearn_h2pc_asia_1k_ok_1():  # Cancer, 1K rows
     bn = BN.read(TESTDATA_DIR + '/discrete/small/asia.dsc')
     print(bn.global_distribution())
-    data = bn.generate_cases(1000)
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
     dag, _ = bnlearn_learn('h2pc', data)
     print('\nDAG learnt from 1K rows of Asia: {}'.format(dag))
     assert ('[asia][bronc][dysp|bronc][either][lung|either][smoke|bronc]' +
@@ -259,55 +214,33 @@ def test_bnlearn_h2pc_asia_1k_ok_1():  # Cancer, 1K rows
 
 
 def test_bnlearn_h2pc_asia_1k_ok_2():  # Cancer, 1K rows, BDE score
-    _in = TESTDATA_DIR + '/discrete/small/asia.dsc'
-    id = 'test/asia_1k'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-    dag, trace = bnlearn_learn('h2pc', data, context={'in': _in, 'id': id},
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/asia.data.gz',
+                      dstype='categorical')
+    dag, trace = bnlearn_learn('h2pc', data, context={'in': 'in', 'id': 'id'},
                                params={'score': 'bde'})
     print('\nDAG learnt from 1K rows of Asia: {}'.format(dag))
     print(dag.to_string())
-    return
     assert ('[asia][bronc][dysp|bronc][either][lung|either][smoke|bronc]' +
             '[tub|either][xray]') == dag.to_string()
     print(trace)
     assert trace.context['N'] == 1000
-    assert trace.context['id'] == id
-    assert trace.context['algorithm'] == 'h2pc'
-    assert trace.context['in'] == _in
+    assert trace.context['id'] == 'id'
+    assert trace.context['algorithm'] == 'H2PC'
+    assert trace.context['in'] == 'in'
     assert trace.context['external'] == 'BNLEARN'
-    assert trace.context['params'] == {'score': 'bde'}
-    _trace = trace.get().drop(labels='time', axis=1).to_dict('records')
-    assert _trace[0] == {'activity': 'init', 'arc': None,
-                         'delta/score': -3032.945000, 'activity_2': None,
-                         'arc_2': None, 'delta_2': None, 'min_N': None,
-                         'mean_N': None, 'max_N': None, 'free_params': None,
-                         'lt5': None, 'knowledge': None}
-    assert _trace[4] == {'activity': 'add', 'arc': ('bronc', 'smoke'),
-                         'delta/score': 52.652915, 'activity_2': None,
-                         'arc_2': None, 'delta_2': None, 'min_N': None,
-                         'mean_N': None, 'max_N': None, 'free_params': None,
-                         'lt5': None, 'knowledge': None}
-    assert _trace[9] == {'activity': 'reverse', 'arc': ('bronc', 'smoke'),
-                         'delta/score': 6.999314, 'activity_2': None,
-                         'arc_2': None, 'delta_2': None, 'min_N': None,
-                         'mean_N': None, 'max_N': None, 'free_params': None,
-                         'lt5': None, 'knowledge': None}
-    assert _trace[10] == {'activity': 'stop', 'arc': None,
-                          'delta/score': -2264.126, 'activity_2': None,
-                          'arc_2': None, 'delta_2': None, 'min_N': None,
-                          'mean_N': None, 'max_N': None, 'free_params': None,
-                          'lt5': None, 'knowledge': None}
+    assert trace.context['params'] == \
+        {'score': 'bde', 'test': 'mi', 'iss': 1, 'prior': 'uniform',
+         'alpha': 0.05}
     assert trace.result == dag
 
 
 # Gaussian datasets
 
 def test_bnlearn_h2pc_gauss_1_ok():  # Gaussian example, 100 rows
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous', N=100)
-    pdag, trace = bnlearn_learn('h2pc', data.sample, dstype='continuous',
-                                context={'in': _in, 'id': 'gauss'},
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=100)
+    pdag, trace = bnlearn_learn('h2pc', data,
+                                context={'in': 'in', 'id': 'gauss'},
                                 params={'test': 'mi-g', 'score': 'bic-g'})
     print('\nPDAG learnt from 100 rows of gauss: {}\n\n{}'.format(pdag, trace))
     edges = {(e[0], t.value[3], e[1]) for e, t in pdag.edges.items()}
@@ -317,11 +250,11 @@ def test_bnlearn_h2pc_gauss_1_ok():  # Gaussian example, 100 rows
 
 
 def test_bnlearn_h2pc_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous', N=100)
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=100)
     data.set_order(tuple(list(data.get_order())[::-1]))
-    pdag, trace = bnlearn_learn('h2pc', data.sample, dstype='continuous',
-                                context={'in': _in, 'id': 'gauss'},
+    pdag, trace = bnlearn_learn('h2pc', data,
+                                context={'in': 'in', 'id': 'gauss'},
                                 params={'test': 'mi-g', 'score': 'bic-g'})
     print('\nPDAG learnt from 100 rows of gauss: {}\n\n{}'.format(pdag, trace))
     edges = {(e[0], t.value[3], e[1]) for e, t in pdag.edges.items()}
@@ -331,12 +264,12 @@ def test_bnlearn_h2pc_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
 
 
 def test_bnlearn_h2pc_gauss_3_ok():  # Gaussian example, 5K rows
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
-    pdag, trace = bnlearn_learn('h2pc', data.sample, dstype='continuous',
-                                context={'in': _in, 'id': 'gauss'},
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=5000)
+    pdag, trace = bnlearn_learn('h2pc', data,
+                                context={'in': 'in', 'id': 'gauss'},
                                 params={'test': 'mi-g', 'score': 'bic-g'})
-    print('\nPDAG learnt from 100 rows of gauss: {}\n\n{}'.format(pdag, trace))
+    print('\nPDAG learnt from 5K rows of gauss: {}\n\n{}'.format(pdag, trace))
     edges = {(e[0], t.value[3], e[1]) for e, t in pdag.edges.items()}
     assert edges == \
         {('B', '->', 'C'),
@@ -349,11 +282,11 @@ def test_bnlearn_h2pc_gauss_3_ok():  # Gaussian example, 5K rows
 
 
 def test_bnlearn_h2pc_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=5000)
     data.set_order(tuple(list(data.get_order())[::-1]))
-    pdag, trace = bnlearn_learn('h2pc', data.sample, dstype='continuous',
-                                context={'in': _in, 'id': 'gauss'},
+    pdag, trace = bnlearn_learn('h2pc', data,
+                                context={'in': 'in', 'id': 'gauss'},
                                 params={'test': 'mi-g', 'score': 'bic-g'})
     print('\nPDAG learnt from 100 rows of gauss: {}\n\n{}'.format(pdag, trace))
     edges = {(e[0], t.value[3], e[1]) for e, t in pdag.edges.items()}
@@ -368,10 +301,10 @@ def test_bnlearn_h2pc_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
 
 
 def test_bnlearn_h2pc_sachs_c_1_ok():  # Sachs gauss example, 1K rows
-    _in = TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
-    pdag, trace = bnlearn_learn('h2pc', data.sample, dstype='continuous',
-                                context={'in': _in, 'id': 'gauss'},
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
+                      dstype='continuous', N=1000)
+    pdag, trace = bnlearn_learn('h2pc', data,
+                                context={'in': 'in', 'id': 'gauss'},
                                 params={'test': 'mi-g', 'score': 'bic-g'})
     print('\nPDAG rom 1K rows of sachs_c: {}\n\n{}'.format(pdag, trace))
     edges = {(e[0], t.value[3], e[1]) for e, t in pdag.edges.items()}
@@ -390,11 +323,11 @@ def test_bnlearn_h2pc_sachs_c_1_ok():  # Sachs gauss example, 1K rows
 
 
 def test_bnlearn_h2pc_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
-    _in = TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
+                      dstype='continuous', N=1000)
     data.set_order(tuple(list(data.get_order())[::-1]))
-    pdag, trace = bnlearn_learn('h2pc', data.sample, dstype='continuous',
-                                context={'in': _in, 'id': 'gauss'},
+    pdag, trace = bnlearn_learn('h2pc', data,
+                                context={'in': 'in', 'id': 'gauss'},
                                 params={'test': 'mi-g', 'score': 'bic-g'})
     print('\nPDAG rom 1K rows of sachs_c: {}\n\n{}'.format(pdag, trace))
     edges = {(e[0], t.value[3], e[1]) for e, t in pdag.edges.items()}

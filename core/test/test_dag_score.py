@@ -266,9 +266,9 @@ def test_dag_score_ab1():
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
     assert dicts_same(dict(scores.sum()),
@@ -279,11 +279,11 @@ def test_dag_score_ab2():  # set k = 2
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
     params = dict(ENTROPY_PARAMS)
     params.update({'k': 2})
     scores = dag_score(graph, data, ENTROPY_SCORES, params)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, params)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, params)
     assert dicts_same(bnlearn, dict(scores.sum()))
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2, 'k': 2})
     assert dicts_same(dict(scores.sum()),
@@ -295,10 +295,10 @@ def test_dag_score_ab3():
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
                              'B': ['0', '1', '0', '1']},
                   dtype='category'))
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -312,10 +312,10 @@ def test_dag_score_ab4():
                              'B': ['0', '1', '1', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -329,10 +329,10 @@ def test_dag_score_ab5():
                              'B': ['0', '1', '1', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -352,10 +352,10 @@ def test_dag_score_ab6():
                              'B': ['0', '1', '1', '2']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 5
+    assert free_params(graph, data.as_df()) == 5
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -374,10 +374,10 @@ def test_dag_score_ab7():
                              'B': ['0', '1', '1', '2', '0', '1', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 8
+    assert free_params(graph, data.as_df()) == 8
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -395,9 +395,9 @@ def test_dag_score_ab8():  # Bayesian scores for A --> B, 2 rows
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
     scores = dag_score(graph, data, BAYESIAN_SCORES, BAYESIAN_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, BAYESIAN_SCORES,
+    bnlearn = bnlearn_score(graph, data, BAYESIAN_SCORES,
                             BAYESIAN_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
     assert dicts_same(dict(scores.sum()),
@@ -409,11 +409,11 @@ def test_dag_score_ab9():  # Bayesian scores for A --> B, 2 rows, ISS =5
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
-    assert free_params(graph, data.sample) == 3
+    assert free_params(graph, data.as_df()) == 3
     params = BAYESIAN_PARAMS.copy()
     params.update({'iss': 5})
     scores = dag_score(graph, data, BAYESIAN_SCORES, params)
-    bnlearn = bnlearn_score(graph, data.sample, BAYESIAN_SCORES, params)
+    bnlearn = bnlearn_score(graph, data, BAYESIAN_SCORES, params)
     assert dicts_same(bnlearn, dict(scores.sum()))
     assert dicts_same(dict(scores.sum()),
                       {'bde': -2.954910279, 'bdj': -4.564348191,
@@ -426,10 +426,10 @@ def test_dag_score_ab10():  # Bayesian scores, A --> B, 8 rows
                              'B': ['0', '1', '1', '2', '0', '1', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 8
+    assert free_params(graph, data.as_df()) == 8
 
     scores = dag_score(graph, data, BAYESIAN_SCORES, BAYESIAN_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, BAYESIAN_SCORES,
+    bnlearn = bnlearn_score(graph, data, BAYESIAN_SCORES,
                             BAYESIAN_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
@@ -440,12 +440,12 @@ def test_dag_score_ab11():  # Bayesian scores, A --> B, 8 rows, ISS=10.0
                              'B': ['0', '1', '1', '2', '0', '1', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 8
+    assert free_params(graph, data.as_df()) == 8
 
     params = BAYESIAN_PARAMS.copy()
     params.update({'iss': 10.0})
     scores = dag_score(graph, data, BAYESIAN_SCORES, BAYESIAN_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, BAYESIAN_SCORES,
+    bnlearn = bnlearn_score(graph, data, BAYESIAN_SCORES,
                             BAYESIAN_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
@@ -465,10 +465,10 @@ def test_dag_score_abc1():
                              'C': ['0', '1', '1', '1', '0', '1', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 11
+    assert free_params(graph, data.as_df()) == 11
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -490,10 +490,10 @@ def test_dag_score_abc2():
             'C': ['0', '1', '1', '1', '0', '1', '1', '2', '2', '1']},
            dtype='category'))
 
-    assert free_params(graph, data.sample) == 23
+    assert free_params(graph, data.as_df()) == 23
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES,
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES,
                             ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
@@ -514,10 +514,10 @@ def test_dag_score_ac_bc1():
                              'B': ['0', '1'],
                              'C': ['0', '1']}, dtype='category'))
 
-    assert free_params(graph, data.sample) == 6
+    assert free_params(graph, data.as_df()) == 6
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -537,10 +537,10 @@ def test_dag_score_ac_bc2():
                              'C': ['0', '0', '0', '1']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 6
+    assert free_params(graph, data.as_df()) == 6
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -560,10 +560,10 @@ def test_dag_score_ac_bc3():
                              'C': ['0', '0', '0', '1', '0']},
                   dtype='category'))
 
-    assert free_params(graph, data.sample) == 6
+    assert free_params(graph, data.as_df()) == 6
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -584,10 +584,10 @@ def test_dag_score_ac_bc4():
             'C': ['0', '1', '1', '1', '0', '1', '1', '2', '2', '1']}
     data = Pandas(DataFrame(data, dtype='category'))
 
-    assert free_params(graph, data.sample) == 38
+    assert free_params(graph, data.as_df()) == 38
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -610,10 +610,10 @@ def test_dag_score_cancer_1():
                              'Xray': ['clear', 'clear', 'dark', 'dark']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 10
+    assert free_params(graph, data.as_df()) == 10
 
     scores = dag_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, ENTROPY_PARAMS)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, ENTROPY_PARAMS)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2})
@@ -635,12 +635,12 @@ def test_dag_score_cancer_2():  # use 'k' as 0.1
                              'Xray': ['clear', 'clear', 'dark', 'dark']},
                             dtype='category'))
 
-    assert free_params(graph, data.sample) == 10
+    assert free_params(graph, data.as_df()) == 10
 
     params = ENTROPY_PARAMS.copy()
     print(params)
     scores = dag_score(graph, data, ENTROPY_SCORES, params)
-    bnlearn = bnlearn_score(graph, data.sample, ENTROPY_SCORES, params)
+    bnlearn = bnlearn_score(graph, data, ENTROPY_SCORES, params)
     assert dicts_same(bnlearn, dict(scores.sum()))
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 2, 'k': 0.1})

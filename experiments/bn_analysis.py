@@ -20,7 +20,7 @@ def bn_analysis():
     for network in ['cancer', 'asia', 'sports', 'sachs', 'covid', 'child',
                     'insurance', 'property', 'diarrhoea', 'water', 'mildew',
                     'alarm', 'barley', 'hailfinder', 'hepar2', 'win95pts',
-                    'formed', 'pathfinder']:
+                    'formed', 'pathfinder', 'gaming']:
 
         #   Read in network description, write out Bayesys format file
         #   and anlyse the network

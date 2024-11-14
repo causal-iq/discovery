@@ -6,15 +6,21 @@ import pytest
 from core.common import EdgeType
 from call.tetrad import tetrad_learn
 from fileio.common import TESTDATA_DIR
-from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from core.bn import BN
 from core.graph import PDAG, DAG
 
 
 @pytest.fixture(scope="module")  # simple ab DataFrame
 def ab3():
-    return Pandas.read(TESTDATA_DIR + '/simple/ab_3.csv',
-                       dstype='categorical').df
+    return NumPy.read(TESTDATA_DIR + '/simple/ab_3.csv',
+                      dstype='categorical')
+
+
+@pytest.fixture(scope="module")  # simple ab DataFrame
+def xy3():
+    return NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv',
+                      dstype='continuous')
 
 
 def test_tetrad_fges_type_error_1():  # no arguments
@@ -40,7 +46,7 @@ def test_tetrad_fges_type_error_3(ab3):  # bad algorithm type
 
 def test_tetrad_fges_type_error_4(ab3):  # bad data type
     with pytest.raises(TypeError):
-        tetrad_learn('fges', Pandas(df=ab3))
+        tetrad_learn('fges', ab3.as_df())
     with pytest.raises(TypeError):
         tetrad_learn('fges', None)
     with pytest.raises(TypeError):
@@ -78,45 +84,37 @@ def test_tetrad_fges_value_error_1(ab3):  # Invalid algorithm name
         tetrad_learn('unknown', ab3)
 
 
-def test_tetrad_fges_value_error_2():  # DataFrame has too few columns
-    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/a.dsc')
-    data = bn.generate_cases(10)
-    with pytest.raises(ValueError):
-        tetrad_learn('fges', data)
-
-
-def test_tetrad_fges_value_error_3(ab3):  # Context has wrong elements
+def test_tetrad_fges_value_error_2(ab3):  # Context has wrong elements
     with pytest.raises(ValueError):
         tetrad_learn('fges', ab3, {'invalid': 3})
 
 
-def test_tetrad_fges_value_error_4(ab3):  # Context missing mandatory elements
+def test_tetrad_fges_value_error_3(ab3):  # Context missing mandatory elements
     with pytest.raises(ValueError):
         tetrad_learn('fges', ab3, {'dataset': True})
 
 
-def test_tetrad_fges_value_error_5(ab3):  # Params has invalid key
+def test_tetrad_fges_value_error_4(ab3):  # Params has invalid key
     with pytest.raises(ValueError):
         tetrad_learn('fges', ab3, params={'invalid': 3})
 
 
-def test_tetrad_fges_value_error_6(ab3):  # Params has bad score
+def test_tetrad_fges_value_error_5(ab3):  # Params has bad score
     with pytest.raises(ValueError):
         tetrad_learn('fges', ab3, params={'score': 'bde'})
 
 
-def test_tetrad_fges_value_error_7(ab3):  # categorical & bic-g incompatible
+def test_tetrad_fges_value_error_6(ab3):  # categorical & bic-g incompatible
     with pytest.raises(ValueError):
         tetrad_learn('fges', ab3, params={'score': 'bic-g'})
 
 
-def test_tetrad_fges_value_error_8(ab3):  # continuous & bic incompatible
+def test_tetrad_fges_value_error_7(xy3):  # continuous & bic incompatible
     with pytest.raises(ValueError):
-        tetrad_learn('fges', ab3, params={'score': 'bic'},
-                     dstype='continuous')
+        tetrad_learn('fges', xy3, params={'score': 'bic'})
 
 
-def test_tetrad_fges_value_error_9(ab3):  # Params has bad k penalty
+def test_tetrad_fges_value_error_8(ab3):  # Params has bad k penalty
     with pytest.raises(ValueError):
         tetrad_learn('fges', ab3, params={'k': 4})
 
@@ -129,10 +127,8 @@ def test_tetrad_fges_ab_ok_1(ab3):  # Learning from an ab datafile, no context
     assert graph.edges == {}
 
 
-def test_tetrad_fges_ab_ok_2():  # Learning from an ab datafile, context
-    infile = TESTDATA_DIR + '/simple/ab_3.csv'
-    _, trace = tetrad_learn('fges', Pandas.read(infile).df,
-                            context={'in': infile, 'id': 'TEST/AB_OK_2'})
+def test_tetrad_fges_ab_ok_2(ab3):  # Learning from an ab datafile, context
+    _, trace = tetrad_learn('fges', ab3, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from ab_3.csv by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, DAG)
@@ -142,9 +138,9 @@ def test_tetrad_fges_ab_ok_2():  # Learning from an ab datafile, context
 
 
 def test_tetrad_fges_ab_ok_3():  # Learning generated data, no context
-    infile = TESTDATA_DIR + '/discrete/tiny/ab.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
     graph, _ = tetrad_learn('fges', data)
     print('\nGraph learnt from ab, N=1K by Tetrad FGES:\n{}'.format(graph))
     assert isinstance(graph, DAG)
@@ -152,12 +148,12 @@ def test_tetrad_fges_ab_ok_3():  # Learning generated data, no context
     assert graph.edges == {}
 
 
-def test_tetrad_fges_ab_ok_4():  # Learning generated data, no context
-    infile = TESTDATA_DIR + '/discrete/tiny/ab.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
+def test_tetrad_fges_ab_ok_4():  # Learning generated data, check trace
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
     _, trace = tetrad_learn('fges', data,
-                            context={'in': infile, 'id': 'TEST/AB_OK_4'})
+                            context={'in': 'in', 'id': 'TEST/AB_OK_4'})
     print('\nGraph learnt from ab, N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, DAG)
@@ -167,11 +163,10 @@ def test_tetrad_fges_ab_ok_4():  # Learning generated data, no context
 
 
 def test_tetrad_fges_ab_cb_ok_1():  # A -> B <- C, N=100
-    infile = TESTDATA_DIR + '/discrete/tiny/ab_cb.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(100)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile, 'id': 'TEST/AB_CB_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab_cb.dsc')
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from a->b<-c, N=100 by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -181,11 +176,10 @@ def test_tetrad_fges_ab_cb_ok_1():  # A -> B <- C, N=100
 
 
 def test_tetrad_fges_ab_cb_ok_2():  # A -> B <- C, N=1K
-    infile = TESTDATA_DIR + '/discrete/tiny/ab_cb.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile, 'id': 'TEST/AB_CB_OK_2'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab_cb.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from a->b<-c, N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, DAG)
@@ -196,11 +190,10 @@ def test_tetrad_fges_ab_cb_ok_2():  # A -> B <- C, N=1K
 
 
 def test_tetrad_fges_abc_ok_1():  # A -> B -> C, N=1K
-    infile = TESTDATA_DIR + '/discrete/tiny/abc.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile, 'id': 'TEST/ABC_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/abc.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from a->b->c, N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -211,12 +204,10 @@ def test_tetrad_fges_abc_ok_1():  # A -> B -> C, N=1K
 
 
 def test_tetrad_fges_abc_dual_ok_1():  # A -> B -> C, A -> C N=10
-    infile = TESTDATA_DIR + '/discrete/tiny/abc_dual.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(10)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/ABC_DUAL_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/abc_dual.dsc')
+    data = NumPy.from_df(bn.generate_cases(10), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from a->b->c, a->c N=100 by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -226,12 +217,10 @@ def test_tetrad_fges_abc_dual_ok_1():  # A -> B -> C, A -> C N=10
 
 
 def test_tetrad_fges_abc_dual_ok_2():  # A -> B -> C, A -> C N=100
-    infile = TESTDATA_DIR + '/discrete/tiny/abc_dual.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(100)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/ABC_DUAL_OK_2'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/abc_dual.dsc')
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from a->b->c, a->c N=100 by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -242,12 +231,10 @@ def test_tetrad_fges_abc_dual_ok_2():  # A -> B -> C, A -> C N=100
 
 
 def test_tetrad_fges_abc_dual_ok_3():  # A -> B -> C, A -> C N=1K
-    infile = TESTDATA_DIR + '/discrete/tiny/abc_dual.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/ABC_DUAL_OK_3'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/abc_dual.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from a->b->c, a->c N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -259,12 +246,10 @@ def test_tetrad_fges_abc_dual_ok_3():  # A -> B -> C, A -> C N=1K
 
 
 def test_tetrad_fges_and4_10_ok_1():  # and4_10, 1K rows
-    infile = TESTDATA_DIR + '/discrete/tiny/and4_10.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/AND4_10_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/and4_10.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from and4_10 N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -276,12 +261,10 @@ def test_tetrad_fges_and4_10_ok_1():  # and4_10, 1K rows
 
 
 def test_tetrad_fges_and4_10_ok_2():  # and4_10, 10K rows
-    infile = TESTDATA_DIR + '/discrete/tiny/and4_10.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(10000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/AND4_10_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/tiny/and4_10.dsc')
+    data = NumPy.from_df(bn.generate_cases(10000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from and4_10 N=10K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, DAG)
@@ -293,12 +276,10 @@ def test_tetrad_fges_and4_10_ok_2():  # and4_10, 10K rows
 
 
 def test_tetrad_fges_cancer_ok_1():  # Cancer, 1K rows
-    infile = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/CANCER_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/cancer.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from Cancer N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -311,12 +292,10 @@ def test_tetrad_fges_cancer_ok_1():  # Cancer, 1K rows
 
 
 def test_tetrad_fges_cancer_ok_2():  # Cancer, 10K rows
-    infile = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(10000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/CANCER_OK_2'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/cancer.dsc')
+    data = NumPy.from_df(bn.generate_cases(10000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from Cancer N=10K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, DAG)
@@ -330,12 +309,12 @@ def test_tetrad_fges_cancer_ok_2():  # Cancer, 10K rows
 
 
 def test_tetrad_fges_asia_ok_1():  # Asia, 100 rows
-    infile = TESTDATA_DIR + '/discrete/small/asia.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(100)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/ASIA_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/asia.dsc')
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
+    print('\nGraph learnt from Cancer N=10K by Tetrad FGES:\n{}'
+          .format(trace.result))
     print('\nGraph learnt from Asia N=100 by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -350,12 +329,10 @@ def test_tetrad_fges_asia_ok_1():  # Asia, 100 rows
 
 
 def test_tetrad_fges_asia_ok_2():  # Asia, 1K rows
-    infile = TESTDATA_DIR + '/discrete/small/asia.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/ASIA_OK_2'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/asia.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from Asia N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -371,12 +348,10 @@ def test_tetrad_fges_asia_ok_2():  # Asia, 1K rows
 
 
 def test_tetrad_fges_asia_ok_3():  # Asia, 10K rows
-    infile = TESTDATA_DIR + '/discrete/small/asia.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(10000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/ASIA_OK_3'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/asia.dsc')
+    data = NumPy.from_df(bn.generate_cases(10000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from Asia N=10K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -394,12 +369,10 @@ def test_tetrad_fges_asia_ok_3():  # Asia, 10K rows
 
 
 def test_tetrad_fges_child_1k_ok_1():  # Child, 1K rows
-    infile = TESTDATA_DIR + '/discrete/medium/child.dsc'
-    bn = BN.read(infile)
-    data = bn.generate_cases(1000)
-    _, trace = tetrad_learn('fges', data,
-                            context={'in': infile,
-                                     'id': 'TEST/CHILD_OK_1'})
+    bn = BN.read(TESTDATA_DIR + '/discrete/medium/child.dsc')
+    data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
+                         keep_df=False)
+    _, trace = tetrad_learn('fges', data, context={'in': 'in', 'id': 'id'})
     print('\nGraph learnt from Child N=1K by Tetrad FGES:\n{}'
           .format(trace.result))
     assert isinstance(trace.result, PDAG)
@@ -432,11 +405,10 @@ def test_tetrad_fges_child_1k_ok_1():  # Child, 1K rows
 
 
 def test_tetrad_fges_gauss_1_ok():  # Gaussian example, 100 rows
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous', N=100)
-    pdag, trace = tetrad_learn('fges', data.sample,
-                               context={'in': _in, 'id': 'gauss'},
-                               params={'score': 'bic-g'}, dstype='continuous')
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=100)
+    pdag, trace = tetrad_learn('fges', data, params={'score': 'bic-g'},
+                               context={'in': 'in', 'id': 'gauss'})
 
     print('\nPDAG learnt from 100 rows of gauss: {}\n\n{}'.format(pdag, trace))
 
@@ -453,12 +425,11 @@ def test_tetrad_fges_gauss_1_ok():  # Gaussian example, 100 rows
 
 
 def test_tetrad_fges_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous', N=100)
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=100)
     data.set_order(tuple(list(data.get_order())[::-1]))
-    pdag, trace = tetrad_learn('fges', data.sample,
-                               context={'in': _in, 'id': 'gauss'},
-                               params={'score': 'bic-g'}, dstype='continuous')
+    pdag, trace = tetrad_learn('fges', data, params={'score': 'bic-g'},
+                               context={'in': 'in', 'id': 'gauss'})
 
     print('\nPDAG learnt from 100 rows of gauss: {}\n\n{}'.format(pdag, trace))
 
@@ -475,11 +446,10 @@ def test_tetrad_fges_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
 
 
 def test_tetrad_fges_gauss_3_ok():  # Gaussian example, 5K rows
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
-    pdag, trace = tetrad_learn('fges', data.sample,
-                               context={'in': _in, 'id': 'gauss'},
-                               params={'score': 'bic-g'}, dstype='continuous')
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=5000)
+    pdag, trace = tetrad_learn('fges', data, params={'score': 'bic-g'},
+                               context={'in': 'in', 'id': 'gauss'})
 
     print('\nPDAG learnt from 5K rows of gauss: {}\n\n{}'.format(pdag, trace))
 
@@ -496,12 +466,11 @@ def test_tetrad_fges_gauss_3_ok():  # Gaussian example, 5K rows
 
 
 def test_tetrad_fges_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
-    _in = TESTDATA_DIR + '/simple/gauss.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=5000)
     data.set_order(tuple(list(data.get_order())[::-1]))
-    pdag, trace = tetrad_learn('fges', data.sample,
-                               context={'in': _in, 'id': 'gauss'},
-                               params={'score': 'bic-g'}, dstype='continuous')
+    pdag, trace = tetrad_learn('fges', data, params={'score': 'bic-g'},
+                               context={'in': 'in', 'id': 'gauss'})
 
     print('\nPDAG learnt from 5K rows of gauss: {}\n\n{}'.format(pdag, trace))
 
@@ -518,12 +487,10 @@ def test_tetrad_fges_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
 
 
 def test_tetrad_fges_sachs_c_1_ok():  # Sachs gauss example, 1K rows
-    _in = TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
-    pdag, trace = tetrad_learn('fges', data.sample,
-                               context={'in': _in, 'id': 'gauss'},
-                               params={'score': 'bic-g'}, dstype='continuous')
-    print('\nPDAG rom 1K rows of sachs_c: {}\n\n{}'.format(pdag, trace))
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
+                      dstype='continuous', N=1000)
+    pdag, trace = tetrad_learn('fges', data, params={'score': 'bic-g'},
+                               context={'in': 'in', 'id': 'gauss'})
 
     assert pdag.nodes == ['Akt', 'Erk', 'Jnk', 'Mek', 'P38', 'PIP2', 'PIP3',
                           'PKA', 'PKC', 'Plcg', 'Raf']
@@ -542,13 +509,11 @@ def test_tetrad_fges_sachs_c_1_ok():  # Sachs gauss example, 1K rows
 
 
 def test_tetrad_fges_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
-    _in = TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz'
-    data = Pandas.read(_in, dstype='continuous')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
+                      dstype='continuous', N=1000)
     data.set_order(tuple(list(data.get_order())[::-1]))
-    pdag, trace = tetrad_learn('fges', data.sample,
-                               context={'in': _in, 'id': 'gauss'},
-                               params={'score': 'bic-g'}, dstype='continuous')
-    print('\nPDAG rom 1K rows of sachs_c: {}\n\n{}'.format(pdag, trace))
+    pdag, trace = tetrad_learn('fges', data, params={'score': 'bic-g'},
+                               context={'in': 'in', 'id': 'gauss'})
 
     assert pdag.nodes == ['Akt', 'Erk', 'Jnk', 'Mek', 'P38', 'PIP2', 'PIP3',
                           'PKA', 'PKC', 'Plcg', 'Raf']

@@ -47,8 +47,8 @@ def check_hc(id, N, expect=None, reverse=False):
     dag, trace = hc(data, context=context, params=params)
     print('\n{} rows for {}:\n{}\n{}'.format(N, id, trace, dag))
 
-    dag_b, trace_b = bnlearn_learn('hc', data.sample, context=context,
-                                   params=params, dstype='continuous')
+    dag_b, trace_b = bnlearn_learn('hc', data, context=context,
+                                   params=params)
 
     print('\nbnlearn:\n{}\n{}'.format(trace_b, dag_b))
 

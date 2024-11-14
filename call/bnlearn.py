@@ -16,8 +16,9 @@ from core.lingauss import LinGauss
 from core.score import SCORES, SCORE_PARAMS, check_score_params
 from core.indep import TESTS, TEST_PARAMS, check_test_params
 from core.indep import check_indep_args, MIN_P_VALUE
-from fileio.common import DatasetType, is_valid_path
+from fileio.common import is_valid_path
 from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from learn.trace import Trace, Activity, Detail, CONTEXT_FIELDS
 from learn.knowledge import Knowledge
 from learn.knowledge_rule import Rule
@@ -31,6 +32,9 @@ BNLEARN_ALGORITHMS = {
     'pc.stable': 'constraint',
     'tabu': 'score'
 }
+
+BNLEARN_PARAMS = {'score', 'test', 'base', 'k', 'iss', 'alpha', 'prior',
+                  'bnlearn', 'tabu', 'noinc'}
 
 
 def _arcs_to_edges(arcs):
@@ -51,15 +55,14 @@ def _arcs_to_edges(arcs):
             or ((e[1], e[0]) in arcs and e[0] < e[1])]
 
 
-def bnlearn_score(dag, data, types, params, dstype='categorical'):
+def bnlearn_score(dag, data, types, params):
     """
         Score data against a DAG using bnlearn
 
         :param DAG dag: DAG to score data against
-        :param DataFrame/str data: data or file containing data
+        :param NumPy/Pandas/str data: data or file containing data
         :param str/list types: type/types of score e.g. 'bic', 'bdeu'
         :param dict params: score parameters e.g. 'iss'
-        :param str dstype: dataset type: categorical, continuous or mixed
 
         :raises TypeError: if arg types incorrect
         :raises ValueError: if arg values in valid
@@ -71,18 +74,19 @@ def bnlearn_score(dag, data, types, params, dstype='categorical'):
     if not isinstance(dag, DAG) or \
             (not isinstance(types, str) and not (isinstance(types, list)
              and all([isinstance(t, str) for t in types]))) or \
-            (not isinstance(data, DataFrame) and not isinstance(data, str)) \
-            or not isinstance(params, dict) or dstype != 'categorical':
+            (not isinstance(data, (Pandas, NumPy))
+             and not isinstance(data, str)) \
+            or not isinstance(params, dict):
         raise TypeError('bnlearn_score called with bad arg types')
 
-    data_file = None if isinstance(data, DataFrame) else data
+    data_file = None if isinstance(data, (Pandas, NumPy)) else data
     if data_file:
-        data = Pandas.read(data_file).df
+        data = Pandas.read(data_file)
 
-    if len(dag.nodes) < 2 or sorted(data.columns) != dag.nodes:
+    if len(dag.nodes) < 2 or sorted(data.nodes) != dag.nodes:
         raise ValueError('Too few or mismatched variables')
 
-    if any([len(data[c].value_counts()) < 2 for c in data.columns]):
+    if any([len(data.node_values[n]) < 2 for n in data.node_values]):
         raise ValueError('Some variables are single-valued')
 
     types = types if isinstance(types, list) else [types]
@@ -92,11 +96,12 @@ def bnlearn_score(dag, data, types, params, dstype='categorical'):
     # setup parameters for R function
 
     score_params = {p: v for p, v in params.items() if p in SCORE_PARAMS}
-    params = {'dag': dag.to_string(), 'types': types, 'dstype': dstype}
+    params = {'dag': dag.to_string(), 'types': types, 'dstype': data.dstype}
     if data_file:
         params['datafile'] = abspath(data_file)
     else:
-        params['data'] = {c: list(data[c]) for c in data.columns}
+        df = data.as_df()
+        params['data'] = {c: list(df[c]) for c in df.columns}
 
     # Check the score parameters and set default score parameters
 
@@ -461,11 +466,16 @@ def _validate_learn_params(algorithm, params, dstype, knowledge):
     if 'test' not in params and algo_class != 'score':
         params.update({'test': 'mi'})
 
+    # Check only valid parameters are specified
+
+    if len(set(params) - BNLEARN_PARAMS) > 0:
+        raise ValueError('bnlearn_learn: invalid param')
+
     # check score and test have valid values (mi-g additionally supported)
 
     if (('score' in params and params['score'] not in SCORES) or
             ('test' in params and params['test'] not in TESTS + ['mi-g'])):
-        raise ValueError('invalid test or score')
+        raise ValueError('bnlearn_learn: invalid test or score')
 
     # now validate and add in the score and/or test parameters
 
@@ -515,15 +525,14 @@ def _validate_learn_params(algorithm, params, dstype, knowledge):
 
 
 def bnlearn_learn(algorithm, data, context=None, params=None,
-                  dstype='categorical', knowledge=None):
+                  knowledge=None):
     """
         Return graph learnt from data using bnlearn algorithms
 
         :param str algorithm: algorithm to use, e.g. 'hc', 'pc.stable'
-        :param DataFrame/str data: data or data filename to learn from
+        :param Pandas/NumPy/str data: data or data filename to learn from
         :param dict context: context information about the test/experiment
         :param dict params: parameters for algorithm e.g. score to use
-        :param str dstype: dataset type: categorical, continuous or mixed
         :param Knowledge/None knowledge: knowledge constraints
 
         :raises TypeError: if arg types incorrect
@@ -534,10 +543,10 @@ def bnlearn_learn(algorithm, data, context=None, params=None,
         :returns tuple: (DAG/PDAG learnt from data, learning trace)
     """
     if not isinstance(algorithm, str) or\
-            (not isinstance(data, DataFrame) and not isinstance(data, str)) \
+            (not isinstance(data, (Pandas, NumPy))
+             and not isinstance(data, str)) \
             or (context is not None and not isinstance(context, dict)) \
             or (params is not None and not isinstance(params, dict)) \
-            or dstype not in {v for v in DatasetType} \
             or (knowledge is not None
                 and not isinstance(knowledge, Knowledge)):
         raise TypeError('bnlearn_learn bad arg types')
@@ -554,9 +563,9 @@ def bnlearn_learn(algorithm, data, context=None, params=None,
             raise ValueError('bnlearn_learn data < 3 columns')
     else:
         tmpfile = 'call/R/tmp/{}.csv'.format(int(random() * 10000000))
-        Pandas(df=data).write(tmpfile)
+        Pandas(df=data.as_df()).write(tmpfile)
         if algorithm not in ['hc', 'tabu', 'h2pc', 'mmhc'] \
-                and len(data.columns) <= 2:
+                and len(data.nodes) <= 2:
             raise ValueError('bnlearn_learn data < 3 columns')
 
     if (context is not None
@@ -567,10 +576,10 @@ def bnlearn_learn(algorithm, data, context=None, params=None,
     # Validate learning parameters and return in format required by Trace and
     # by the bnlearn algorithms
 
-    params, bnlearn_params = _validate_learn_params(algorithm, params, dstype,
-                                                    knowledge)
+    params, bnlearn_params = _validate_learn_params(algorithm, params,
+                                                    data.dstype, knowledge)
     bnlearn_params.update({'datafile': data if tmpfile is None else tmpfile,
-                           'dstype': dstype})
+                           'dstype': data.dstype})
 
     # Call a R sub-process to perform the learning
 
@@ -580,11 +589,11 @@ def bnlearn_learn(algorithm, data, context=None, params=None,
 
     if algorithm in ['hc', 'tabu', 'h2pc', 'mmhc']:
         graph = DAG(graph['nodes'], _arcs_to_edges(graph['arcs']))
-        trace = _get_hc_trace(stdout, algorithm, context, params, len(data),
+        trace = _get_hc_trace(stdout, algorithm, context, params, data.N,
                               graph, elapsed) if context else None
     else:
         graph = PDAG(graph['nodes'], _arcs_to_edges(graph['arcs']))
-        trace = _get_pc_trace(stdout, algorithm, context, params, len(data),
+        trace = _get_pc_trace(stdout, algorithm, context, params, data.N,
                               graph, elapsed) if context else None
 
     if tmpfile is not None:

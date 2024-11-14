@@ -6,6 +6,7 @@ from pandas import DataFrame, set_option
 
 from fileio.common import TESTDATA_DIR
 from fileio.oracle import Oracle
+from fileio.pandas import Pandas
 from core.bn import BN
 from learn.hc import hc
 from call.bnlearn import bnlearn_learn
@@ -148,7 +149,7 @@ def test_hc_ab_10_ok_1(showall):  # A->B 10 rows, no trace
     data = bn.generate_cases(10)
     dag, _ = hc(data)
     print('\nLearning DAG from 10 rows of A->B produces:\n{}'.format(dag))
-    dag_bnlearn, _ = bnlearn_learn('hc', data)
+    dag_bnlearn, _ = bnlearn_learn('hc', Pandas(data))
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -162,7 +163,8 @@ def test_hc_ab_10_ok_2(showall):  # A->B 10 rows
     context = {'id': 'test/hc/ab_10', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -181,8 +183,8 @@ def test_hc_ab_10_ok_2a(showall):  # A->B 10 rows, k is 2
     params = {'score': 'bic', 'k': 2}
     dag, trace = hc(data, context=context, params=params)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context, params=params)
     assert dag.to_string() == '[A][B]'  # higher complexity suppresses edge
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -201,8 +203,8 @@ def test_hc_ab_10_ok_3(showall):  # A->B 10 rows, BDeu score
     context = {'id': 'test/hc/ab_10', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -221,8 +223,8 @@ def test_hc_ab_10_ok_3a(showall):  # A->B 10 rows, BDeu score, iss=5
     context = {'id': 'test/hc/ab_10', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -241,8 +243,8 @@ def test_hc_ab_10_ok_4(showall):  # A->B 10 rows, BDS score
     context = {'id': 'test/hc/ab_10', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -261,8 +263,8 @@ def test_hc_ab_10_ok_4a(showall):  # A->B 10 rows, BDS score, ISS=0.1
     context = {'id': 'test/hc/ab_10', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -281,8 +283,8 @@ def test_hc_ab_10_ok_5(showall):  # A->B 10 rows, Loglik score
     context = {'id': 'test/hc/ab_10', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -301,7 +303,8 @@ def test_hc_ab_100_ok_1(showall):  # A->B 100 rows
     context = {'id': 'test/hc/ab_100', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -321,8 +324,8 @@ def test_hc_ab_100_ok_2(showall):  # A->B 100 rows, BDeu score
     context = {'id': 'test/hc/ab_100', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -342,8 +345,8 @@ def test_hc_ab_100_ok_3(showall):  # A->B 100 rows, BDS score
     context = {'id': 'test/hc/ab_100', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -363,8 +366,8 @@ def test_hc_ab_100_ok_4(showall):  # A->B 100 rows, Log likelihood score
     context = {'id': 'test/hc/ab_100', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -383,7 +386,8 @@ def test_hc_ab_1k_ok_1(showall):  # A->B 1k rows
     context = {'id': 'test/hc/ab_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -403,8 +407,8 @@ def test_hc_ab_1k_ok_1a(showall):  # A->B 1k rows, k = 0.5
     params = {'score': 'bic', 'k': 0.5}
     dag, trace = hc(data, context=context, params=params)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context, params=params)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -424,8 +428,8 @@ def test_hc_ab_1k_ok_2(showall):  # A->B 1k rows, BDeu score
     context = {'id': 'test/hc/ab_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -445,8 +449,8 @@ def test_hc_ab_1k_ok_3(showall):  # A->B 1k rows, BDS score
     context = {'id': 'test/hc/ab_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -466,8 +470,8 @@ def test_hc_ab_1k_ok_4(showall):  # A->B 1k rows, Log-Likelihood score
     context = {'id': 'test/hc/ab_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -488,7 +492,8 @@ def test_hc_ba_10_ok(showall):  # A<-B 10 rows
     context = {'id': 'test/hc/ba_10', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -508,7 +513,8 @@ def test_hc_ba_100_ok(showall):  # A<-B 100 rows
     context = {'id': 'test/hc/ba_100', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -528,7 +534,8 @@ def test_hc_ba_1k_ok(showall):  # A<-B 1k rows
     context = {'id': 'test/hc/ba_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -550,7 +557,8 @@ def test_hc_abc_10_ok(showall):  # A->B->C 10 rows
     context = {'id': 'test/hc/abc_10', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -570,7 +578,8 @@ def test_hc_abc_100_ok(showall):  # A->B->C 10 rows
     context = {'id': 'test/hc/abc_100', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -590,7 +599,8 @@ def test_hc_abc_1k_ok_1(showall):  # A->B->C 1k rows
     context = {'id': 'test/hc/abc_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -611,8 +621,8 @@ def test_hc_abc_1k_ok_2(showall):  # A->B->C 1k rows, BDeu score
     context = {'id': 'test/hc/abc_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -633,8 +643,8 @@ def test_hc_abc_1k_ok_3(showall):  # A->B->C 1k rows, BDS score
     context = {'id': 'test/hc/abc_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context,
-                                               params=params)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context, params=params)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -655,8 +665,8 @@ def test_hc_abc_1k_ok_4(showall):  # A->B->C 1k rows, Log-likelihood score
     context = {'id': 'test/hc/abc_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -676,7 +686,8 @@ def test_hc_abc_3_1k_ok(showall):  # A->B->C 1k rows
     context = {'id': 'test/hc/abc_3_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -696,7 +707,8 @@ def test_hc_ab_cb_10_ok(showall):  # A->B<-C 10 rows
     context = {'id': 'test/hc/ab_cb_10', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A|C][B][C|B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -716,7 +728,8 @@ def test_hc_ab_cb_100_ok(showall):  # A->B<-C 100 rows
     context = {'id': 'test/hc/ab_cb_100', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B][C|B]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -736,7 +749,8 @@ def test_hc_ab_cb_1k_ok_1(showall):  # A->B<-C 1k rows
     context = {'id': 'test/hc/ab_cb_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -757,8 +771,8 @@ def test_hc_ab_cb_1k_ok_2(showall):  # A->B<-C 1k rows, BDeu score
     context = {'id': 'test/hc/ab_cb_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -779,8 +793,8 @@ def test_hc_ab_cb_1k_ok_3(showall):  # A->B<-C 1k rows, BDS score
     context = {'id': 'test/hc/ab_cb_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -801,8 +815,8 @@ def test_hc_ab_cb_1k_ok_4(showall):  # A->B<-C 1k rows, Log-likelihood score
     context = {'id': 'test/hc/ab_cb_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -822,7 +836,8 @@ def test_hc_ab_cb_10k_ok(showall):  # A->B<-C 10k rows
     context = {'id': 'test/hc/ab_cb_10k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[A][B|A][C|A:B]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -844,7 +859,8 @@ def test_hc_and4_10_10_ok(showall):  # X1->X2->X4, X3->X2 10 rows
     context = {'id': 'test/hc/and4_10_10', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[X1][X2][X3][X4]'
     assert dag.number_components() == 4
     assert dag == dag_bnlearn
@@ -864,7 +880,8 @@ def test_hc_and4_10_100_ok(showall):  # X1->X2->X4, X3->X2 100 rows
     context = {'id': 'test/hc/and4_10_100', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[X1][X2][X3|X2][X4|X2]'
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
@@ -884,7 +901,8 @@ def test_hc_and4_10_200_ok(showall):  # X1->X2->X4, X3->X2 200 rows
     context = {'id': 'test/hc/and4_10_200', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -904,7 +922,8 @@ def test_hc_and4_10_1k_ok_1(showall):  # X1->X2->X4, X3->X2 1K rows
     context = {'id': 'test/hc/and4_10_1K', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -925,8 +944,8 @@ def test_hc_and4_10_1k_ok_2(showall):  # X1->X2->X4, X3->X2 1K rows, BDeu score
     context = {'id': 'test/hc/and4_10_1K', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -947,8 +966,8 @@ def test_hc_and4_10_1k_ok_3(showall):  # X1->X2->X4, X3->X2 1K rows, BDS score
     context = {'id': 'test/hc/and4_10_1K', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -969,8 +988,8 @@ def test_hc_and4_10_1k_ok_4(showall):  # X1->X2->X4, X3->X2 1K rows, Loglik
     context = {'id': 'test/hc/and4_10_1K', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.to_string() == '[X1][X2|X1][X3|X1:X2][X4|X1:X2:X3]'
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
@@ -990,7 +1009,8 @@ def test_hc_cancer_1k_ok_1(showall):  # Cancer 1K rows
     context = {'id': 'test/hc/cancer_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert '[Cancer][Dyspnoea|Cancer][Pollution][Smoker|Cancer][Xray|Cancer]' \
         == dag.to_string()
     assert dag.number_components() == 2
@@ -1012,8 +1032,8 @@ def test_hc_cancer_1k_ok_2(showall):  # Cancer 1K rows, BDeu score
     context = {'id': 'test/hc/cancer_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert '[Cancer][Dyspnoea|Cancer][Pollution][Smoker|Cancer][Xray|Cancer]' \
         == dag.to_string()
     assert dag.number_components() == 2
@@ -1035,8 +1055,8 @@ def test_hc_cancer_1k_ok_3(showall):  # Cancer 1K rows, BDS score
     context = {'id': 'test/hc/cancer_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert '[Cancer][Dyspnoea|Cancer][Pollution][Smoker|Cancer][Xray|Cancer]' \
         == dag.to_string()
     assert dag.number_components() == 2
@@ -1058,8 +1078,8 @@ def test_hc_cancer_1k_ok_4(showall):  # Cancer 1K rows, Log-likelihood score
     context = {'id': 'test/hc/cancer_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert ('[Cancer][Dyspnoea|Cancer:Pollution][Pollution|Cancer]' +
             '[Smoker|Cancer:Dyspnoea:Pollution:Xray]' +
             '[Xray|Cancer:Dyspnoea:Pollution]') == dag.to_string()
@@ -1083,7 +1103,8 @@ def test_hc_asia_500_ok(showall):  # Asia 500 rows
     context = {'id': 'test/hc/asia_500', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert ('[asia][bronc][dysp|bronc][either|dysp][lung|either][smoke|bronc' +
             ':lung][tub|either:lung][xray|either]') == dag.to_string()
     assert dag.number_components() == 2
@@ -1104,7 +1125,8 @@ def test_hc_asia_1k_ok_1(showall):  # Asia 1K rows
     context = {'id': 'test/hc/asia_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert ('[asia][bronc][dysp|bronc][either|bronc:dysp][lung|either][smoke' +
             '|bronc:lung][tub|either:lung][xray|either]') == dag.to_string()
     assert dag.number_components() == 2
@@ -1126,8 +1148,8 @@ def test_hc_asia_1k_ok_2(showall):  # Asia 1K rows, BDeu score
     context = {'id': 'test/hc/asia_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert ('[asia][bronc|smoke][dysp|bronc:either][either][lung|either]' +
             '[smoke|lung][tub|either:lung][xray|either]') == dag.to_string()
     assert dag.number_components() == 2
@@ -1149,8 +1171,8 @@ def test_hc_asia_1k_ok_3(showall):  # Asia 1K rows, BDS score
     context = {'id': 'test/hc/asia_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert ('[asia][bronc|smoke][dysp|bronc:either][either][lung|either]' +
             '[smoke|lung][tub|either:lung][xray|either]') == dag.to_string()
     assert dag.number_components() == 2
@@ -1172,8 +1194,8 @@ def test_hc_asia_1k_ok_4(showall):  # Asia 1K rows, Loglik score
     context = {'id': 'test/hc/asia_1k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert ('[asia][bronc|asia:lung:tub]' +
             '[dysp|asia:bronc:either:lung:tub:xray][either|asia]' +
             '[lung|either][smoke|asia:bronc:dysp:lung:tub:xray]' +
@@ -1200,7 +1222,8 @@ def test_hc_child_1k_ok(showall):  # Child 1K rows
     context = {'id': 'test/hc/child_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1220,7 +1243,8 @@ def test_hc_child_10k_ok_1(showall):  # Child 10K rows
     context = {'id': 'test/hc/child_10k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1241,8 +1265,8 @@ def test_hc_child_10k_ok_2(showall):  # Child 10K rows, BDeu score
     context = {'id': 'test/hc/child_10k', 'in': dsc}
     dag, trace = hc(data, params=params, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, params=params,
-                                               context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               params=params, context=context)
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1264,7 +1288,8 @@ def test_hc_insurance_1k_ok(showall):  # Insurance 1K rows
     context = {'id': 'test/hc/insurance_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1284,7 +1309,8 @@ def test_hc_insurance_10k_ok(showall):  # Insurance 10K rows
     context = {'id': 'test/hc/insurance_10k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1306,7 +1332,8 @@ def test_hc_alarm_1k_ok(showall):  # Alarm 1K rows
     context = {'id': 'test/hc/alarm_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1326,7 +1353,8 @@ def test_hc_alarm_10k_ok(showall):  # Alarm 1K rows
     context = {'id': 'test/hc/alarm_10k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 2
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1348,7 +1376,8 @@ def test_hc_hailfinder_10k_ok(showall):  # Hailfinder 10K rows
     context = {'id': 'test/hc/hailfinder_10k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1368,7 +1397,8 @@ def test_hc_hailfinder_25k_ok(showall):  # Hailfinder 25K rows
     context = {'id': 'test/hc/hailfinder_25k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1390,7 +1420,8 @@ def test_hc_hepar2_10k_ok(showall):  # HEPAR2 10K rows
     context = {'id': 'test/hc/hepar2_10k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 1
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1414,7 +1445,8 @@ def test_hc_pathfinder_1k_ok(showall):  # Pathfinder 1K rows
     context = {'id': 'test/hc/pathfinder_1k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 6
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn
@@ -1436,7 +1468,8 @@ def test_hc_pathfinder_5k_ok(showall):  # Pathfinder 10K rows
     context = {'id': 'test/hc/pathfinder_5k', 'in': dsc}
     dag, trace = hc(data, context=context)
     print('\n\n{}\n\nproduces:\n\n{}'.format(trace, dag))
-    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', data, context=context)
+    dag_bnlearn, trace_bnlearn = bnlearn_learn('hc', Pandas(data),
+                                               context=context)
     assert dag.number_components() == 4
     assert dag == dag_bnlearn
     assert trace.result == dag_bnlearn

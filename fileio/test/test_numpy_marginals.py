@@ -74,7 +74,10 @@ def check(args, results, data):
 
     # Check shape and maxcol returned by old marginals
 
+    scale = len(args[1][args[0]]) + 1 if args[0] in args[1] else 1
+    start = Timing.now()
     orig, orig_num_pvs = orig_marginals(data, args[0], args[1])
+    Timing.record('crosstab', scale, start)
     assert results[0].shape == orig.shape
     assert results[1] == orig_num_pvs
     print('\n{}\n'.format(orig.head()))
@@ -380,6 +383,18 @@ def test_numpy_marginals_asia_5_ok():  # check operation of set_N
     args = ('xray', {'xray': ['lung', 'smoke', 'either']}, True)
     results = numpy.marginals(args[0], args[1], args[2])
     check(args, results, pandas)
+
+
+def test_numpy_marginals_sports_1_ok():  # 100 rows of Sports
+    pandas = Pandas.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                         dstype='categorical', N=1000)
+    numpy = NumPy.from_df(pandas.df, dstype='categorical', keep_df=True)
+
+    args = ('HDA', {'HDA': ['RDlevel', 'HTgoals']}, True)
+    Timing.on(True)
+    results = numpy.marginals(args[0], args[1], args[2])
+    check(args, results, pandas)
+    print(Timing)
 
 
 def test_numpy_marginals_covid_1_ok():

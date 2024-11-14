@@ -6,6 +6,7 @@ import pytest
 from call.bnlearn import bnlearn_learn
 from fileio.common import TESTDATA_DIR
 from fileio.bayesys import read_constraints
+from fileio.numpy import NumPy
 from core.common import EdgeType
 from core.graph import DAG
 from core.bn import BN
@@ -13,36 +14,36 @@ from learn.knowledge import Knowledge
 from learn.knowledge_rule import RuleSet
 
 
-def test_reqd_type_error_1_():  # bad Knowledge arg type
+@pytest.fixture(scope="module")  # AB, 10 categorical rows
+def ab10():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
-    with pytest.raises(TypeError):
-        dag, trace = bnlearn_learn('hc', data, knowledge=2)
-    with pytest.raises(TypeError):
-        dag, trace = bnlearn_learn('hc', data, knowledge=False)
+    data = NumPy.from_df(df=bn.generate_cases(10), dstype='categorical',
+                         keep_df=False)
+    return (data, bn)
 
 
-def test_reqd_value_error_1_():  # only reqd & tiers knowledge supported
-    bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
-    data = bn.generate_cases(10)
+def test_reqd_type_error_1_(ab10):  # bad Knowledge arg type
+    with pytest.raises(TypeError):
+        bnlearn_learn('hc', ab10[0], knowledge=2)
+    with pytest.raises(TypeError):
+        bnlearn_learn('hc', ab10[0], knowledge=False)
+
+
+def test_reqd_value_error_1_(ab10):  # only reqd & tiers knowledge supported
     knowledge = Knowledge(rules=RuleSet.EQUIV_SEQ,
                           params={'sequence': tuple([True])})
     with pytest.raises(ValueError):
-        dag, trace = bnlearn_learn('hc', data, knowledge=knowledge)
+        bnlearn_learn('hc', ab10[0], knowledge=knowledge)
 
 
-def test_reqd_hc_ab_1_ok():  # A --> B data, No knowledge
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
-    dag, trace = bnlearn_learn('hc', data,
-                               context={'in': _in, 'id': 'hc_ab_1'})
+def test_reqd_hc_ab_1_ok(ab10):  # A --> B data, No knowledge
+    dag, trace = bnlearn_learn('hc', ab10[0],
+                               context={'in': 'in', 'id': 'hc_ab_1'})
 
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
     print(trace)
     _trace = trace.get().drop(labels='time', axis=1).to_dict('records')
-    # return
 
     # DAG initialised to A --> B, and no changes made
 
@@ -64,15 +65,12 @@ def test_reqd_hc_ab_1_ok():  # A --> B data, No knowledge
     assert trace.result == dag
 
 
-def test_reqd_hc_ab_2_ok():  # A --> B data, A --> B required
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
+def test_reqd_hc_ab_2_ok(ab10):  # A --> B data, A --> B required
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('A', 'B'): True},
-                                  'initial': bn.dag})
-    dag, trace = bnlearn_learn('hc', data, knowledge=knowledge,
-                               context={'in': _in, 'id': 'hc_ab_2'})
+                                  'initial': ab10[1].dag})
+    dag, trace = bnlearn_learn('hc', ab10[0], knowledge=knowledge,
+                               context={'in': 'in', 'id': 'hc_ab_2'})
 
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
@@ -94,15 +92,12 @@ def test_reqd_hc_ab_2_ok():  # A --> B data, A --> B required
     assert trace.result == dag
 
 
-def test_reqd_hc_ab_3_ok():  # A --> B data, B --> A required
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
+def test_reqd_hc_ab_3_ok(ab10):  # A --> B data, B --> A required
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('B', 'A'): True},
-                                  'initial': bn.dag})
-    dag, trace = bnlearn_learn('hc', data, knowledge=knowledge,
-                               context={'in': _in, 'id': 'hc_ab_3'})
+                                  'initial': ab10[1].dag})
+    dag, trace = bnlearn_learn('hc', ab10[0], knowledge=knowledge,
+                               context={'in': 'in', 'id': 'hc_ab_3'})
 
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A|B][B]'  # HC learns correct answer
@@ -125,11 +120,10 @@ def test_reqd_hc_ab_3_ok():  # A --> B data, B --> A required
 
 
 def test_reqd_hc_cancer_1_ok():  # Cancer, no knowledge
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-    dag, trace = bnlearn_learn('hc', data, context={'in': _in,
-                               'id': 'hc_cancer_1'})
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
+    dag, trace = bnlearn_learn('hc', data,
+                               context={'in': 'in', 'id': 'hc_cancer_1'})
 
     print('\nDAG learnt from 1K rows of Cancer: {}'.format(dag))
     assert dag.to_string() == \
@@ -168,11 +162,10 @@ def test_reqd_hc_cancer_1_ok():  # Cancer, no knowledge
 
 
 def test_reqd_pc_cancer_1_ok():  # PC, Cancer data, No knowledge
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('pc.stable', data,
-                                context={'in': _in, 'id': 'pc_cancer_1'})
+                                context={'in': 'in', 'id': 'pc_cancer_1'})
 
     print('\nPDAG learnt from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -182,11 +175,10 @@ def test_reqd_pc_cancer_1_ok():  # PC, Cancer data, No knowledge
 
 
 def test_reqd_mmhc_cancer_1_ok():  # MMHC, Cancer data, No knowledge
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('mmhc', data,
-                                context={'in': _in, 'id': 'mmhc_cancer_1'})
+                                context={'in': 'in', 'id': 'mmhc_cancer_1'})
 
     print('\nPDAG learnt from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -196,11 +188,10 @@ def test_reqd_mmhc_cancer_1_ok():  # MMHC, Cancer data, No knowledge
 
 
 def test_reqd_h2pc_cancer_1_ok():  # H2PC, Cancer data, No knowledge
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('h2pc', data,
-                                context={'in': _in, 'id': 'h2pc_cancer_1'})
+                                context={'in': 'in', 'id': 'h2pc_cancer_1'})
 
     print('\nPDAG learnt from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -210,16 +201,16 @@ def test_reqd_h2pc_cancer_1_ok():  # H2PC, Cancer data, No knowledge
 
 
 def test_reqd_hc_cancer_2_ok():  # Cancer, S --> C, P --> C required
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     initial = DAG(bn.dag.nodes, [('Smoker', '->', 'Cancer'),
                                  ('Pollution', '->', 'Cancer')])
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('Smoker', 'Cancer'): True,
                                            ('Pollution', 'Cancer'): True},
                                   'initial': initial})
-    dag, trace = bnlearn_learn('hc', data, context={'in': _in,
+    dag, trace = bnlearn_learn('hc', data, context={'in': 'in',
                                'id': 'hc_cancer_2'}, knowledge=knowledge)
 
     print('\nDAG learnt from 1K rows of Cancer: {}'.format(dag))
@@ -255,18 +246,17 @@ def test_reqd_hc_cancer_2_ok():  # Cancer, S --> C, P --> C required
 
 
 def test_reqd_pc_cancer_2_ok():  # PC, Cancer data, No knowledge
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     initial = DAG(bn.dag.nodes, [('Smoker', '->', 'Cancer'),
                                  ('Pollution', '->', 'Cancer')])
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('Smoker', 'Cancer'): True,
                                            ('Pollution', 'Cancer'): True},
                                   'initial': initial})
-    pdag, trace = bnlearn_learn('pc.stable', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'pc_cancer_2'})
-
+    pdag, _ = bnlearn_learn('pc.stable', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'pc_cancer_2'})
     print('\nPDAG learnt by PC from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
         {('Smoker', 'Cancer'): EdgeType.DIRECTED,
@@ -275,17 +265,17 @@ def test_reqd_pc_cancer_2_ok():  # PC, Cancer data, No knowledge
 
 
 def test_reqd_mmhc_cancer_2_ok():  # MMHC, Cancer data, 2 reqd
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     initial = DAG(bn.dag.nodes, [('Smoker', '->', 'Cancer'),
                                  ('Pollution', '->', 'Cancer')])
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('Smoker', 'Cancer'): True,
                                            ('Pollution', 'Cancer'): True},
                                   'initial': initial})
-    pdag, trace = bnlearn_learn('mmhc', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'pc_cancer_2'})
+    pdag, _ = bnlearn_learn('mmhc', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'pc_cancer_2'})
 
     print('\nPDAG learnt by MMHC from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -295,9 +285,9 @@ def test_reqd_mmhc_cancer_2_ok():  # MMHC, Cancer data, 2 reqd
 
 
 def test_reqd_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     initial = DAG(bn.dag.nodes, [('Smoker', '->', 'Cancer'),
                                  ('Pollution', '->', 'Cancer')])
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
@@ -309,20 +299,20 @@ def test_reqd_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
 
     with pytest.raises(RuntimeError):
         bnlearn_learn('h2pc', data, knowledge=knowledge,
-                      context={'in': _in, 'id': 'h2pc_cancer_2'})
+                      context={'in': 'in', 'id': 'h2pc_cancer_2'})
 
 
 def test_reqd_h2pc_cancer_3_ok():  # H2PC, Cancer data, 1 reqd
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     initial = DAG(bn.dag.nodes, [('Smoker', '->', 'Cancer'),
                                  ('Pollution', '->', 'Cancer')])
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('Pollution', 'Cancer'): True},
                                   'initial': initial})
-    pdag, trace = bnlearn_learn('h2pc', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'h2pc_cancer_2'})
+    pdag, _ = bnlearn_learn('h2pc', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'h2pc_cancer_2'})
 
     print('\nPDAG learnt by H2PC from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -333,10 +323,9 @@ def test_reqd_h2pc_cancer_3_ok():  # H2PC, Cancer data, 1 reqd
 
 
 def test_reqd_hc_sports_1_ok():  # HC, Sports, no knowledge
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-    dag, trace = bnlearn_learn('hc', data, context={'in': _in,
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
+    dag, trace = bnlearn_learn('hc', data, context={'in': 'in',
                                'id': 'hc_sports_1'})
 
     print('\nDAG learnt by HC from 1K rows of Sports: {}'.format(dag))
@@ -354,13 +343,13 @@ def test_reqd_hc_sports_1_ok():  # HC, Sports, no knowledge
 
 
 def test_reqd_hc_sports_7_ok():  # Sports, 9 required arcs
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsDirected_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
-    dag, trace = bnlearn_learn('hc', data, context={'in': _in,
-                               'id': 'hc_sports_1'}, knowledge=knowledge)
+    dag, _ = bnlearn_learn('hc', data, knowledge=knowledge,
+                           context={'in': 'in', 'id': 'hc_sports_1'})
 
     print('\nDAG learnt from 1K rows of Sports: {}'.format(dag))
     assert dag.edges == \
@@ -376,10 +365,9 @@ def test_reqd_hc_sports_7_ok():  # Sports, 9 required arcs
 
 
 def test_reqd_pc_sports_1_ok():  # PC, Sports, no knowledge
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-    pdag, trace = bnlearn_learn('pc.stable', data, context={'in': _in,
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
+    pdag, trace = bnlearn_learn('pc.stable', data, context={'in': 'in',
                                 'id': 'pc_sports_1'})
 
     print('\nPDAG learnt by PC from 1K rows of Sports: {}'.format(pdag))
@@ -393,13 +381,13 @@ def test_reqd_pc_sports_1_ok():  # PC, Sports, no knowledge
 
 
 def test_reqd_pc_sports_7_ok():  # PC, Sports, 9 required arcs
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsDirected_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
     pdag, trace = bnlearn_learn('pc.stable', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'pc_sports_7'})
+                                context={'in': 'in', 'id': 'pc_sports_7'})
 
     print('\nPDAG learnt by PC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \
@@ -414,11 +402,10 @@ def test_reqd_pc_sports_7_ok():  # PC, Sports, 9 required arcs
 
 
 def test_reqd_mmhc_sports_1_ok():  # MMHC, Sports, no knowledge
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-    pdag, trace = bnlearn_learn('mmhc', data, context={'in': _in,
-                                'id': 'mmhc_sports_1'})
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
+    pdag, _ = bnlearn_learn('mmhc', data, context={'in': 'in',
+                                                   'id': 'mmhc_sports_1'})
 
     print('\nPDAG learnt by MMHC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \
@@ -432,13 +419,13 @@ def test_reqd_mmhc_sports_1_ok():  # MMHC, Sports, no knowledge
 
 
 def test_reqd_mmhc_sports_7_ok():  # MMHC, Sports, 9 required arcs
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsDirected_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
-    pdag, trace = bnlearn_learn('mmhc', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'mmhc_sports_7'})
+    pdag, _ = bnlearn_learn('mmhc', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'mmhc_sports_7'})
 
     print('\nPDAG learnt by MMHC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \
@@ -453,10 +440,9 @@ def test_reqd_mmhc_sports_7_ok():  # MMHC, Sports, 9 required arcs
 
 
 def test_reqd_h2pc_sports_1_ok():  # H2PC, Sports, no knowledge
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-    pdag, trace = bnlearn_learn('h2pc', data, context={'in': _in,
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
+    pdag, trace = bnlearn_learn('h2pc', data, context={'in': 'in',
                                 'id': 'h2pc_sports_1'})
 
     print('\nPDAG learnt by H2PC from 1K rows of Sports: {}'.format(pdag))
@@ -470,9 +456,9 @@ def test_reqd_h2pc_sports_1_ok():  # H2PC, Sports, no knowledge
 
 
 def test_reqd_h2pc_sports_7_ok():  # H2PC, Sports, 9 required arcs
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsDirected_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
 
@@ -480,13 +466,13 @@ def test_reqd_h2pc_sports_7_ok():  # H2PC, Sports, 9 required arcs
 
     with pytest.raises(RuntimeError):
         bnlearn_learn('h2pc', data, knowledge=knowledge,
-                      context={'in': _in, 'id': 'h2pc_sports_7'})
+                      context={'in': 'in', 'id': 'h2pc_sports_7'})
 
 
 def test_reqd_h2pc_sports_7a_ok():  # H2PC, Sports, 4 required arcs
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
 
     # commented out required arcs cause R abend
 
@@ -502,8 +488,8 @@ def test_reqd_h2pc_sports_7a_ok():  # H2PC, Sports, 4 required arcs
                           # ('ATgoals', 'HDA'): True},
                           'initial': bn.dag})
     print(knowledge.reqd)
-    pdag, trace = bnlearn_learn('h2pc', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'h2pc_sports_7'})
+    pdag, _ = bnlearn_learn('h2pc', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'h2pc_sports_7'})
 
     print('\nPDAG learnt by H2PC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \
@@ -517,14 +503,11 @@ def test_reqd_h2pc_sports_7a_ok():  # H2PC, Sports, 4 required arcs
          ('ATshotsOnTarget', 'ATgoals'): EdgeType.DIRECTED}
 
 
-def test_stop_hc_ab_2_ok():  # A --> B data, A --> B prohibited
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
+def test_stop_hc_ab_2_ok(ab10):  # A --> B data, A --> B prohibited
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('A', 'B'): True}})
-    dag, trace = bnlearn_learn('hc', data, knowledge=knowledge,
-                               context={'in': _in, 'id': 'stop_hc_ab_2'})
+    dag, trace = bnlearn_learn('hc', ab10[0], knowledge=knowledge,
+                               context={'in': 'in', 'id': 'stop_hc_ab_2'})
 
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A|B][B]'  # HC learns correct answer
@@ -551,14 +534,11 @@ def test_stop_hc_ab_2_ok():  # A --> B data, A --> B prohibited
     assert trace.result == dag
 
 
-def test_stop_hc_ab_3_ok():  # A --> B data, B --> A prohibited
-    _in = TESTDATA_DIR + '/dsc/ab.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(10)
+def test_stop_hc_ab_3_ok(ab10):  # A --> B data, B --> A prohibited
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('B', 'A'): True}})
-    dag, trace = bnlearn_learn('hc', data, knowledge=knowledge,
-                               context={'in': _in, 'id': 'stop_hc_ab_3'})
+    dag, trace = bnlearn_learn('hc', ab10[0], knowledge=knowledge,
+                               context={'in': 'in', 'id': 'stop_hc_ab_3'})
 
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
@@ -586,12 +566,11 @@ def test_stop_hc_ab_3_ok():  # A --> B data, B --> A prohibited
 
 
 def test_stop_hc_cancer_2_ok():  # Cancer, prohibit C --> S
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('Cancer', 'Smoker'): True}})
-    dag, trace = bnlearn_learn('hc', data, context={'in': _in,
+    dag, trace = bnlearn_learn('hc', data, context={'in': 'in',
                                'id': 'stop_hc_cancer_2'}, knowledge=knowledge)
 
     print('\nDAG learnt from 1K rows of Cancer: {}'.format(dag))
@@ -631,15 +610,14 @@ def test_stop_hc_cancer_2_ok():  # Cancer, prohibit C --> S
 
 
 def test_stop_pc_cancer_2_ok():  # PC, Cancer, prohibit D->C, X->C & C->S
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('Dyspnoea', 'Cancer'): True,
                                            ('Xray', 'Cancer'): True,
                                            ('Cancer', 'Smoker'): True}})
-    pdag, trace = bnlearn_learn('pc.stable', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'stop_pc_cancer_2'})
+    pdag, _ = bnlearn_learn('pc.stable', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'stop_pc_cancer_2'})
 
     print('\nPDAG learnt by PC from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -649,15 +627,13 @@ def test_stop_pc_cancer_2_ok():  # PC, Cancer, prohibit D->C, X->C & C->S
 
 
 def test_stop_mmhc_cancer_2_ok():  # MMHC, Cancer, stop C->X, C->S
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('Cancer', 'Xray'): True,
                                            ('Cancer', 'Smoker'): True}})
-    pdag, trace = bnlearn_learn('mmhc', data, knowledge=knowledge,
-                                context={'in': _in,
-                                         'id': 'stop_mmhc_cancer_2'})
+    pdag, _ = bnlearn_learn('mmhc', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'stop_mmhc_cancer_2'})
 
     print('\nPDAG learnt by MMHC from 1K rows of Cancer: {}'.format(pdag))
     assert pdag.edges == \
@@ -667,16 +643,15 @@ def test_stop_mmhc_cancer_2_ok():  # MMHC, Cancer, stop C->X, C->S
 
 
 def test_stop_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
-    _in = TESTDATA_DIR + '/discrete/small/cancer.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
+                      dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('Cancer', 'Smoker'): True}})
 
     # This fails - suspect bug in bnlearn
 
     pdag, _ = bnlearn_learn('h2pc', data, knowledge=knowledge,
-                            context={'in': _in, 'id': 'stop_h2pc_cancer_2'})
+                            context={'in': 'in', 'id': 'stop_h2pc_cancer_2'})
     print('\nPDAG learnt by H2PC from 1K rows of Cancer: {}'.format(pdag))
 
     assert pdag.edges == \
@@ -686,13 +661,13 @@ def test_stop_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
 
 
 def test_tiers_hc_sports_7_ok():  # Sports, HC, 3 tiers
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsTemporal_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
-    dag, trace = bnlearn_learn('hc', data, knowledge=knowledge,
-                               context={'in': _in, 'id': 'tiers_hc_sports_1'})
+    dag, _ = bnlearn_learn('hc', data, knowledge=knowledge,
+                           context={'in': 'in', 'id': 'tiers_hc_sports_1'})
 
     print('\nDAG learnt from 1K rows of Sports: {}'.format(dag))
 
@@ -709,13 +684,13 @@ def test_tiers_hc_sports_7_ok():  # Sports, HC, 3 tiers
 
 
 def test_tiers_pc_sports_7_ok():  # PC, Sports, 3 tiers
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsTemporal_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
-    pdag, trace = bnlearn_learn('pc.stable', data, knowledge=knowledge,
-                                context={'in': _in, 'id': 'tiers_pc_sports_7'})
+    pdag, _ = bnlearn_learn('pc.stable', data, knowledge=knowledge,
+                            context={'in': 'in', 'id': 'tiers_pc_sports_7'})
 
     print('\nPDAG learnt by PC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \
@@ -728,13 +703,13 @@ def test_tiers_pc_sports_7_ok():  # PC, Sports, 3 tiers
 
 
 def test_tiers_mmhc_sports_7_ok():  # MMHC, Sports, 3 tiers
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsTemporal_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
     pdag, _ = bnlearn_learn('mmhc', data, knowledge=knowledge,
-                            context={'in': _in, 'id': 'tiers_mmhc_sports_7'})
+                            context={'in': 'in', 'id': 'tiers_mmhc_sports_7'})
 
     print('\nPDAG learnt by MMHC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \
@@ -747,26 +722,16 @@ def test_tiers_mmhc_sports_7_ok():  # MMHC, Sports, 3 tiers
          ('HTgoals', 'HDA'): EdgeType.DIRECTED,
          ('HTshots', 'HTshotOnTarget'): EdgeType.DIRECTED}
     return
-    assert pdag.edges == \
-        {('ATshots', 'ATshotsOnTarget'): EdgeType.DIRECTED,
-         ('possession', 'ATshots'): EdgeType.DIRECTED,
-         ('HTgoals', 'HDA'): EdgeType.DIRECTED,
-         ('ATgoals', 'HDA'): EdgeType.DIRECTED,
-         ('possession', 'HTshots'): EdgeType.DIRECTED,
-         ('HTshotOnTarget', 'HTgoals'): EdgeType.DIRECTED,
-         ('HTshots', 'HTshotOnTarget'): EdgeType.DIRECTED,
-         ('ATshotsOnTarget', 'ATgoals'): EdgeType.DIRECTED}
 
 
 def test_tiers_h2pc_sports_7_ok():  # H2PC, Sports, 3 tiers
-    _in = TESTDATA_DIR + '/discrete/small/sports.dsc'
-    bn = BN.read(_in)
-    data = bn.generate_cases(1000)
-
+    bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
+                      dstype='categorical', N=1000)
     constraints = TESTDATA_DIR + '/bayesys/constraintsTemporal_SPORTS_7.csv'
     knowledge = read_constraints(constraints, set(bn.dag.nodes))
     pdag, _ = bnlearn_learn('h2pc', data, knowledge=knowledge,
-                            context={'in': _in, 'id': 'tiers_h2pc_sports_7'})
+                            context={'in': 'in', 'id': 'tiers_h2pc_sports_7'})
 
     print('\nPDAG learnt by H2PC from 1K rows of Sports: {}'.format(pdag))
     assert pdag.edges == \

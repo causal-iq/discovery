@@ -137,8 +137,7 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
 
         try:
             _, trace = tetrad_learn(props['algorithm'].value['method'],
-                                    data.sample, params=params,
-                                    context=context, dstype=data.dstype)
+                                    data, params=params, context=context)
         except RuntimeError:
             print('*** tetrad failed to learn graph')
             return (None, False)
@@ -148,8 +147,7 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
 
         try:
             _, trace = bnlearn_learn(props['algorithm'].value['method'],
-                                     data.sample, params=params,
-                                     context=context, dstype=data.dstype)
+                                     data, params=params, context=context)
         except RuntimeError:
             print('*** bnlearn failed to learn graph')
             return (None, False)
@@ -158,6 +156,8 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
           .format(round(trace.trace['time'][-1], 2), asctime(localtime())))
 
     if Randomise.NAMES in randomise:
+        print(data.ext_to_orig)
+        print(trace.result)
         trace.rename(name_map=data.ext_to_orig)
 
     if key in existing and action == 'compare':

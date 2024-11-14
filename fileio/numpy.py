@@ -1,7 +1,8 @@
 
 # Data concrete implementation with data held in NumPy arrays
 
-from numpy import array, ndarray, bincount, unique, zeros
+from numpy import array, ndarray, bincount, unique as npunique, zeros, \
+                  prod as npprod, nonzero, empty
 from numpy.random import default_rng
 from pandas import read_csv, factorize, DataFrame, Categorical
 from pandas.errors import EmptyDataError
@@ -9,6 +10,7 @@ from gzip import BadGzipFile
 
 from core.timing import Timing
 from fileio.common import DatasetType, is_valid_path, FileFormatError
+from fileio.pandas import Pandas
 from fileio.data import Data
 
 MAX_CATEGORY = 100  # maximum number of different values in category
@@ -37,11 +39,12 @@ class NumPy(Data):
         :ivar DatasetType dstype: type of dataset (categorical/numeric/mixed)
         :ivar dict node_values: values and their counts for categorical nodes
                                 in sample {n1: {v1: c1, v2: ...}, n2 ...}
-        :ivar dict node_types: type of each node {node: category/float32}
 
         :raises TypeError: if bad arg type
         :raises ValueError: if bad arg value
     """
+
+    MAX_BINCOUNT = 1000000
 
     def __init__(self, data, dstype, col_values):
 
@@ -264,6 +267,54 @@ class NumPy(Data):
         self.node_values = {map[n]: vc for n, vc in self.node_values.items()}
         self.node_types = {map[n]: t for n, t in self.node_types.items()}
 
+    def unique(self, j_reqd, num_vals):
+        """
+            Counts unique combinations of categorical variables in specified
+            set of columns
+
+            :param tuple j_reqd: indices of columns required
+            :param ndarray num_vals: number of values in each of those columns
+
+            :returns tuple: (ndarray: array of unique combinations,
+                             ndarray: vector of corresponding counts)
+        """
+        minlength = npprod(num_vals).item()
+
+        if minlength <= self.MAX_BINCOUNT:
+
+            # If maximum number of possible combinations below threshold then
+            # pack combinations into integers, and count those for speed.
+            # First, generate the packed integers
+
+            multipliers = array([npprod(num_vals[:i])
+                                 for i in range(len(j_reqd))])
+            packed = self.sample[:, j_reqd] @ multipliers
+
+            # Count the frquency of unique packed integers, removing all
+            # entries with zero counts
+
+            counts = bincount(packed, minlength=minlength)
+            packed = nonzero(counts)[0]
+            counts = counts[packed]
+
+            # Unpack integers back into their combinations of values using
+            # the same multipliers used to pack them into one integer
+
+            combos = empty((len(packed), len(multipliers)), dtype=int)
+            for jj, r in enumerate(reversed(multipliers)):
+                combos[:, len(multipliers) - jj - 1] = packed // r
+                packed = packed % r
+
+        else:
+
+            # If maximum number of possible combinations above threshold then
+            # using the much slower numpy unique function.
+
+            combos, counts = npunique(self.sample[:, j_reqd], axis=0,
+                                      return_counts=True)
+
+        return combos, counts
+
     def marginals(self, node, parents, values_reqd=False):
         """
             Return marginal counts for a node and its parents.
@@ -308,53 +359,36 @@ class NumPy(Data):
 
         else:
 
-            # marginals for multiple variables - determine    columns required
+            # Determine required column indices and number of unique values
+            # in each column.
 
             j_reqd = tuple(self.nodes.index(self.ext_to_orig[n])
                            for n in nodes)
-            num_cats = [len(self.node_values[n]) for n in nodes]
-            print('\n\nMarginal column indexes: {}'.format(j_reqd))
+            num_vals = array([len(self.node_values[n]) for n in nodes])
+            maxcol = npprod(num_vals[1:]).item()
 
-            # Generate a 2D array where each row contains a tuple of the
-            # combinations of values
+            # identify and count unique combinations of node values
 
-            s2 = Timing.now()
-            view = self.sample[:, j_reqd].copy().view([('', self.data.dtype)]
-                                                      * len(j_reqd))
-            print(view, view.shape)
-            Timing.record('view', len(j_reqd), s2)
+            combos, _counts = self.unique(j_reqd, num_vals)
 
-            # count the different combinations of values
-
-            s2 = Timing.now()
-            combos, _counts = unique(self.sample[:, j_reqd], axis=0,
-                                     return_counts=True)
-            Timing.record('unique', len(j_reqd), s2)
-            combos = array([list(c) for c in combos])
-
-            # identify unique values of child and parent combos
+            # separate the child values and parental combinations
 
             c_values = array(range(len(self.node_values[node])))
-            p_combos = unique(combos[:, 1:], axis=0)
+            p_combos = npunique(combos[:, 1:], axis=0)
+
+            # initialise and populate the crosstab-style matrix where rows
+            # are child values, and columns are unique parental combinations.
+
             c_value_to_i = {v: i for i, v in enumerate(c_values)}
             p_combo_to_j = {tuple(c): j for j, c in enumerate(p_combos)}
-
-            # initialise and populate the crosstab-style matrix
-
             counts = zeros((len(c_values), len(p_combos)), dtype='int32')
             for idx, (c_value, *p_combo) in enumerate(combos):
                 i = c_value_to_i[c_value]
                 j = p_combo_to_j[tuple(p_combo)]
                 counts[i, j] = _counts[idx]
 
-            # max number of parental value combos is geometric product of
-            # number of states of each parent
-
-            for p in parents[node]:
-                maxcol *= len(self.node_values[p].keys())
-
-            # Generate child value corresponding to each row, and parental
-            # combination to each column if required.
+            # Generate child category corresponding to each row, and parental
+            # category combination to each column if required.
 
             if values_reqd is True:
                 rowval = tuple(self.categories[j_reqd[0]])
@@ -364,116 +398,9 @@ class NumPy(Data):
                                for c in p_combos)
 
             c_values = p_combos = c_value_to_i = p_combo_to_j = None
-            view = _counts = combos = None
+            _counts = combos = None
 
-        Timing.record('marginals', (len(parents[node]) + 1
-                                    if node in parents else 1), start)
-
-        return (counts, maxcol, rowval, colval)
-
-    def marginals_safe(self, node, parents, values_reqd=False):
-        """
-            Return marginal counts for a node and its parents.
-
-            :param str node: node for which marginals required.
-            :param dict parents: {node: parents} parents of non-orphan nodes
-            :param bool values_reqd: whether parent and child values required
-
-            :raises TypeError: for bad argument types
-            :raises ValueError: for bad argument values
-
-            :returns tuple: of counts, and optionally, values:
-                            - ndarray counts: 2D, rows=child, cols=parents
-                            - int maxcol: maximum number of parental values
-                            - tuple rowval: child values for each row
-                            - tuple colval: parent combo (dict) for each col
-        """
-        if (not isinstance(node, str) or not isinstance(parents, dict)
-                or not all([isinstance(p, list) for p in parents.values()])
-                or not isinstance(values_reqd, bool)):
-            raise TypeError('NumPy.marginals() bad arg type')
-
-        # determine nodes (external names) for which marginals required
-
-        nodes = tuple([node] + parents[node]) if node in parents else (node,)
-        if (len(set(nodes) - set(self.node_values)) != 0
-                or len(nodes) != len(set(nodes))):
-            raise ValueError('NumPy.marginals() bad arg value')
-
-        maxcol = 1
-        rowval = colval = None
-        start = Timing.now()
-
-        if len(nodes) == 1:
-
-            # marginals for a single variable - just use node_values
-
-            counts = array([[c] for c in self.node_values[node].values()],
-                           dtype=int)
-            if values_reqd is True:
-                rowval = tuple(self.node_values[node].keys())
-
-        else:
-
-            # marginals for multiple variables - determine columns required
-
-            j_reqd = tuple(self.nodes.index(self.ext_to_orig[n])
-                           for n in nodes)
-            print('\n\nMarginal column indexes: {}'.format(j_reqd))
-
-            # Generate a 2D array where each row contains a tuple of the
-            # combinations of values
-
-            s2 = Timing.now()
-            view = self.sample[:, j_reqd].copy().view([('', self.data.dtype)]
-                                                      * len(j_reqd))
-            print(view, view.shape)
-            Timing.record('view', len(j_reqd), s2)
-
-            # count the different combinations of values
-
-            s2 = Timing.now()
-            combos, _counts = unique(self.sample[:, j_reqd], axis=0,
-                                     return_counts=True)
-            Timing.record('unique', len(j_reqd), s2)
-            combos = array([list(c) for c in combos])
-
-            # identify unique values of child and parent combos
-
-            c_values = array(range(len(self.node_values[node])))
-            p_combos = unique(combos[:, 1:], axis=0)
-            c_value_to_i = {v: i for i, v in enumerate(c_values)}
-            p_combo_to_j = {tuple(c): j for j, c in enumerate(p_combos)}
-
-            # initialise and populate the crosstab-style matrix
-
-            counts = zeros((len(c_values), len(p_combos)), dtype='int32')
-            for idx, (c_value, *p_combo) in enumerate(combos):
-                i = c_value_to_i[c_value]
-                j = p_combo_to_j[tuple(p_combo)]
-                counts[i, j] = _counts[idx]
-
-            # max number of parental value combos is geometric product of
-            # number of states of each parent
-
-            for p in parents[node]:
-                maxcol *= len(self.node_values[p].keys())
-
-            # Generate child value corresponding to each row, and parental
-            # combination to each column if required.
-
-            if values_reqd is True:
-                rowval = tuple(self.categories[j_reqd[0]])
-                colval = tuple({self.orig_to_ext[self.nodes[j_reqd[j]]]:
-                                self.categories[j_reqd[j]][c[j - 1]]
-                                for j in range(1, len(j_reqd))}
-                               for c in p_combos)
-
-            c_values = p_combos = c_value_to_i = p_combo_to_j = None
-            view = _counts = combos = None
-
-        Timing.record('marginals', (len(parents[node]) + 1
-                                    if node in parents else 1), start)
+        Timing.record('marginals', len(nodes), start)
 
         return (counts, maxcol, rowval, colval)
 
@@ -528,3 +455,22 @@ class NumPy(Data):
             df = df.rename(columns=self.orig_to_ext).reindex(columns=order)
 
         return df
+
+    def write(self, filename, compress=False, sf=10, zero=None, preserve=True):
+        """
+            Write data into a gzipped CSV data format file
+
+            :param str filename: full path of data file
+            :param bool compress: whether to gzip compress the file
+            :param int sf: number of s.f. to retain for numeric values
+            :param float zero: abs values below this counted as zero
+            :param bool preserve: whether self.df is left unchanged by this
+                                  function, False conserves memory if writing
+                                  out large files.
+
+            :raises TypeError: if argument types incorrect
+            :raises ValueError: if data has no columns defined
+            :raises FileNotFoundError: if destination folder does not exist
+        """
+        pandas = Pandas(df=self.as_df())
+        pandas.write(filename, compress, sf, zero, preserve)
