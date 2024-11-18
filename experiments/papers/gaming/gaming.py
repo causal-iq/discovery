@@ -59,17 +59,23 @@ def values_gaming_tabu_stable_disc():
     """
         Learn Gaming discrete with Tabu-Stable
     """
-    data = Pandas.read(EXPTS_DIR + '/realdata/ht_disc.data.gz',
-                       dstype='categorical')
-    print(data.df.tail())
+    N = 1000000
+    data = NumPy.read(EXPTS_DIR + '/realdata/ht_disc.data.gz',
+                      dstype='categorical', N=N)
+    print(data.as_df().tail())
 
     params = {'tabu': 10, 'stable': 'score+'}
     context = {'id': 'tabu-stable_disc/N1000000', 'in': 'ht_disc'}
 
+    Timing.on(True)
+    start = Timing.now()
     dag, trace = hc(data, params=params, context=context)
+    Timing.record('tabu', N, start)
 
     print(trace)
     print(dag)
+    print(Timing)
+
     trace.save(PATH + 'trace')
     write_tetrad(dag, PATH + 'tetrad/tabu-stable_disc.tetrad')
     write_bayesys(dag, PATH + 'bayesys/tabu-stable_disc.csv')
@@ -79,13 +85,12 @@ def values_gaming_hc_stable_disc():
     """
         Learn Gaming discrete with HC-Stable
     """
-    N = 10000
+    N = 1000000
     data = NumPy.read(EXPTS_DIR + '/realdata/ht_disc.data.gz',
                       dstype='categorical', N=N)
     print(data.as_df().tail())
 
     params = {'stable': 'score+'}
-    params = {'score': 'bic', 'k': 1.0}
     context = {'id': 'hc-stable_disc/N1000000', 'in': 'ht_disc'}
 
     Timing.on(True)
@@ -97,9 +102,9 @@ def values_gaming_hc_stable_disc():
     print(dag)
     print(Timing)
 
-    # trace.save(PATH + 'trace')
-    # write_tetrad(dag, PATH + 'tetrad/hc-stable_disc.tetrad')
-    # write_bayesys(dag, PATH + 'bayesys/hc-stable_disc.csv')
+    trace.save(PATH + 'trace')
+    write_tetrad(dag, PATH + 'tetrad/hc-stable_disc.tetrad')
+    write_bayesys(dag, PATH + 'bayesys/hc-stable_disc.csv')
 
 
 def values_gaming_bnlearn_tabu_disc():
