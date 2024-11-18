@@ -1685,7 +1685,6 @@ def compare_series_properties(series):
     # Analyse which properties the series have in common and which different
 
     rows = DataFrame(rows).set_index('series').replace({nan: None})
-    print(rows)
     common = {}
     for column in rows.columns:
         values = rows[column].value_counts().to_dict()
@@ -1721,7 +1720,6 @@ def reference_bn(network, root_dir=EXPTS_DIR):
     bn_file = ('{}/bn/xdsl/{}.xdsl'.format(EXPTS_DIR, network)
                if network.endswith('_c') else
                '{}/bn/{}.dsc'.format(EXPTS_DIR, network))
-    print(bn_file)
     return (BN.read(bn_file), bn_file)
 
 

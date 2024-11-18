@@ -1,8 +1,9 @@
 
 # Data concrete implementation with data held in NumPy arrays
 
+from math import prod
 from numpy import array, ndarray, bincount, unique as npunique, zeros, \
-                  prod as npprod, nonzero, empty
+                  nonzero, empty
 from numpy.random import default_rng
 from pandas import read_csv, factorize, DataFrame, Categorical
 from pandas.errors import EmptyDataError
@@ -74,8 +75,9 @@ class NumPy(Data):
         node_type = 'category' if dstype == 'categorical' else 'float32'
         self.node_types = {n: node_type for n in self.nodes}
 
-        self.categories = (array([col_values[n] for n in self.nodes]) if
-                           dstype == 'categorical' else None)
+        self.categories = (array([col_values[n] for n in self.nodes],
+                                 dtype='object') if dstype == 'categorical'
+                           else None)
         self.order = tuple(i for i in range(len(self.nodes)))
         self.ext_to_orig = {n: n for n in self.nodes}
         self.orig_to_ext = {n: n for n in self.nodes}
@@ -126,13 +128,11 @@ class NumPy(Data):
                           dtype=dtype, **nrows)
 
             if N is not None and N > len(df):
-                raise ValueError('Bad argument values for Pandas.read')
+                raise ValueError('Bad argument values for NumPy.read')
 
         except (UnicodeDecodeError, PermissionError, EmptyDataError,
                 BadGzipFile) as e:
             raise FileFormatError('File format error: {}'.format(e))
-
-        print('\n\n{}\n'.format(df.tail()))
 
         return NumPy.from_df(df, dstype, keep_df=False)
 
@@ -214,7 +214,7 @@ class NumPy(Data):
 
         if (N < 1 or N > self.data.shape[0] or
                 (seed is not None and (seed < 0 or seed > 100))):
-            raise ValueError('Pandas.set_N() bad arg value')
+            raise ValueError('NumPy.set_N() bad arg value')
 
         self.N = N
 
@@ -233,7 +233,7 @@ class NumPy(Data):
                 counts = {self.categories[j][v]: c for v, c
                           in enumerate(bincount(self.sample[:, j]))}
                 counts = {v: counts[v] for v in sorted(counts)}
-                self.node_values[self.nodes[j]] = counts
+                self.node_values[self.orig_to_ext[self.nodes[j]]] = counts
 
         # Randomise the row order in self.sample if required
 
@@ -278,7 +278,7 @@ class NumPy(Data):
             :returns tuple: (ndarray: array of unique combinations,
                              ndarray: vector of corresponding counts)
         """
-        minlength = npprod(num_vals).item()
+        minlength = prod(num_vals.tolist())
 
         if minlength <= self.MAX_BINCOUNT:
 
@@ -286,7 +286,7 @@ class NumPy(Data):
             # pack combinations into integers, and count those for speed.
             # First, generate the packed integers
 
-            multipliers = array([npprod(num_vals[:i])
+            multipliers = array([prod((num_vals[:i]).tolist())
                                  for i in range(len(j_reqd))])
             packed = self.sample[:, j_reqd] @ multipliers
 
@@ -365,7 +365,7 @@ class NumPy(Data):
             j_reqd = tuple(self.nodes.index(self.ext_to_orig[n])
                            for n in nodes)
             num_vals = array([len(self.node_values[n]) for n in nodes])
-            maxcol = npprod(num_vals[1:]).item()
+            maxcol = prod((num_vals[1:]).tolist())
 
             # identify and count unique combinations of node values
 
@@ -418,11 +418,11 @@ class NumPy(Data):
         """
         if (not isinstance(nodes, tuple) or len(nodes) == 0
                 or not all([isinstance(n, str) for n in nodes])):
-            raise TypeError('Pandas.values() bad arg type')
+            raise TypeError('NumPy.values() bad arg type')
 
         numeric = {n for n, t in self.node_types.items() if t != 'category'}
         if len(nodes) != len(set(nodes)) or len(set(nodes) - numeric) != 0:
-            raise ValueError('Pandas.values() bad arg values')
+            raise ValueError('NumPy.values() bad arg values')
 
         return self.data[:, [self.nodes.index(n) for n in nodes]]
 
@@ -451,7 +451,6 @@ class NumPy(Data):
         if (self.order != tuple(range(self.data.shape[1]))
                 or self.orig_to_ext != self.ext_to_orig):
             order = (self.orig_to_ext[self.nodes[j]] for j in self.order)
-            print('\n*** Re-ordering/naming to {}\n'.format(self.get_order()))
             df = df.rename(columns=self.orig_to_ext).reindex(columns=order)
 
         return df
