@@ -7,7 +7,7 @@ from time import localtime, asctime
 
 from core.common import Randomise
 from fileio.common import EXPTS_DIR
-from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from fileio.oracle import Oracle
 from call.bnlearn import bnlearn_learn
 from call.tetrad import tetrad_learn
@@ -73,8 +73,6 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
     seed = (sample_num if Randomise.ROWS in randomise
             and props['datagen'] != 'none' else None)
     data.set_N(N, seed)
-    if seed is not None:
-        print('\nTop 5 random rows:\n{}'.format(data.sample.head()))
 
     # construct and score sample for true DAG - only for for sample 0
 
@@ -156,8 +154,6 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
           .format(round(trace.trace['time'][-1], 2), asctime(localtime())))
 
     if Randomise.NAMES in randomise:
-        print(data.ext_to_orig)
-        print(trace.result)
         trace.rename(name_map=data.ext_to_orig)
 
     if key in existing and action == 'compare':
@@ -245,8 +241,8 @@ def run_learn(args, root_dir=EXPTS_DIR):
                     and props['params']['test'] == 'mi'
                         and dstype == 'continuous'):
                     props['params']['test'] = 'mi-g'
-                data = Pandas.read(root_dir + '/datasets/' + network +
-                                   '.data.gz', dstype=dstype, N=Ns[-1])
+                data = NumPy.read(root_dir + '/datasets/' + network +
+                                  '.data.gz', dstype=dstype, N=Ns[-1])
             else:
                 print('\nLearning from distribution (oracle)')
                 data = Oracle(bn=ref_bn)
@@ -278,7 +274,6 @@ def run_learn(args, root_dir=EXPTS_DIR):
                     if trace is not None and Randomise.NAMES not in randomise:
                         init_cache = False
                     if diffs is not False:
-                        print(diffs)
                         all_ok = False
 
     return all_ok

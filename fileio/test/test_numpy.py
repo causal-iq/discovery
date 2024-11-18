@@ -1417,6 +1417,46 @@ def test_rand_name_asia_1_ok():  # Asia, N=20 - randomise names
     assert data.get_order() == tuple(data.ext_to_orig)
     assert tuple(data.as_df().columns) == tuple(data.ext_to_orig)
 
+    # Check can go from one random set to another
+
+    data.randomise_names(seed=2)
+
+    assert isinstance(data, NumPy)
+    assert (data.data == orig_data).all().all()  # NB data.df unchanged
+    assert data.order == (0, 1, 2, 3, 4, 5, 6, 7)  # order unchanged
+    assert data.nodes == std_order  # always original order
+    assert data.N == 100  # size unchanged
+    assert data.ext_to_orig == \
+        {'X001asia': 'asia',
+         'X002bronc': 'bronc',
+         'X005dysp': 'dysp',
+         'X006either': 'either',
+         'X000lung': 'lung',
+         'X004smoke': 'smoke',
+         'X003tub': 'tub',
+         'X007xray': 'xray'}
+    assert data.node_values == \
+        {'X001asia': {'no': 97, 'yes': 3},
+         'X002bronc': {'no': 56, 'yes': 44},
+         'X005dysp': {'no': 56, 'yes': 44},
+         'X006either': {'no': 92, 'yes': 8},
+         'X000lung': {'no': 93, 'yes': 7},
+         'X004smoke': {'no': 57, 'yes': 43},
+         'X003tub': {'no': 99, 'yes': 1},
+         'X007xray': {'no': 90, 'yes': 10}}
+    assert data.node_types == \
+        {'X001asia': 'category',
+         'X002bronc': 'category',
+         'X005dysp': 'category',
+         'X006either': 'category',
+         'X000lung': 'category',
+         'X004smoke': 'category',
+         'X003tub': 'category',
+         'X007xray': 'category'}
+    assert data.dstype == 'categorical'
+    assert data.get_order() == tuple(data.ext_to_orig)
+    assert tuple(data.as_df().columns) == tuple(data.ext_to_orig)
+
     # Going back to seed 0 gives same results as before
 
     data.randomise_names(seed=0)
@@ -1514,6 +1554,175 @@ def test_rand_name_asia_1_ok():  # Asia, N=20 - randomise names
     assert data.dstype == 'categorical'
     assert data.get_order() == tuple(data.ext_to_orig)
     assert tuple(data.as_df().columns) == tuple(data.ext_to_orig)
+
+
+# Test sequences changing data in different ways
+
+def test_sequence_abc5_1_ok(abc5):  # ABC5 - test sequences of changes
+    data = NumPy(abc5['d'], abc5['t'], abc5['v'])
+
+    assert data.get_order() == ('A', 'B', 'C')
+    assert data.N == 5
+    assert data.data.dtype == 'uint8'
+    assert (data.data == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.sample.dtype == 'uint8'
+    assert (data.sample == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                  [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.nodes == ('A', 'B', 'C')
+    assert data.order == (0, 1, 2)
+    assert data.ext_to_orig == {'A': 'A', 'B': 'B', 'C': 'C'}
+    assert data.orig_to_ext == {'A': 'A', 'B': 'B', 'C': 'C'}
+    assert data.dstype == 'categorical'
+    assert (data.categories == (('0', '1'), ('0', '1'),
+                                ('0', '1'))).all().all()
+    assert data.node_values == \
+        {'A': {'0': 2, '1': 3}, 'B': {'0': 2, '1': 3}, 'C': {'0': 4, '1': 1}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['0', '0', '1', '1', '1'],
+         'B': ['0', '1', '0', '1', '1'],
+         'C': ['0', '0', '0', '1', '0']}
+
+    # Set data size to 3 - column names should stay the same, but data only
+    # has firts three rows, and as_df() and node_values should reflect this
+
+    data.set_N(3)
+
+    assert data.get_order() == ('A', 'B', 'C')
+    assert data.N == 3
+    assert data.data.dtype == 'uint8'
+    assert (data.data == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.sample.dtype == 'uint8'
+    assert (data.sample == array([[0, 0, 0], [0, 1, 0],
+                                  [1, 0, 0]])).all().all()
+    assert data.nodes == ('A', 'B', 'C')
+    assert data.order == (0, 1, 2)
+    assert data.ext_to_orig == {'A': 'A', 'B': 'B', 'C': 'C'}
+    assert data.orig_to_ext == {'A': 'A', 'B': 'B', 'C': 'C'}
+    assert data.dstype == 'categorical'
+    assert (data.categories == (('0', '1'), ('0', '1'),
+                                ('0', '1'))).all().all()
+    assert data.node_values == \
+        {'A': {'0': 2, '1': 1}, 'B': {'0': 2, '1': 1}, 'C': {'0': 3}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['0', '0', '1'],
+         'B': ['0', '1', '0'],
+         'C': ['0', '0', '0']}
+
+    # Randomise column names - data should stay the same but external node
+    # names should change
+
+    data.randomise_names(1)
+
+    assert data.get_order() == ('X002A', 'X000B', 'X001C')
+    assert data.N == 3
+    assert data.data.dtype == 'uint8'
+    assert (data.data == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.sample.dtype == 'uint8'
+    assert (data.sample == array([[0, 0, 0], [0, 1, 0],
+                                  [1, 0, 0]])).all().all()
+    assert data.nodes == ('A', 'B', 'C')
+    assert data.order == (0, 1, 2)
+    assert data.ext_to_orig == {'X002A': 'A', 'X000B': 'B', 'X001C': 'C'}
+    assert data.orig_to_ext == {'A': 'X002A', 'B': 'X000B', 'C': 'X001C'}
+    assert data.dstype == 'categorical'
+    assert (data.categories == (('0', '1'), ('0', '1'),
+                                ('0', '1'))).all().all()
+    assert data.node_values == \
+        {'X002A': {'0': 2, '1': 1},
+         'X000B': {'0': 2, '1': 1},
+         'X001C': {'0': 3}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'X002A': ['0', '0', '1'],
+         'X000B': ['0', '1', '0'],
+         'X001C': ['0', '0', '0']}
+
+    # Set N to 4 - external column names should stay the same, but fourth
+    # row should be added back into data, and node value counts adjusted
+
+    data.set_N(4)
+
+    assert data.get_order() == ('X002A', 'X000B', 'X001C')
+    assert data.N == 4
+    assert data.data.dtype == 'uint8'
+    assert (data.data == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.sample.dtype == 'uint8'
+    assert (data.sample == array([[0, 0, 0], [0, 1, 0],
+                                  [1, 0, 0], [1, 1, 1]])).all().all()
+    assert data.nodes == ('A', 'B', 'C')
+    assert data.order == (0, 1, 2)
+    assert data.ext_to_orig == {'X002A': 'A', 'X000B': 'B', 'X001C': 'C'}
+    assert data.orig_to_ext == {'A': 'X002A', 'B': 'X000B', 'C': 'X001C'}
+    assert data.dstype == 'categorical'
+    assert (data.categories == (('0', '1'), ('0', '1'),
+                                ('0', '1'))).all().all()
+    assert data.node_values == \
+        {'X002A': {'0': 2, '1': 2},
+         'X000B': {'0': 2, '1': 2},
+         'X001C': {'0': 3, '1': 1}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'X002A': ['0', '0', '1', '1'],
+         'X000B': ['0', '1', '0', '1'],
+         'X001C': ['0', '0', '0', '1']}
+
+    # change processing order - just data.order, get_order() changed
+
+    data.set_order(('X000B', 'X001C', 'X002A'))
+
+    assert data.get_order() == ('X000B', 'X001C', 'X002A')
+    assert data.N == 4
+    assert data.data.dtype == 'uint8'
+    assert (data.data == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.sample.dtype == 'uint8'
+    assert (data.sample == array([[0, 0, 0], [0, 1, 0],
+                                  [1, 0, 0], [1, 1, 1]])).all().all()
+    assert data.nodes == ('A', 'B', 'C')
+    assert data.order == (1, 2, 0)
+    assert data.ext_to_orig == {'X002A': 'A', 'X000B': 'B', 'X001C': 'C'}
+    assert data.orig_to_ext == {'A': 'X002A', 'B': 'X000B', 'C': 'X001C'}
+    assert data.dstype == 'categorical'
+    assert (data.categories == (('0', '1'), ('0', '1'),
+                                ('0', '1'))).all().all()
+    assert data.node_values == \
+        {'X002A': {'0': 2, '1': 2},
+         'X000B': {'0': 2, '1': 2},
+         'X001C': {'0': 3, '1': 1}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'X002A': ['0', '0', '1', '1'],
+         'X000B': ['0', '1', '0', '1'],
+         'X001C': ['0', '0', '0', '1']}
+
+    # randomise row order - sample and node value counts change
+
+    data.set_N(4, 3)
+
+    assert data.get_order() == ('X000B', 'X001C', 'X002A')
+    assert data.N == 4
+    assert data.data.dtype == 'uint8'
+    assert (data.data == array([[0, 0, 0], [0, 1, 0], [1, 0, 0],
+                                [1, 1, 1], [1, 1, 0]])).all().all()
+    assert data.sample.dtype == 'uint8'
+    assert (data.sample == array([[1, 1, 1], [1, 0, 0],
+                                  [0, 1, 0], [0, 0, 0]])).all().all()
+    assert data.nodes == ('A', 'B', 'C')
+    assert data.order == (1, 2, 0)
+    assert data.ext_to_orig == {'X002A': 'A', 'X000B': 'B', 'X001C': 'C'}
+    assert data.orig_to_ext == {'A': 'X002A', 'B': 'X000B', 'C': 'X001C'}
+    assert data.dstype == 'categorical'
+    assert (data.categories == (('0', '1'), ('0', '1'),
+                                ('0', '1'))).all().all()
+    assert data.node_values == \
+        {'X002A': {'0': 2, '1': 2},
+         'X000B': {'0': 2, '1': 2},
+         'X001C': {'0': 3, '1': 1}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'X002A': ['1', '1', '0', '0'],
+         'X000B': ['1', '0', '1', '0'],
+         'X001C': ['1', '0', '0', '0']}
 
 
 # Test values() function
