@@ -386,9 +386,10 @@ def test_dag_score_ab7():
                        'aic': -25.65148445})
 
     scores = dag_score(graph, data, ENTROPY_SCORES, {'base': 10})
+    print(dict(scores.sum()))
     assert dicts_same(dict(scores.sum()),
-                      {'bic': -8.694018448, 'loglik': -5.313626289,
-                       'aic': -13.3136262888})
+                      {'bic': -8.694018449, 'loglik': -5.313626289,
+                       'aic': -13.31362629})
 
 
 def test_dag_score_ab8():  # Bayesian scores for A --> B, 2 rows

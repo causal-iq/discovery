@@ -424,7 +424,8 @@ class NumPy(Data):
         if len(nodes) != len(set(nodes)) or len(set(nodes) - numeric) != 0:
             raise ValueError('NumPy.values() bad arg values')
 
-        return self.data[:, [self.nodes.index(n) for n in nodes]]
+        return self.sample[:, [self.nodes.index(self.ext_to_orig[n])
+                           for n in nodes]]
 
     def as_df(self):
         """

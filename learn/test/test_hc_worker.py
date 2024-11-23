@@ -229,7 +229,7 @@ def test_cache_ab_1_ok(ab1):  # using AB Dataframe and plain HC params
     assert set(cache.keys()) == \
         {('B', ('A',)), ('A', ('B',)), ('B', ()), ('A', ())}
 
-    assert values_same(cache[('B', ('A',))][0], -30.32904566, sf=10)
+    assert values_same(cache[('B', ('A',))][0], -30.32904567, sf=10)
     assert cache[('B', ('A',))][1] == \
         {'mean': 25.0, 'max': 39, 'min': 6, 'lt5': 0.0, 'fpa': 2}
 

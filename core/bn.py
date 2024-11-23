@@ -458,7 +458,7 @@ class BN():
             except (KeyError):
                 raise ValueError('Bad case value in lnprob_case')
 
-        return lnprob
+        return float(lnprob)
 
     def generate_cases(self, n, outfile=None, pseudo=True):
         """

@@ -17,7 +17,11 @@ def test_metrics_values_same_bad_values():
     with pytest.raises(TypeError):
         values_same('1', 2.0)
     with pytest.raises(TypeError):
-        values_same(2.0, True)
+        values_same([1], 2)
+    with pytest.raises(TypeError):
+        values_same({3}, 1)
+    with pytest.raises(TypeError):
+        values_same(2, {'1': 0})
 
 
 def test_metrics_values_same_bad_sf():
@@ -25,12 +29,6 @@ def test_metrics_values_same_bad_sf():
         values_same(1, 1, None)
     with pytest.raises(TypeError):
         values_same(1, 1, '4')
-    with pytest.raises(TypeError):
-        values_same(1, 1, 0)
-    with pytest.raises(TypeError):
-        values_same(1, 1, -3)
-    with pytest.raises(TypeError):
-        values_same(1, 1, 12)
 
 
 def test_metrics_values_same_small_ints():
@@ -124,6 +122,42 @@ def test_metrics_values_same_small_mixed():
     assert values_same(15.001, 15, sf=5) is False
 
 
+def test_metrics_values_same_nans():  # test nan comparisons
+    assert values_same(float('nan'), float('nan')) is True
+    assert values_same(1.3, float('nan')) is False
+    assert values_same(float('nan'), -1.0) is False
+
+
+def test_metrics_values_same_bools():  # bools treated as True=1, False=0
+    assert values_same(2.0, True) is False
+    assert values_same(0, True) is False
+    assert values_same(1, True) is True
+    assert values_same(0, False) is True
+    assert values_same(1, False) is False
+    assert values_same(0.0, True) is False
+    assert values_same(1.0, True) is True
+    assert values_same(0.0, False) is True
+    assert values_same(1.0, False) is False
+    assert values_same(False, True) is False
+    assert values_same(True, True) is True
+    assert values_same(False, False) is True
+    assert values_same(True, False) is False
+
+
+def test_metrics_values_zero_sf():  # sf <= 0 multiplies vals by 10**(1-sf)
+    assert values_same(10, 70, 0) is False
+    assert values_same(140, 70, 0) is False
+    assert values_same(60, 70, 0) is True
+
+
+def test_metrics_values_bool_sf():  # sf = True treated as sf = 1
+    # assert values_same(1, 2, True) is False
+    # assert values_same(1.1, 3, True) is False
+    # assert values_same(2.6, 3.1, True) is True
+    assert values_same(35, 37, False) is True
+
+# Test dict comparisons
+
 def test_metrics_dicts_same_bad_args():
     with pytest.raises(TypeError):
         dicts_same()
@@ -198,8 +232,8 @@ def test_metrics_dists_same_type_error_3():  # some bad types
     with pytest.raises(TypeError):
         dists_same(DataFrame({'A': ['1']}), {'A': ['1']})
 
-#   Tests of distributions comparisons - univariates which are the same
 
+#   Tests of distributions comparisons - univariates which are the same
 
 def test_metrics_dists_same_ok_us1_():  # compare univariate with itself
     dist1 = DataFrame({'': {'0': 0.5, '1': 0.5}})

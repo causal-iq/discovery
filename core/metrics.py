@@ -4,43 +4,54 @@
 #
 
 from pandas import Series, DataFrame
+from math import floor, log10, isnan
 
 from core.common import EdgeType, ln
 
 
 def values_same(value1, value2, sf=3):
     """
-        Tests whether two numeric values are the same to a specified number
-        of significant digits
+    Tests whether two numeric values are the same to a specified number
+    of significant figures.
 
-        :param int/float value1: first value in comparison
-        :param int/float value2: second value in comparison
-        :param int sf: number of significant figures used in comparison
+    :param int/float/bool value1: first value in comparison
+    :param int/float/bool value2: second value in comparison
+    :param int sf: number of significant figures used in comparison
 
-        :raises TypeError: if any arg not of required type
+    :raises TypeError: if any arg not of required type. Since this function
+                       must be very efficient we rely on the Python
+                       standard functions to signal TypeErrors rather than
+                       explicitly testing the argument types.
 
-        :returns bool: whether two values are same to specified number of s.f.
+    :returns bool: whether two values are the same to specified number of s.f.
     """
-    if (not isinstance(value1, int) and not isinstance(value1, float)) or \
-            (not isinstance(value2, int) and not isinstance(value2, float)) \
-            or isinstance(value1, bool) or isinstance(value2, bool):
-        raise TypeError('Comparison values not int or float')
 
-    if not isinstance(sf, int) or sf < 1 or sf > 10:
-        raise TypeError('sf arg not an integer between 1 and 10')
+    # Handle zero and NaNs explicitly  - all zeros are considered the same,
+    # but unlike standard Python, two NaNs comapre as True
 
-    fmt_string = '{:.' + '{}'.format(sf) + 'g}'
-    rounded1 = '0' if fmt_string.format(value1) == '-0' else \
-        fmt_string.format(value1 * 0.9999999999)
-    rounded1up = '0' if fmt_string.format(value1) == '-0' else \
-        fmt_string.format(value1 * 1.00000000001)
-    rounded2 = '0' if fmt_string.format(value2) == '-0' else \
-        fmt_string.format(value2 * 0.9999999999)
-    rounded2up = '0' if fmt_string.format(value2) == '-0' else \
-        fmt_string.format(value2 * 1.00000000001)
+    if value1 == 0 or value2 == 0:
+        return value1 == value2
+    isnan_1 = isnan(value1)
+    isnan_2 = isnan(value2)
+    if isnan_1 or isnan_2:
+        return isnan_1 == isnan_2
 
-    return rounded1 == rounded2 or rounded1up == rounded2 or \
-        rounded1 == rounded2up or rounded1up == rounded2up
+    # Quick pre-check: quickly determine if values differ by more than a factor
+    # of bound_m which is an upper bound on the ratio of numbers at a specific
+    # sf value.
+
+    abs_value1 = abs(value1)
+    abs_value2 = abs(value2)
+    bound_m = 1.0 + 10 ** (1 - sf)
+    if abs_value1 > bound_m * abs_value2 or abs_value2 > bound_m * abs_value1:
+        return False
+
+    # Compute the scaled values for comparison
+
+    scale1 = round(value1, -int(floor(log10(abs_value1)) - (sf - 1)))
+    scale2 = round(value2, -int(floor(log10(abs_value2)) - (sf - 1)))
+
+    return scale1 == scale2
 
 
 def dicts_same(dict1, dict2, sf=10, strict=True):

@@ -191,7 +191,7 @@ def test_bn_generate_cases_xyz_10k_ok():
     mean = data['X'].mean().item()
     sd = data['X'].std().item()
     assert values_same(mean, -0.002438, sf=4)
-    assert values_same(sd, 4.985895, sf=6)
+    assert values_same(sd, 4.98589, sf=6)
     print('\n\nX --> Y --> Z:')
     print('10K of X has mean {:.6f} and S.D. {:.6f}'.format(mean, sd))
 

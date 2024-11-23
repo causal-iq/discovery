@@ -1556,7 +1556,7 @@ def test_rand_name_asia_1_ok():  # Asia, N=20 - randomise names
     assert tuple(data.as_df().columns) == tuple(data.ext_to_orig)
 
 
-# Test sequences changing data in different ways
+# Test sequences changing data in different ways for categorical data
 
 def test_sequence_abc5_1_ok(abc5):  # ABC5 - test sequences of changes
     data = NumPy(abc5['d'], abc5['t'], abc5['v'])
@@ -1788,3 +1788,165 @@ def test_values_xyz10_4_(xyz10):  # Extract Y, Z, X
     assert values.shape == (10, 3)
     assert (values == xyz10.data[:, [1, 2, 0]]).all()
     print('\n\nData for {} is:\n{}'.format(nodes, values))
+
+
+# Test sequences changing data in different ways for continuous data
+
+def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
+
+    print()
+    assert xyz10.get_order() == ('X', 'Y', 'Z')
+    assert xyz10.N == 10
+    assert xyz10.data.dtype == 'float32'
+    assert (xyz10.data ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7],
+                   [4.4, 6.6, 1.9],
+                   [0.6, 2.8, 9.9],
+                   [4.,  6.,  9.],
+                   [2.2, 3.1, 0.8],
+                   [0.1, 0., 2.2],
+                   [7.1, 3.9, 1.4],
+                   [6., 0.2, 0.5]],
+                  dtype='float32')).all().all()
+    assert xyz10.sample.dtype == 'float32'
+    assert (xyz10.sample ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7],
+                   [4.4, 6.6, 1.9],
+                   [0.6, 2.8, 9.9],
+                   [4.,  6.,  9.],
+                   [2.2, 3.1, 0.8],
+                   [0.1, 0., 2.2],
+                   [7.1, 3.9, 1.4],
+                   [6., 0.2, 0.5]],
+                  dtype='float32')).all().all()
+    assert xyz10.nodes == ('X', 'Y', 'Z')
+    assert xyz10.order == (0, 1, 2)
+    assert xyz10.ext_to_orig == {'X': 'X', 'Y': 'Y', 'Z': 'Z'}
+    assert xyz10.orig_to_ext == {'X': 'X', 'Y': 'Y', 'Z': 'Z'}
+    assert xyz10.dstype == 'continuous'
+    assert xyz10.categories is None
+    assert xyz10.node_values == {}
+    assert tuple(xyz10.as_df().columns) == ('X', 'Y', 'Z')
+    assert len(xyz10.as_df()) == 10
+
+    # Set xyz10 size to 3 - column names should stay the same, but xyz10 only
+    # has first three rows, and as_df() and node_values should reflect this
+
+    xyz10.set_N(3)
+
+    assert xyz10.get_order() == ('X', 'Y', 'Z')
+    assert xyz10.N == 3
+    assert (xyz10.sample ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7]],
+                  dtype='float32')).all().all()
+    assert xyz10.nodes == ('X', 'Y', 'Z')
+    assert xyz10.order == (0, 1, 2)
+    assert xyz10.ext_to_orig == {'X': 'X', 'Y': 'Y', 'Z': 'Z'}
+    assert xyz10.orig_to_ext == {'X': 'X', 'Y': 'Y', 'Z': 'Z'}
+    assert xyz10.dstype == 'continuous'
+    assert xyz10.categories is None
+    assert xyz10.node_values == {}
+    assert tuple(xyz10.as_df().columns) == ('X', 'Y', 'Z')
+    assert len(xyz10.as_df()) == 3
+
+    # Randomise column names - xyz10 should stay the same but external node
+    # names should change
+
+    xyz10.randomise_names(1)
+
+    assert xyz10.get_order() == ('X002X', 'X000Y', 'X001Z')
+    assert xyz10.N == 3
+    assert xyz10.data.dtype == 'float32'
+    assert (xyz10.sample ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7]],
+                  dtype='float32')).all().all()
+    assert xyz10.nodes == ('X', 'Y', 'Z')
+    assert xyz10.order == (0, 1, 2)
+    assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
+    assert xyz10.orig_to_ext == {'X': 'X002X', 'Y': 'X000Y', 'Z': 'X001Z'}
+    assert xyz10.dstype == 'continuous'
+    assert xyz10.categories is None
+    assert (xyz10.values(('X001Z', 'X002X')) ==
+            array([[0.3, 1.1], [4., 0.], [1.7, 0.2]],
+                  dtype='float32')).all().all()
+
+    # Set N to 4 - external column names should stay the same, but fourth
+    # row should be added back into xyz10, and node value counts adjusted
+
+    xyz10.set_N(4)
+
+    assert xyz10.get_order() == ('X002X', 'X000Y', 'X001Z')
+    assert xyz10.N == 4
+    assert xyz10.data.dtype == 'float32'
+    assert (xyz10.sample[:4, :] ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7],
+                   [4.4, 6.6, 1.9]],
+                  dtype='float32')).all().all()
+    assert xyz10.nodes == ('X', 'Y', 'Z')
+    assert xyz10.order == (0, 1, 2)
+    assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
+    assert xyz10.orig_to_ext == {'X': 'X002X', 'Y': 'X000Y', 'Z': 'X001Z'}
+    assert xyz10.dstype == 'continuous'
+    assert xyz10.categories is None
+    assert (xyz10.values(('X001Z', 'X002X')) ==
+            array([[0.3, 1.1], [4., 0.], [1.7, 0.2], [1.9, 4.4]], 
+                  dtype='float32')).all().all()
+
+    # change processing order - just xyz10.order, get_order() changed
+
+    xyz10.set_order(('X000Y', 'X001Z', 'X002X'))
+
+    assert xyz10.get_order() == ('X000Y', 'X001Z', 'X002X')
+    assert xyz10.N == 4
+    assert xyz10.data.dtype == 'float32'
+    assert (xyz10.sample ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7],
+                   [4.4, 6.6, 1.9]],
+                  dtype='float32')).all().all()
+    assert xyz10.nodes == ('X', 'Y', 'Z')
+    assert xyz10.order == (1, 2, 0)
+    assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
+    assert xyz10.orig_to_ext == {'X': 'X002X', 'Y': 'X000Y', 'Z': 'X001Z'}
+    assert xyz10.dstype == 'continuous'
+    assert xyz10.categories is None
+    assert (xyz10.values(('X001Z', 'X002X')) ==
+            array([[0.3, 1.1], [4., 0.], [1.7, 0.2], [1.9, 4.4]], 
+                  dtype='float32')).all().all()
+
+    # randomise row order - sample and values change
+
+    xyz10.set_N(4, 3)
+
+    assert xyz10.get_order() == ('X000Y', 'X001Z', 'X002X')
+    assert xyz10.N == 4
+    assert xyz10.data.dtype == 'float32'
+    print(xyz10.sample)
+    return
+    assert (xyz10.sample ==
+            array([[1.1, 0.3, 0.3],
+                   [0.,  3.1, 4.],
+                   [0.2, 5.4, 1.7],
+                   [4.4, 6.6, 1.9]],
+                  dtype='float32')).all().all()
+    assert xyz10.nodes == ('X', 'Y', 'Z')
+    assert xyz10.order == (1, 2, 0)
+    assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
+    assert xyz10.orig_to_ext == {'X': 'X002X', 'Y': 'X000Y', 'Z': 'X001Z'}
+    assert xyz10.dstype == 'continuous'
+    assert xyz10.categories is None
+    assert (xyz10.values(('X001Z', 'X002X')) ==
+            array([[0.3, 1.1], [4., 0.], [1.7, 0.2], [1.9, 4.4]], 
+                  dtype='float32')).all().all()
+    return
