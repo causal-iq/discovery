@@ -520,7 +520,7 @@ def test_from_df_xy3_1_ok():  # XY 3 rows of continuous data, keep_df = True
     assert isinstance(data, NumPy)
     assert data.data.dtype == 'float32'
     assert (data.data == array([[1.01, 1.21], [-0.45, 0.67],
-                               [1.22, -1.41]], dtype='float32')).all().all()
+                                [1.22, -1.41]], dtype='float32')).all().all()
     assert data.nodes == ('F1', 'F2')
     assert data.order == (0, 1)
     assert data.ext_to_orig == {'F1': 'F1', 'F2': 'F2'}
@@ -531,7 +531,9 @@ def test_from_df_xy3_1_ok():  # XY 3 rows of continuous data, keep_df = True
     assert data.node_values == {}
     assert data.node_types == {'F1': 'float32', 'F2': 'float32'}
 
-    assert (df == data.as_df()).all().all()
+    assert data.as_df().applymap(lambda x:
+                                 round(x, 2)).to_dict(orient='lists') == \
+        {'F1': [-0.45, 1.01, 1.22], 'F2': [0.67, 1.21, -1.41]}
 
 
 def test_from_df_xy3_2_ok():  # XY 3 rows of continuous data, keep_df = False
@@ -554,10 +556,12 @@ def test_from_df_xy3_2_ok():  # XY 3 rows of continuous data, keep_df = False
     assert data.node_values == {}
     assert data.node_types == {'F1': 'float32', 'F2': 'float32'}
 
-    assert (df == data.as_df()).all().all()  # df not modified for cont anyway
+    assert data.as_df().applymap(lambda x:
+                                 round(x, 2)).to_dict(orient='lists') == \
+        {'F1': [-0.45, 1.01, 1.22], 'F2': [0.67, 1.21, -1.41]}
 
 
-def test_from_df_xyz10_1_ok(xyz10):  # XYZ 10 rows of continuous data
+def test_from_df_xyz10_1_ok():  # XYZ 10 rows of continuous data
     dstype = 'continuous'
     df = Pandas.read(TESTDATA_DIR + '/simple/xyz_10.csv',
                      dstype=dstype).as_df()
@@ -582,7 +586,11 @@ def test_from_df_xyz10_1_ok(xyz10):  # XYZ 10 rows of continuous data
     assert data.node_values == {}
     assert data.node_types == {'X': 'float32', 'Y': 'float32', 'Z': 'float32'}
 
-    assert (df == data.as_df()).all().all()
+    assert data.as_df().applymap(lambda x:
+                                 round(x, 2)).to_dict(orient='lists') == \
+        {'X': [0.0, 0.1, 0.2, 0.6, 1.1, 2.2, 4.0, 4.4, 6.0, 7.1],
+         'Y': [3.1, 0.0, 5.4, 2.8, 0.3, 3.1, 6.0, 6.6, 0.2, 3.9],
+         'Z': [4.0, 2.2, 1.7, 9.9, 0.3, 0.8, 9.0, 1.9, 0.5, 1.4]}
 
 
 # Test as_df() function to return a Pandas DataFrame
@@ -606,7 +614,7 @@ def test_as_df_xy3_1_ok(xy3):
     df = data.as_df().to_dict(orient='list')
     print('\n\nxy3 NumPy as dataframe: {}\n'.format(df))
 
-    assert df == {'X': [1.0, 1.0, 0.0], 'Y': [1.0, 0.0, 0.0]}
+    assert df == {'X': [0.0, 1.0, 1.0], 'Y': [0.0, 0.0, 1.0]}
 
 
 # Test set_N function
@@ -735,41 +743,41 @@ def test_set_N_xyz10_1_ok():  # XYZ, 10 continuous rows, randmising order
     print('\n\nOriginal Dataset:\n{}\n'.format(data.as_df()))
     rdf = data.as_df().applymap(lambda x: round(x, 1))
     assert rdf.to_dict(orient='list') == \
-        {'X': [1.1, 0.0, 0.2, 4.4, 0.6, 4.0, 2.2, 0.1, 7.1, 6.0],
-         'Y': [0.3, 3.1, 5.4, 6.6, 2.8, 6.0, 3.1, 0.0, 3.9, 0.2],
-         'Z': [0.3, 4.0, 1.7, 1.9, 9.9, 9.0, 0.8, 2.2, 1.4, 0.5]}
+        {'X': [0.0, 0.1, 0.2, 0.6, 1.1, 2.2, 4.0, 4.4, 6.0, 7.1],
+         'Y': [3.1, 0.0, 5.4, 2.8, 0.3, 3.1, 6.0, 6.6, 0.2, 3.9],
+         'Z': [4.0, 2.2, 1.7, 9.9, 0.3, 0.8, 9.0, 1.9, 0.5, 1.4]}
 
     data.set_N(6)
     print('\n\nSetting N=6, no seed:\n{}\n'.format(data.as_df()))
     rdf = data.as_df().applymap(lambda x: round(x, 1))
     assert rdf.to_dict(orient='list') == \
-        {'X': [1.1, 0.0, 0.2, 4.4, 0.6, 4.0],
-         'Y': [0.3, 3.1, 5.4, 6.6, 2.8, 6.0],
-         'Z': [0.3, 4.0, 1.7, 1.9, 9.9, 9.0]}
+        {'X': [0.0, 0.2, 0.6, 1.1, 4.0, 4.4],
+         'Y': [3.1, 5.4, 2.8, 0.3, 6.0, 6.6],
+         'Z': [4.0, 1.7, 9.9, 0.3, 9.0, 1.9]}
 
     data.set_N(4, seed=3)
     print('\n\nSetting N=4, seed=3:\n{}\n'.format(data.as_df()))
     rdf = data.as_df().applymap(lambda x: round(x, 1))
     assert rdf.to_dict(orient='list') == \
-        {'X': [4.4, 0.2, 0.0, 1.1],
-         'Y': [6.6, 5.4, 3.1, 0.3],
-         'Z': [1.9, 1.7, 4.0, 0.3]}
+        {'X': [0.0, 0.2, 1.1, 4.4],
+         'Y': [3.1, 5.4, 0.3, 6.6],
+         'Z': [4.0, 1.7, 0.3, 1.9]}
 
     data.set_N(10)
     print('\n\nSetting N=10, no seed:\n{}\n'.format(data.as_df()))
     rdf = data.as_df().applymap(lambda x: round(x, 1))
     assert rdf.to_dict(orient='list') == \
-        {'X': [1.1, 0.0, 0.2, 4.4, 0.6, 4.0, 2.2, 0.1, 7.1, 6.0],
-         'Y': [0.3, 3.1, 5.4, 6.6, 2.8, 6.0, 3.1, 0.0, 3.9, 0.2],
-         'Z': [0.3, 4.0, 1.7, 1.9, 9.9, 9.0, 0.8, 2.2, 1.4, 0.5]}
+        {'X': [0.0, 0.1, 0.2, 0.6, 1.1, 2.2, 4.0, 4.4, 6.0, 7.1],
+         'Y': [3.1, 0.0, 5.4, 2.8, 0.3, 3.1, 6.0, 6.6, 0.2, 3.9],
+         'Z': [4.0, 2.2, 1.7, 9.9, 0.3, 0.8, 9.0, 1.9, 0.5, 1.4]}
 
     data.set_N(4, seed=3)
     print('\n\nSetting N=4, seed=3:\n{}\n'.format(data.as_df()))
     rdf = data.as_df().applymap(lambda x: round(x, 1))
     assert rdf.to_dict(orient='list') == \
-        {'X': [4.4, 0.2, 0.0, 1.1],
-         'Y': [6.6, 5.4, 3.1, 0.3],
-         'Z': [1.9, 1.7, 4.0, 0.3]}
+        {'X': [0.0, 0.2, 1.1, 4.4],
+         'Y': [3.1, 5.4, 0.3, 6.6],
+         'Z': [4.0, 1.7, 0.3, 1.9]}
 
 
 def test_set_N_asia_1_ok():  # Asia, N=100 - set N to 50
@@ -1752,41 +1760,55 @@ def test_values_value_error_1(xyz10):  # duplicate node names
 
 def test_values_xyz10_1_(xyz10):  # Extract X
     nodes = ('X',)
-    values = xyz10.values(nodes)
+    values = xyz10.values(nodes).round(1)
 
     assert isinstance(values, ndarray)
     assert values.shape == (10, 1)
-    assert (values == xyz10.data[:, [0]]).all()
+    assert (values == [[0.0], [0.1], [0.2], [0.6], [1.1], [2.2], [4.0],
+                       [4.4], [6.0], [7.1]]).all().all()
     print('\n\nData for {} is:\n{}'.format(nodes, values))
 
 
 def test_values_xyz10_2_(xyz10):  # Extract Z
     nodes = ('Z',)
-    values = xyz10.values(nodes)
+    values = xyz10.values(nodes).round(1)
 
     assert isinstance(values, ndarray)
     assert values.shape == (10, 1)
-    assert (values == xyz10.data[:, [2]]).all()
+    assert (values == [[4.0], [2.2], [1.7], [9.9], [0.3], [0.8], [9.0],
+                       [1.9], [0.5], [1.4]]).all().all()
     print('\n\nData for {} is:\n{}'.format(nodes, values))
 
 
 def test_values_xyz10_3_(xyz10):  # Extract Z, Y
     nodes = ('Z', 'Y')
-    values = xyz10.values(nodes)
+    values = xyz10.values(nodes).round(1)
 
     assert isinstance(values, ndarray)
     assert values.shape == (10, 2)
-    assert (values == xyz10.data[:, [2, 1]]).all()
+    assert (values ==
+            [[4.0, 3.1], [2.2, 0.0], [1.7, 5.4], [9.9, 2.8],
+             [0.3, 0.3], [0.8, 3.1], [9.0, 6.0], [1.9, 6.6],
+             [0.5, 0.2], [1.4, 3.9]]).all().all()
     print('\n\nData for {} is:\n{}'.format(nodes, values))
 
 
 def test_values_xyz10_4_(xyz10):  # Extract Y, Z, X
     nodes = ('Y', 'Z', 'X')
-    values = xyz10.values(nodes)
+    values = xyz10.values(nodes).round(1)
 
     assert isinstance(values, ndarray)
     assert values.shape == (10, 3)
-    assert (values == xyz10.data[:, [1, 2, 0]]).all()
+    assert (values == [[3.1, 4.0, 0.0],
+                       [0.0, 2.2, 0.1],
+                       [5.4, 1.7, 0.2],
+                       [2.8, 9.9, 0.6],
+                       [0.3, 0.3, 1.1],
+                       [3.1, 0.8, 2.2],
+                       [6.0, 9.0, 4.0],
+                       [6.6, 1.9, 4.4],
+                       [0.2, 0.5, 6.0],
+                       [3.9, 1.4, 7.1]]).all().all()
     print('\n\nData for {} is:\n{}'.format(nodes, values))
 
 
@@ -1800,29 +1822,28 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.data.dtype == 'float32'
     assert (xyz10.data ==
             array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
+                   [0.0, 3.1, 4.0],
                    [0.2, 5.4, 1.7],
                    [4.4, 6.6, 1.9],
                    [0.6, 2.8, 9.9],
-                   [4.,  6.,  9.],
+                   [4.0, 6.0, 9.0],
                    [2.2, 3.1, 0.8],
-                   [0.1, 0., 2.2],
+                   [0.1, 0.0, 2.2],
                    [7.1, 3.9, 1.4],
-                   [6., 0.2, 0.5]],
+                   [6.0, 0.2, 0.5]],
                   dtype='float32')).all().all()
-    assert xyz10.sample.dtype == 'float32'
-    assert (xyz10.sample ==
-            array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
+    assert xyz10.sample.dtype == 'float64'
+    assert (xyz10.sample.round(1) ==
+            array([[0.0, 3.1, 4.0],
+                   [0.1, 0.0, 2.2],
                    [0.2, 5.4, 1.7],
-                   [4.4, 6.6, 1.9],
                    [0.6, 2.8, 9.9],
-                   [4.,  6.,  9.],
+                   [1.1, 0.3, 0.3],
                    [2.2, 3.1, 0.8],
-                   [0.1, 0., 2.2],
-                   [7.1, 3.9, 1.4],
-                   [6., 0.2, 0.5]],
-                  dtype='float32')).all().all()
+                   [4.0, 6.0, 9.0],
+                   [4.4, 6.6, 1.9],
+                   [6.0, 0.2, 0.5],
+                   [7.1, 3.9, 1.4]], dtype='float64')).all().all()
     assert xyz10.nodes == ('X', 'Y', 'Z')
     assert xyz10.order == (0, 1, 2)
     assert xyz10.ext_to_orig == {'X': 'X', 'Y': 'Y', 'Z': 'Z'}
@@ -1840,11 +1861,10 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
 
     assert xyz10.get_order() == ('X', 'Y', 'Z')
     assert xyz10.N == 3
-    assert (xyz10.sample ==
-            array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
-                   [0.2, 5.4, 1.7]],
-                  dtype='float32')).all().all()
+    assert (xyz10.sample.round(1) ==
+            array([[0.0, 3.1, 4.0],
+                   [0.2, 5.4, 1.7],
+                   [1.1, 0.3, 0.3]], dtype='float64')).all().all()
     assert xyz10.nodes == ('X', 'Y', 'Z')
     assert xyz10.order == (0, 1, 2)
     assert xyz10.ext_to_orig == {'X': 'X', 'Y': 'Y', 'Z': 'Z'}
@@ -1863,20 +1883,19 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.get_order() == ('X002X', 'X000Y', 'X001Z')
     assert xyz10.N == 3
     assert xyz10.data.dtype == 'float32'
-    assert (xyz10.sample ==
-            array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
-                   [0.2, 5.4, 1.7]],
-                  dtype='float32')).all().all()
+    assert (xyz10.sample.round(1) ==
+            array([[0.0, 3.1, 4.0],
+                   [0.2, 5.4, 1.7],
+                   [1.1, 0.3, 0.3]], dtype='float64')).all().all()
     assert xyz10.nodes == ('X', 'Y', 'Z')
     assert xyz10.order == (0, 1, 2)
     assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
     assert xyz10.orig_to_ext == {'X': 'X002X', 'Y': 'X000Y', 'Z': 'X001Z'}
     assert xyz10.dstype == 'continuous'
     assert xyz10.categories is None
-    assert (xyz10.values(('X001Z', 'X002X')) ==
-            array([[0.3, 1.1], [4., 0.], [1.7, 0.2]],
-                  dtype='float32')).all().all()
+    assert (xyz10.values(('X001Z', 'X002X')).round(1) ==
+            array([[4.0, 0.0], [1.7, 0.2], [0.3, 1.1]],
+                  dtype='float64')).all().all()
 
     # Set N to 4 - external column names should stay the same, but fourth
     # row should be added back into xyz10, and node value counts adjusted
@@ -1886,12 +1905,11 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.get_order() == ('X002X', 'X000Y', 'X001Z')
     assert xyz10.N == 4
     assert xyz10.data.dtype == 'float32'
-    assert (xyz10.sample[:4, :] ==
-            array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
+    assert (xyz10.sample[:4, :].round(1) ==
+            array([[0.0, 3.1, 4.0],
                    [0.2, 5.4, 1.7],
-                   [4.4, 6.6, 1.9]],
-                  dtype='float32')).all().all()
+                   [1.1, 0.3, 0.3],
+                   [4.4, 6.6, 1.9]], dtype='float64')).all().all()
     assert xyz10.nodes == ('X', 'Y', 'Z')
     assert xyz10.order == (0, 1, 2)
     assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
@@ -1899,7 +1917,7 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.dstype == 'continuous'
     assert xyz10.categories is None
     assert (xyz10.values(('X001Z', 'X002X')) ==
-            array([[0.3, 1.1], [4., 0.], [1.7, 0.2], [1.9, 4.4]], 
+            array([[4.0, 0.0], [1.7, 0.2], [0.3, 1.1], [1.9, 4.4]],
                   dtype='float32')).all().all()
 
     # change processing order - just xyz10.order, get_order() changed
@@ -1909,12 +1927,11 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.get_order() == ('X000Y', 'X001Z', 'X002X')
     assert xyz10.N == 4
     assert xyz10.data.dtype == 'float32'
-    assert (xyz10.sample ==
-            array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
+    assert (xyz10.sample[:4, :].round(1) ==
+            array([[0.0, 3.1, 4.0],
                    [0.2, 5.4, 1.7],
-                   [4.4, 6.6, 1.9]],
-                  dtype='float32')).all().all()
+                   [1.1, 0.3, 0.3],
+                   [4.4, 6.6, 1.9]], dtype='float64')).all().all()
     assert xyz10.nodes == ('X', 'Y', 'Z')
     assert xyz10.order == (1, 2, 0)
     assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
@@ -1922,24 +1939,22 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.dstype == 'continuous'
     assert xyz10.categories is None
     assert (xyz10.values(('X001Z', 'X002X')) ==
-            array([[0.3, 1.1], [4., 0.], [1.7, 0.2], [1.9, 4.4]], 
+            array([[4.0, 0.0], [1.7, 0.2], [0.3, 1.1], [1.9, 4.4]],
                   dtype='float32')).all().all()
 
-    # randomise row order - sample and values change
+    # randomise row order - nothing changes - we always internally sort
+    # continuous variables for stability
 
     xyz10.set_N(4, 3)
 
     assert xyz10.get_order() == ('X000Y', 'X001Z', 'X002X')
     assert xyz10.N == 4
     assert xyz10.data.dtype == 'float32'
-    print(xyz10.sample)
-    return
-    assert (xyz10.sample ==
-            array([[1.1, 0.3, 0.3],
-                   [0.,  3.1, 4.],
+    assert (xyz10.sample[:4, :].round(1) ==
+            array([[0.0, 3.1, 4.0],
                    [0.2, 5.4, 1.7],
-                   [4.4, 6.6, 1.9]],
-                  dtype='float32')).all().all()
+                   [1.1, 0.3, 0.3],
+                   [4.4, 6.6, 1.9]], dtype='float64')).all().all()
     assert xyz10.nodes == ('X', 'Y', 'Z')
     assert xyz10.order == (1, 2, 0)
     assert xyz10.ext_to_orig == {'X002X': 'X', 'X000Y': 'Y', 'X001Z': 'Z'}
@@ -1947,6 +1962,5 @@ def test_sequence_xyz10_1_ok(xyz10):  # XYZ10 - test sequences of changes
     assert xyz10.dstype == 'continuous'
     assert xyz10.categories is None
     assert (xyz10.values(('X001Z', 'X002X')) ==
-            array([[0.3, 1.1], [4., 0.], [1.7, 0.2], [1.9, 4.4]], 
+            array([[4.0, 0.0], [1.7, 0.2], [0.3, 1.1], [1.9, 4.4]],
                   dtype='float32')).all().all()
-    return

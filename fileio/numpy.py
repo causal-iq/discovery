@@ -3,7 +3,7 @@
 
 from math import prod
 from numpy import array, ndarray, bincount, unique as npunique, zeros, \
-                  nonzero, empty
+                  nonzero, empty, float64, lexsort
 from numpy.random import default_rng
 from pandas import read_csv, factorize, DataFrame, Categorical
 from pandas.errors import EmptyDataError
@@ -240,6 +240,13 @@ class NumPy(Data):
         if seed is not None and seed != 0:
             order = default_rng(seed).permutation(N)
             self.sample = self.sample[order]
+
+        # change continuous data to float64 for precision in score calcs. Doing
+        # it here means it is only done once for each sample.
+
+        if self.dstype == 'continuous':
+            sorted_idx = lexsort(self.sample[:, ::-1].T)
+            self.sample = self.sample[sorted_idx].astype(float64)
 
     def randomise_names(self, seed=None):
         """

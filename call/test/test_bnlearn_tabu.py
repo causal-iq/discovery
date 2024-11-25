@@ -345,7 +345,7 @@ def test_bnlearn_tabu_gauss_3_ok():  # Gaussian example, 5K rows
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
                                context={'in': 'in', 'id': 'gauss'})
     print('\nDAG learnt from 5K rows of gauss: {}\n\n{}'.format(dag, trace))
-    assert dag.to_string() == '[A|C][B|A:C][C][D|B][E][F|A:C:D:E:G][G]'
+    assert dag.to_string() == '[A|B:C][B][C|B][D|B][E][F|A:C:D:E:G][G]'
 
 
 def test_bnlearn_tabu_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
@@ -355,10 +355,10 @@ def test_bnlearn_tabu_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
                                context={'in': 'in', 'id': 'gauss'})
     print('\nDAG learnt from 5K rows of gauss: {}\n\n{}'.format(dag, trace))
-    assert dag.to_string() == '[A|C][B|A:C][C][D|B][E][F|A:C:D:E:G][G]'
+    assert dag.to_string() == '[A|B:C][B][C|B][D|B][E][F|A:C:D:E:G][G]'
 
 
-def test_bnlearn_hc_sachs_c_1_ok():  # Sachs gauss example, 1K rows
+def test_bnlearn_tabu_sachs_c_1_ok():  # Sachs gauss example, 1K rows
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
                       dstype='continuous')
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
@@ -378,7 +378,7 @@ def test_bnlearn_hc_sachs_c_1_ok():  # Sachs gauss example, 1K rows
          '[Raf|Akt:Jnk:Mek:PKC]')
 
 
-def test_bnlearn_hc_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
+def test_bnlearn_tabu_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
                       dstype='continuous')
     data.set_order(tuple(list(data.get_order())[::-1]))
@@ -389,11 +389,12 @@ def test_bnlearn_hc_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
         ('[Akt]' +
          '[Erk|Akt:PKA]' +
          '[Jnk|PKC]' +
-         '[Mek]' +
+         '[Mek|PKC]' +
          '[P38|Akt:PIP3:PKC]' +
          '[PIP2|Akt:Mek:PIP3:Plcg]' +
-         '[PIP3]' +
+         '[PIP3|Plcg]' +
          '[PKA|Jnk:Mek:P38:PIP3:PKC:Raf]' +
-         '[PKC|Mek]' +
-         '[Plcg|PIP3]' +
+         '[PKC]' +
+         '[Plcg]' +
          '[Raf|Akt:Jnk:Mek:PKC]')
+    return

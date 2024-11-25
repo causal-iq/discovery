@@ -280,7 +280,7 @@ def test_write_xy3_1_ok(tmpfile):  # check rounding to 7 s.f.,
     data = NumPy(data, 'continuous', {'X': None, 'Y': None})
     data.write(tmpfile, compress=False, sf=3, zero=1E-6)
     check = NumPy.read(tmpfile, dstype='continuous')
-    assert (check.data == array([[1.04, 132.0],
-                                 [-0.00348, 0.00045],
-                                 [1e-5, 43.1]],
+    assert (check.data == array([[-0.00348, 0.00045],
+                                 [1e-5, 43.1],
+                                 [1.04, 132.0]],
                                 dtype='float32')).all().all()
