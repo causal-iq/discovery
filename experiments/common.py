@@ -635,6 +635,8 @@ SERIES = {
     'TABU/BASE3': {'package': Package.BNBENCH, 'params': {'tabu': 10},
                    'randomise': ([Randomise.ORDER, Randomise.NAMES,
                                   Randomise.ROWS], 25)},
+    'TABU/OPT': {'package': Package.BNBENCH, 'ordering': Ordering.OPTIMAL,
+                 'params': {'tabu': 10}},
     'TABU/BDEU_BASE2': {'package': Package.BNBENCH,
                         'params': {'tabu': 10, 'score': 'bde', 'iss': 1},
                         'randomise': ([Randomise.ORDER, Randomise.NAMES], 25)},

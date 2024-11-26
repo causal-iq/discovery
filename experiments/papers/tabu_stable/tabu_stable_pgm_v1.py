@@ -11,10 +11,13 @@ from fileio.pandas import Pandas
 from learn.hc import hc
 
 
-NETWORKS = ('asia,sports,sachs,covid,child,' +
-            'insurance,property,diarrhoea,water,' +
-            'mildew,alarm,barley,hailfinder,' +
-            'hepar2,win95pts,formed,pathfinder')
+CATEGORICAL = ('asia,sports,sachs,covid,child,' +
+               'insurance,property,diarrhoea,water,' +
+               'mildew,alarm,barley,hailfinder,' +
+               'hepar2,win95pts,formed,pathfinder')
+
+CONTINUOUS = ('sachs_c,covid_c,building_c,magic-niab_c,magic-irri_c,' +
+              'ecoli70_c,arth150_c')
 
 
 def graph_stab_arbitrary_arcs():
@@ -62,7 +65,7 @@ def chart_tabu_stab_order_f1():
                        'TABU/STABLE3/SCORE_PLUS'
                        ),
             'metrics': 'f1-e',
-            'networks': NETWORKS,
+            'networks': CATEGORICAL,
             'N': '100-100k',
             'params': ('fig:tabu_stab_order_f1;' +
                        'figure.title;' +
@@ -72,8 +75,8 @@ def chart_tabu_stab_order_f1():
                        'subplot.axes_fontsize:24;' +
                        'subplot.title_fontsize:26;' +
                        'subplot.title:{' +
-                       ','.join([n + ',' + n for n in NETWORKS.split(',')]) +
-                       '};' +
+                       ','.join([n + ',' + n
+                                 for n in CATEGORICAL.split(',')]) + '};' +
                        'legend.labels:{' +
                        'TABU/BASE3,Tabu using\nvariable order\n,' +
                        'TABU/STABLE3/DEC_SCORE,Tabu using' +
@@ -104,7 +107,7 @@ def chart_tabu_stab_order_score():
                        'TABU/STABLE/SCORE,' +
                        'TABU/STABLE/SCORE_PLUS'),
             'metrics': 'score',
-            'networks': NETWORKS,
+            'networks': CATEGORICAL,
             'N': '100-100k',
             'params': ('fig:tabu_stab_order_score;' +
                        'figure.title;' +
@@ -125,9 +128,9 @@ def chart_tabu_stab_order_score():
     run_analysis(args)
 
 
-def table_tabu_stab_baseline():
+def table_tabu_stab_baseline_cat():
     """
-        Comparison of stable algorithms with baselines
+        Comparison of stable algorithms with baselines for categorical data
     """
     args = {'action': 'summary',
             'series': ('HC/BASE3,' +
@@ -136,7 +139,28 @@ def table_tabu_stab_baseline():
                        'TABU/STABLE3/DEC_SCORE,' +
                        'TABU/STABLE3/INC_SCORE,' +
                        'TABU/STABLE3/SCORE_PLUS'),
-            'networks': NETWORKS,
+            'networks': CATEGORICAL,
+            'N': '100-100k;1;0-24',
+            'metrics': 'expts,f1-e,f1-e-std,score,time,p-e,r-e',
+            # 'maxtime': '180',
+            'file': None}
+    run_analysis(args)
+
+
+def table_tabu_stab_baseline_con():
+    """
+        Comparison of stable algorithms with baselines for continuous data
+    """
+    args = {'action': 'summary',
+            'series': ('HC/BASE3,' +
+                       'HC/STABLE3/SCORE_PLUS,' +
+                       'TABU/BASE3,' +
+                       'TABU/STABLE3/DEC_SCORE,' +
+                       'TABU/STABLE3/INC_SCORE,' +
+                       'TABU/STABLE3/SCORE_PLUS,' +
+                       'TABU/OPT,' +
+                       'TETRAD/FGES_BASE3'),
+            'networks': CONTINUOUS,
             'N': '100-100k;1;0-24',
             'metrics': 'expts,f1-e,f1-e-std,score,time,p-e,r-e',
             # 'maxtime': '180',
@@ -151,7 +175,7 @@ def table_tabu_stab_residuals():
     Ns = [100, 1000, 10000, 100000]
     Ss = (0, 24)
     metrics = ['f1-e', 'f1-e-std', 'expts']
-    networks = NETWORKS.split(',') + ['hailfinder2', 'win95pts2']
+    networks = CATEGORICAL.split(',') + ['hailfinder2', 'win95pts2']
 
     for N in Ns:
         print('\n\n*** RESULTS FOR N={} ***\n'.format(N))
@@ -232,7 +256,7 @@ def chart_tabu_stab_algos():
                    'BNLEARN/GS_BASE3': 'GS',
                    'BNLEARN/IIAMB_BASE3': 'Inter-IAMB'
                    }
-    # NETWORKS = 'sports'
+    # CATEGORICAL = 'sports'
     Ns = [100, 1000, 10000, 100000]
     Ss = (0, 24)
     metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'expts']
@@ -244,7 +268,8 @@ def chart_tabu_stab_algos():
     # Get summary EXcluding networks with identical variables for all
     # algorithms
 
-    networks = NETWORKS.replace('lfinder', 'lfinder2').replace('pts', 'pts2')
+    networks = CATEGORICAL.replace('lfinder',
+                                   'lfinder2').replace('pts', 'pts2')
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=networks.split(','), Ns=Ns, Ss=Ss,
                              metrics=metrics, params={'ignore': SING_VAL})
@@ -311,8 +336,8 @@ def values_tabu_stab_revised_f1():
     args = {'action': 'summary',
             'series': ('TABU/STABLE3/SCORE_PLUS,' +
                        'TETRAD/FGES_BASE3'),
-            'networks': NETWORKS.replace('lfinder',
-                                         'lfinder2').replace('pts', 'pts2'),
+            'networks': CATEGORICAL.replace('lfinder',
+                                            'lfinder2').replace('pts', 'pts2'),
             'N': '100-100K;1;0-24',
             'metrics': 'expts,f1-e,f1-e-std,score,time',
             # 'maxtime': '180',
