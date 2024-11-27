@@ -33,12 +33,6 @@ def test_solve_log_ratiotype_error_2():  # bad arg type
 
 def test_solve_log_ratiovalue_error_1():  # bad arg value
     with pytest.raises(ValueError):
-        SampleAnalysis.solve_log_ratio(-1.0)
-    with pytest.raises(ValueError):
-        SampleAnalysis.solve_log_ratio(-1.0E-40)
-    with pytest.raises(ValueError):
-        SampleAnalysis.solve_log_ratio(-0.1)
-    with pytest.raises(ValueError):
         SampleAnalysis.solve_log_ratio(1.0)
     with pytest.raises(ValueError):
         SampleAnalysis.solve_log_ratio(2.3)
@@ -92,6 +86,15 @@ def test_solve_log_ratio11_ok():  # should give  approx 100G
 
 def test_solve_log_ratio12_ok():  # should give  approx 1T
     assert round(SampleAnalysis.solve_log_ratio(2.763103E-11)) == 999999666402
+
+
+def test_solve_log_ratio13_ok():  # zero ratios return 10**12
+    assert round(SampleAnalysis.solve_log_ratio(0.0)) == 1000000000000
+    assert round(SampleAnalysis.solve_log_ratio(-0.0)) == 1000000000000
+
+
+def test_solve_log_ratio14_ok():  # negative ratios return 10**12
+    assert round(SampleAnalysis.solve_log_ratio(-0.01)) == 1000000000000
 
 
 # test SampleAnalysis initialiser

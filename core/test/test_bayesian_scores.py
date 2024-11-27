@@ -7,7 +7,7 @@ from core.score import bayesian_score
 
 
 def check(counts, q_i, type, expected, iss=1):
-    score = bayesian_score(counts=array(counts), q_i=q_i, type=type,
+    score = bayesian_score(N_ijk=array(counts), q_i=q_i, type=type,
                            params={'iss': iss})
     print('\n{} score (q_i={}, iss={}) for {} is {:.6f}'
           .format(type, q_i, iss, counts, score))

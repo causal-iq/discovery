@@ -2,11 +2,12 @@
 #   Class for score (objective) functions
 #
 
-from numpy import ndarray, sum as npsum, sqrt as npsqrt, mean as npmean
+from numpy import ndarray, sum as npsum, sqrt as npsqrt, mean as npmean, \
+    zeros, log as nplog
 from pandas import DataFrame
-from math import lgamma
 import scipy.stats as stats
 from sklearn.linear_model import LinearRegression
+from scipy.special import gammaln
 
 from core.common import ln
 from core.timing import Timing
@@ -33,11 +34,14 @@ SCORE_PARAMS = {'base': 'e',  # score parameters and default values
                 'unistate_ok': True}
 
 
-def bayesian_score(counts, q_i, type, params):
+def bayesian_score(N_ijk, q_i, type, params):
     """
-        Return Bayesian based scores for marginal counts (for a node)
+        Return Bayesian based scores for marginal counts (for a node). Variable
+        names follow standard names used for the relevant formula in the
+        literature.
 
-        :param ndarray counts: 2D instance counts [row, col]
+        :param ndarray N_ijk: 2-D array of instance counts for node i,
+                              parental combo j and node value k
         :param int q_i: maximum possible number of parental value combinations
                         (even if they don't all necessarily occur in the data)
         :param str type: bayesian score type required e.g. bde, k2
@@ -49,7 +53,7 @@ def bayesian_score(counts, q_i, type, params):
 
         :returns dict: of requested scores {score: value}
     """
-    if (not isinstance(counts, ndarray)
+    if (not isinstance(N_ijk, ndarray)
             or not isinstance(q_i, int) or isinstance(q_i, bool)
             or not isinstance(type, str)
             or not isinstance(params, dict)):
@@ -64,10 +68,10 @@ def bayesian_score(counts, q_i, type, params):
     # Use variable names to match literature. NP_ijk is N-prime subscript ijk,
     # the prior count for kth state and jth parental value combination
 
-    r_i = counts.shape[0]
+    r_i = N_ijk.shape[0]
 
     if type == 'bds':  # for BDS use actual number of parental combos in data
-        q_i = counts.shape[1]
+        q_i = N_ijk.shape[1]
 
     if type in ['bde', 'bds']:
         NP_ijk = iss / (q_i * r_i)
@@ -76,21 +80,25 @@ def bayesian_score(counts, q_i, type, params):
         NP_ijk = 1.0 if type == 'k2' else 0.5  # 1 or 0.5 for K2 or BDJ
         NP_ij = r_i if q_i == 1 or type == 'k2' else 0.5 * r_i
 
-    for j in range(counts.shape[1]):
-        N_ij = counts[:, j].sum()
-        score += lgamma(NP_ij) - lgamma(NP_ij + N_ij)
-        for k in range(counts.shape[0]):
-            N_ijk = counts[k, j]
-            score += lgamma(NP_ijk + N_ijk) - lgamma(NP_ijk)
+    # Element of score derived from marginal count for each parental combo
+
+    N_ij = zeros((1, N_ijk.shape[1]))
+    N_ij = N_ijk.sum(axis=0)
+    score = npsum(gammaln(NP_ij) - gammaln(NP_ij + N_ij))
+
+    # Element of score derived from individual j, k counts
+
+    score += npsum(gammaln(NP_ijk + N_ijk) - gammaln(NP_ijk))
 
     return score
 
 
-def entropy_scores(counts, types, params, N, free_params):
+def entropy_scores(Nijk, types, params, N, free_params):
     """
         Return entropy based scores for marginal counts (for a node)
 
-        :param ndarray counts: 2-D array [rows, cols] of instance counts
+        :param ndarray Nijk: 2-D array of instance counts for node i,
+                             parental combo j and node value k
         :param str/list types: entropy based score(s) required
         :param dict params: parameters used in score computation: 'base' is
                             logarithm base
@@ -105,7 +113,7 @@ def entropy_scores(counts, types, params, N, free_params):
     if isinstance(types, str):
         types = [types]
 
-    if not isinstance(counts, ndarray) or not isinstance(params, dict) \
+    if not isinstance(Nijk, ndarray) or not isinstance(params, dict) \
             or not isinstance(types, list)  \
             or not isinstance(N, int) or isinstance(N, bool) \
             or not isinstance(free_params, int) \
@@ -113,39 +121,40 @@ def entropy_scores(counts, types, params, N, free_params):
             or any([not isinstance(t, str) for t in types]):
         raise TypeError('Bad arg types for entropy_scores')
 
-    if any([t not in ENTROPY_SCORES for t in types]) \
-            or N < 1 or free_params < 0:
+    base = params['base'] if 'base' in params else 10  # default to base 10
+    k = params['k'] if 'k' in params else 1.0  # default to 1.0
+
+    if (any([t not in ENTROPY_SCORES for t in types])
+            or N < 1 or free_params < 0
+            or base not in [2, 10, 'e']):
         raise ValueError('Bad arg values for entropy_scores')
 
-    base = params['base'] if 'base' in params else 10  # default to base 10
+    # compute column sums and replicate them for each row in Nijk so it
+    # is same shape as Nijk ready for vectorised operations. Note other
+    # approaches used like repeat and tile were slower than Nij[:] brpadcast
+    # method.
+
+    Nij = zeros(Nijk.shape)
+    Nij[:] = Nijk.sum(axis=0)
+
+    # use vectorised operation to compute log likelihood. "nonzero" is a mask
+    # preventing operations on zero counts
+
+    nonzero = Nijk > 0
+    loglik = zeros(Nijk.shape)
+    loglik[nonzero] = Nijk[nonzero] * nplog(Nijk[nonzero] / Nij[nonzero])
+    loglik = loglik.sum().item()
+    if base == 2 or base == 10:
+        loglik = loglik / nplog(base)
+
+    # Compute specific scores with particular complexity penalties
 
     scores = {}
-
-    # Compute log likelihood on which all entropy scores are based
-    # Formula in lambda function is directly relateable to the literature:
-    # - Nij is number of instances with jth parental value combo for node i
-    # - Nijk is number of instances with jth parental value combo for node i
-    #   where node i takes kth value.
-
-    loglik = 0.0
-    for j in range(counts.shape[1]):
-        Nij = counts[:, j].sum()
-        for k in range(counts.shape[0]):
-            Nijk = counts[k, j]
-            loglik += Nijk * ln(Nijk / Nij, base) if Nijk > 0 else 0.0
-
-#    for combo in marginals.columns:
-#        Nij = marginals[combo].sum()
-#        loglik += marginals[combo].apply(lambda Nijk:
-#                                         Nijk * ln(Nijk / Nij, base)
-#                                         if Nijk > 0 else 0.0).sum()
-
     if 'loglik' in types:
         scores['loglik'] = loglik
 
     if 'bic' in types:
-        scores['bic'] = loglik - (params['k'] * 0.5 * free_params
-                                  * ln(N, base))
+        scores['bic'] = loglik - (k * 0.5 * free_params * ln(N, base))
 
     if 'aic' in types:
         scores['aic'] = loglik - params['k'] * free_params

@@ -161,7 +161,7 @@ class SampleAnalysis():
         """
             Solves the transcendental equation log x / x = ratio approximately
 
-            :param float ratio: requied ratio of log x to x
+            :param float ratio: required ratio of log x to x
 
             :raises TypeError: if ratio not a float
             :raises ValueError: if ratio not between 0.0 and 1.0
@@ -191,7 +191,7 @@ class SampleAnalysis():
         if not isinstance(ratio, float):
             raise TypeError('SampleAnalysis.solve_log_ratopm bad arg type')
 
-        if ratio < 0.0 or ratio >= 1.0:
+        if ratio >= 1.0:
             raise ValueError('SampleAnalysis.solve_log_ratopm bad arg value')
 
         # Only support returning N between 4 and 10**12

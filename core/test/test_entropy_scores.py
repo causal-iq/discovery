@@ -34,11 +34,6 @@ def test_metrics_entropy_scores_type_error_2():  # types not all strings
         entropy_scores(array([[1]]), ['loglik', 6], {'base': 'e'}, 1, 0)
 
 
-def test_metrics_entropy_scores_type_error_3():  # base param not int/strings
-    with pytest.raises(TypeError):
-        entropy_scores(array([[1]]), 'loglik', {'base': True}, 1, 0)
-
-
 def test_metrics_entropy_scores_value_error_1():  # unsupported score parameter
     with pytest.raises(ValueError):
         entropy_scores(array([[1]]), ['loglik', 'unsupported'],
@@ -48,6 +43,10 @@ def test_metrics_entropy_scores_value_error_1():  # unsupported score parameter
 def test_metrics_entropy_scores_value_error_2():  # unsupported log base
     with pytest.raises(ValueError):
         entropy_scores(array([[1]]), 'bic', {'base': 'unsupported'}, 1, 0)
+    with pytest.raises(ValueError):
+        entropy_scores(array([[1]]), 'bic', {'base': True}, 1, 0)
+    with pytest.raises(ValueError):
+        entropy_scores(array([[1]]), 'bic', {'base': 8}, 1, 0)
 
 
 def test_metrics_entropy_scores_value_error_3():  # num_cases not positive

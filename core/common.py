@@ -16,7 +16,7 @@ from psutil import virtual_memory
 
 from fileio.common import EXPTS_DIR
 
-SOFTWARE_VERSION = 174
+SOFTWARE_VERSION = 175
 
 BAYESYS_VERSIONS = ['v1.3', 'v1.5+']
 

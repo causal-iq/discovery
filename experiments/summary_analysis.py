@@ -62,7 +62,6 @@ def _generate_table(reqd_metric, raw_metrics):
             # We now take mean value over all sample sizes except for expts
             # which we sum
 
-            print(series, reqd_metric, values)
             table[network][series] = (round(sum(values), 0) if reqd_metric ==
                                       'expts' else round(mean(values), 4)
                                       if len(values) else None)
@@ -114,7 +113,7 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
     ignore = ({(e.split('@')[0], int(e.split('@')[1]))
                for e in params['ignore']}
               if 'ignore' in params else set())
-    print('\n\n** {} \n'.format(ignore))
+    # print('\n\n** {} \n'.format(ignore))
 
     # Loop over specified networks and series
 
