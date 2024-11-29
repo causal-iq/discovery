@@ -326,7 +326,7 @@ def dag_score(dag, data, types, params):
             or isinstance(data, Oracle):
         raise TypeError('bad arg types for dag_score')
 
-    if set(data.nodes) != set(dag.nodes):
+    if set(data.get_order()) != set(dag.nodes):
         raise ValueError('data/dag variable mismatch for dag_score')
     allowed = (ENTROPY_SCORES + BAYESIAN_SCORES if data.dstype == 'categorical'
                else GAUSSIAN_SCORES)

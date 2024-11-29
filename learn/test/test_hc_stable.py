@@ -967,14 +967,13 @@ def test_stable_order_property_2_ok(d_params):  # Property, rev std order
     print('... reversed to start from {}'.format(data.get_order()[0]))
     HCWorker.init_score_cache()
     data, _ = set_stable_order(data, d_params)
-
     assert data.get_order() == \
         ('stampDutyTax', 'stampDutyTaxBand', 'otherPropertyExpensesT1',
          'otherInterestFees', 'otherPropertyExpenses', 'LTV',
          'propertyExpenses', 'borrowing', 'propertyManagement', 'incomeTax',
          'rentalGrossYield', 'capitalGains', 'rentalNetProfitBeforeInterest',
          'propertyExpensesGrowth', 'rentalIncomeLoss', 'capitalGrowth',
-         'rentalGrowth', 'rentalGrossProfit', 'interestTaxRelief', 'interest',
+         'rentalGrowth', 'rentalGrossProfit', 'interest', 'interestTaxRelief',
          'actualRentalIncome', 'propertyPurchaseValue', 'propertyValueT1',
          'rentalIncomeT1', 'interestRate', 'rentalIncome', 'netProfit')
 

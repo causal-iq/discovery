@@ -161,7 +161,12 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
         # Re-running an experiment - check it strictly gives same result.
 
         diffs = trace.diffs_from(existing[key], strict=True)
-        if diffs is not None:
+        if diffs is None and trace.result != existing[key].result:
+            print('Traces same but graphs differ, was:\n{}\n\nnow:\n{}'
+                  .format(existing[key].result, trace.result))
+            diffs = True
+
+        elif diffs is not None:
             print('\nRerun differences\n{}\n\npreviously:\n{}\n\nnow:\n{}'
                   .format(diffs[2], existing[key], trace))
             if diffs[0] == {}:

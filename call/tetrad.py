@@ -8,6 +8,7 @@ from re import compile
 from datetime import datetime
 
 from core.graph import SDG, PDAG, DAG
+from core.score import SCORE_PARAMS
 from learn.trace import Trace, Activity, Detail, CONTEXT_FIELDS
 from call.cmd import dispatch_cmd
 from fileio.pandas import Pandas
@@ -152,6 +153,40 @@ def process_output(id, nodes):
     return (graph, elapsed)
 
 
+def graph_scores(learnt, data, params, context):
+    """
+        Determine score of initial and learnt graphs.
+
+        :param PDAG learnt: graph learnt by Tetrad
+        :param Data data: data graph learnt from
+        :param dict params: learning hyperparameters
+        :param dict context: parameters for algorithm e.g. score to use
+
+        :returns tuple: (initial, learnt) graph scores
+    """
+    score_type = params['score']
+    score_params = {k: v for k, v in params.items() if k in SCORE_PARAMS}
+    score_params.update({'unistate_ok': True})
+
+    # determine score of initial empty graph
+
+    initial = DAG(list(data.get_order()), [])
+    score1 = (initial.score(data, score_type, score_params)[score_type]).sum()
+
+    # Try to extend the learnt graph to a DAG to be able to score it
+
+    try:
+        learnt = learnt if learnt.is_DAG() else DAG.extendPDAG(learnt)
+        score2 = (learnt.score(data, score_type,
+                               score_params)[score_type]).sum()
+    except ValueError as e:
+        print('\n*** Cannot extend PDAG for {} {}:\n{}\n'
+              .format(context['id'], e, learnt))
+        score2 = 0.0
+
+    return score1, score2
+
+
 def tetrad_learn(algorithm, data, context=None, params=None):
     """
         Return graph learnt from data using tetrad algorithms
@@ -224,14 +259,20 @@ def tetrad_learn(algorithm, data, context=None, params=None):
                             'N': data.N, 'external': 'TETRAD',
                             'dataset': True})
             trace = Trace(context)
-            trace.add(Activity.INIT, {Detail.DELTA: 0.0})
-            trace.add(Activity.STOP, {Detail.DELTA: 0.0})
+
+            # Construct simple trace which records elapsed time and scores
+            # of and learnt initial graph
+
+            score_i, score_g = graph_scores(graph, data, params, context)
+            trace.add(Activity.INIT, {Detail.DELTA: score_i})
+            trace.add(Activity.STOP, {Detail.DELTA: score_g})
             trace.trace['time'][-1] = elapsed
             trace.result = graph
         else:
             trace = None
 
     except Exception as e:
+        print('\n*** Exception: tetrad_learn(): {}\n'.format(e))
         raise RuntimeError('tetrad_learn(): ' + str(e))
 
     finally:
