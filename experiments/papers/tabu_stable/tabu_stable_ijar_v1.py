@@ -3,15 +3,18 @@
 
 from pandas import DataFrame
 
+from experiments.common import reference_bn, sample_sizes
 from experiments.run_analysis import run_analysis
 from experiments.summary_analysis import summary_analysis
 from experiments.plot import relplot
 from core.graph import DAG
-from fileio.common import EXPTS_DIR, TESTDATA_DIR
+from core.score import SCORE_PARAMS
+from fileio.common import EXPTS_DIR
 from fileio.pandas import Pandas
 from fileio.numpy import NumPy
 from learn.hc import hc
-from learn.trace import Trace
+from learn.trace import Trace, Activity, Detail
+from learn.knowledge import Knowledge, RuleSet
 
 
 CATEGORICAL = ('asia,sports,sachs,covid,child,' +
@@ -453,7 +456,7 @@ def values_ijar_stab_revised_f1():
     run_analysis(args)
 
 
-def values_ijar_score_fges_graphs():
+def values_ijar_stab_score_fges_graphs():
     """
         Adds score to FGES graph traces
     """
@@ -512,3 +515,79 @@ def values_ijar_score_fges_graphs():
             trace.trace['delta/score'][0] = initial_score[N]
             trace.trace['delta/score'][-1] = learnt_score
             trace.save()
+
+
+def values_ijar_stab_hc_ref():
+    """
+        Learn and score true graphs using hc
+    """
+    Ns, _ = sample_sizes('10-100K;1')
+    params = {'k': 1, 'unistate_ok': True}
+
+    for network in ('cancer,' + CATEGORICAL + ',' + CONTINUOUS).split(','):
+        if network != 'sachs_c':
+            continue
+
+        # Obtain reference & empty DAG and data for network
+
+        ref, _in = reference_bn(network)
+        ref = ref.dag
+        empty = DAG(ref.nodes, [])
+        dstype = 'continuous' if network.endswith('_c') else 'categorical'
+        score = 'bic' if dstype == 'categorical' else 'bic-g'
+        params.update({'score': score})
+        data = NumPy.read(EXPTS_DIR + '/datasets/' + network + '.data.gz',
+                          dstype=dstype, N=max(Ns))
+        print('\n\nLearning {} using {} score ...'.format(network, score))
+
+        # Construct Knowledge object that stops all arcs not in the
+        # reference graph
+
+        ref_know = {}
+        for n1 in ref.nodes:
+            for n2 in ref.nodes:
+                if n1 != n2 and (n1, n2) not in ref.edges:
+                    ref_know[(n1, n2)] = True
+        ref_know = Knowledge(rules=RuleSet.STOP_ARC, params={'stop': ref_know})
+        data.set_order(tuple([n for n in ref.ordered_nodes()]))
+
+        for N in Ns:
+            data.set_N(N)
+            _params = {k: v for k, v in params.items() if k in SCORE_PARAMS}
+
+            # create a minimal trace for empty graph which includes its score
+
+            score_e = (empty.score(data, score, _params)[score]).sum()
+            id = 'HC/SCORE/EMPTY/{}/N{}_0'.format(network, N)
+            context = {'id': id, 'in': _in, 'algorithm': 'DAG_SCORE',
+                       'N': data.N, 'params': params, 'dataset': True}
+            trace = Trace(context.copy())
+            trace.add(Activity.INIT, {Detail.DELTA: score_e})
+            trace.add(Activity.STOP, {Detail.DELTA: score_e})
+            trace.result = empty
+            trace.save()
+            print('{:>8} rows, emp: {:.3e}'.format(N, score_e))
+
+            # create a minimal trace for ref graph which includes its score
+
+            score_r = (ref.score(data, score, _params)[score]).sum()
+            context.update({'id':
+                            'HC/SCORE/REF/{}/N{}_0'.format(network, N)})
+            trace = Trace(context.copy())
+            trace.add(Activity.INIT, {Detail.DELTA: score_e})
+            trace.add(Activity.STOP, {Detail.DELTA: score_r})
+            trace.result = ref
+            trace.save()
+            print('{:>8} rows, ref: {:.3e}'.format(N, score_r))
+
+            # Learn graph with Knowledge prohibiting all arcs not in the
+            # reference graph - one might expect this to learn the ref graph.
+
+            context = {'id': 'HC/SCORE/HCREF/{}/N{}_0'.format(network, N),
+                       'in': _in}
+            _, trace = hc(data, params=params, knowledge=ref_know,
+                          context=context, init_cache=True)
+            trace.save()
+            print('{:>8} rows,  hc: {:.3e}        [{} iters]\n'
+                  .format(N, trace.trace['delta/score'][-1],
+                          len(trace.trace['delta/score']) - 2))
