@@ -191,6 +191,7 @@ def table_ijar_stab_cat():
     """
         Table summarising HC/Tabu stability approaches - categorical
     """
+    CATEGORICAL = 'cancer'
     args = {'action': 'summary',
             'series': ('HC/BASE3,' +
                        'HC/STABLE3/SCORE_PLUS,' +
@@ -525,8 +526,8 @@ def values_ijar_stab_hc_ref():
     params = {'k': 1, 'unistate_ok': True}
 
     for network in ('cancer,' + CATEGORICAL + ',' + CONTINUOUS).split(','):
-        if network != 'sachs_c':
-            continue
+        # if network != 'sachs_c':
+        #     continue
 
         # Obtain reference & empty DAG and data for network
 
