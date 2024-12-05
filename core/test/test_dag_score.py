@@ -9,6 +9,7 @@ from call.bnlearn import bnlearn_score
 import testdata.example_dags as dag
 from fileio.common import TESTDATA_DIR
 from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from fileio.oracle import Oracle
 
 ENTROPY_PARAMS = {'base': 'e', 'k': 1.0}
@@ -652,3 +653,21 @@ def test_dag_score_cancer_2():  # use 'k' as 0.1
     assert dicts_same(dict(scores.sum()),
                       {'aic': -4.612359948, 'bic': -3.913389944,
                        'loglik': -3.612359948})
+
+
+# Test reference scores
+
+def test_dag_score_covid_ref_1():  # Covid reference, 1K rows
+    data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/covid.data.gz',
+                      dstype='categorical', N=1000)
+    print(data.as_df().tail())
+
+    ref = BN.read(TESTDATA_DIR + '/discrete/medium/covid.dsc').dag
+    params = {'unistate_ok': True, 'base': 'e'}
+
+    scores = dag_score(ref, data, 'bic', params)
+    print(scores)
+    print((scores['bic'].sum()))
+
+    bnlearn = bnlearn_score(ref, data, 'bic', params)
+    print(bnlearn)

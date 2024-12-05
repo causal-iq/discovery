@@ -301,22 +301,32 @@ class HCWorker():
 
         if len(delta) == 1:
 
-            # arc doesn't exist so can only be add arc - check if possible
+            # arc doesn't exist so can only be add arc - check if it is an
+            # improvement over current second best and is possible.
 
             top = DAGChange(Activity.ADD, arc, delta[0][0], delta[0][1])
-            top = self._change_permitted(top)
+            if self._is_better(top, best.second, self.params['prefer']):
+                top = self._change_permitted(top)
+            else:
+                top = None
 
         elif len(delta) > 1:
 
-            # check if delete a possibility
+            # check if delete is an improvement and is possible
 
             delete = DAGChange(Activity.DEL, arc, delta[0][0], delta[0][1])
-            delete = self._change_permitted(delete)
+            if self._is_better(delete, best.second, self.params['prefer']):
+                delete = self._change_permitted(delete)
+            else:
+                delete = None
 
-            # ... and check if reverse possble
+            # ... and check if reverse is an improvement and is possble
 
             reverse = DAGChange(Activity.REV, arc, delta[1][0], delta[1][1])
-            reverse = self._change_permitted(reverse)
+            if self._is_better(reverse, best.second, self.params['prefer']):
+                reverse = self._change_permitted(reverse)
+            else:
+                reverse = None
 
             # delete and reverse both possible, so rank according to precedence
 

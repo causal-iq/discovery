@@ -191,17 +191,22 @@ def table_ijar_stab_cat():
     """
         Table summarising HC/Tabu stability approaches - categorical
     """
-    CATEGORICAL = 'cancer'
+    # CATEGORICAL = ('asia,sports,sachs,covid,child,insurance,property,' +
+    #                'diarrhoea,water')  # smaller networks
+    # CATEGORICAL = ('mildew,alarm,barley,hailfinder,hepar2,win95pts,' +
+    #                'formed,pathfinder,gaming')  # larger networks
+    SERIES = ('TABU/BASE3,' +
+              'TABU/STABLE3/DEC_SCORE,' +
+              'TABU/STABLE3/INC_SCORE,' +
+              'TABU/STABLE3/SCORE,' +
+              'HC/BASE3,' +
+              'HC/STABLE3/SCORE_PLUS'
+              )
     args = {'action': 'summary',
-            'series': ('HC/BASE3,' +
-                       'HC/STABLE3/SCORE_PLUS,' +
-                       'TABU/BASE3,' +
-                       'TABU/STABLE3/DEC_SCORE,' +
-                       'TABU/STABLE3/INC_SCORE,' +
-                       'TABU/STABLE3/SCORE_PLUS'),
+            'series': SERIES,
             'networks': CATEGORICAL,
             'N': '100-100k;1;0-24',
-            'metrics': 'expts,f1-e,f1-e-std,score,time,p-e,r-e',
+            'metrics': 'f1-e,f1-e-std,score',  # 'expts,f1-e,f1-e-std,score,time,p-e,r-e',
             # 'maxtime': '180',
             'file': None}
     run_analysis(args)
@@ -209,21 +214,33 @@ def table_ijar_stab_cat():
 
 def table_ijar_stab_con():
     """
-        Table summarising HC/Tabu stability approaches - categorical
+        Table summarising HC/Tabu stability approaches - continuous
     """
+    SERIES = ('HC/BASE3,' +
+              'HC/STABLE3/SCORE_PLUS,' +
+              'HC/OPT,' +
+              'HC/SCORE/EMPTY,' +
+              'HC/SCORE/REF,' +
+              'HC/SCORE/HCREF,' +
+              'TABU/BASE3,' +
+              'TABU/STABLE3/DEC_SCORE,' +
+              'TABU/STABLE3/INC_SCORE,' +
+              'TABU/STABLE3/SCORE,' +
+              'TABU/STABLE3/SCORE_PLUS,' +
+              'TABU/OPT,' +
+              'TETRAD/FGES_BASE3')
+    SERIES = ('TABU/BASE3,' +
+              'TABU/STABLE3/DEC_SCORE,' +
+              'TABU/STABLE3/INC_SCORE,' +
+              'TABU/STABLE3/SCORE,' +
+              'HC/BASE3,' +
+              'HC/STABLE3/SCORE_PLUS'
+              )
     args = {'action': 'summary',
-            'series': ('HC/BASE3,' +
-                       'HC/STABLE3/SCORE_PLUS,' +
-                       'TABU/BASE3,' +
-                       'TABU/STABLE3/DEC_SCORE,' +
-                       'TABU/STABLE3/INC_SCORE,' +
-                       'TABU/STABLE3/SCORE,' +
-                       'TABU/STABLE3/SCORE_PLUS,' +
-                       'TABU/OPT,' +
-                       'TETRAD/FGES_BASE3'),
+            'series': SERIES,
             'networks': CONTINUOUS,
             'N': '100-100k;1;0-24',
-            'metrics': 'expts,f1-e,f1-e-std,f1,score,time,p-e,r-e',
+            'metrics': 'f1-e,f1-e-std,score',  # 'expts,f1-e,f1-e-std,f1,score,time,p-e,r-e',
             # 'maxtime': '180',
             'file': None}
     run_analysis(args)

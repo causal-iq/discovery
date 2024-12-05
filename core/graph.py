@@ -179,13 +179,15 @@ class SDG():
 
         order = []
         while len(parents_copy):
-            roots = {n for n, p in parents_copy.items() if not len(p)}
+            roots = {n for n in parents_copy if not parents_copy[n]}
             if not len(roots):
                 return None
             order.append(roots)
             for root in roots:
-                del parents_copy[root]
-            parents_copy = {n: p - roots for n, p in parents_copy.items()}
+                parents_copy.pop(root)
+            for node, parents in parents_copy.items():
+                parents_copy[node].difference_update(roots)
+
         return order
 
     def is_DAG(self):

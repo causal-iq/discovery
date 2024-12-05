@@ -4,8 +4,8 @@
 from pprofile import Profile
 
 from fileio.common import EXPTS_DIR, TESTDATA_DIR
-# from fileio.numpy import NumPy
-from fileio.pandas import Pandas
+from fileio.numpy import NumPy
+# from fileio.pandas import Pandas
 from core.bn import BN
 from core.timing import Timing
 from learn.hc import hc
@@ -50,15 +50,16 @@ def run_profile_diarrhoea():
 def run_profile_gaming():
     N = 100
     context = {'in': 'in', 'id': 'tabu/diarrhoea/profiling'}
-    data = Pandas.read(EXPTS_DIR + '/realdata/ht_disc.data.gz',
-                       dstype='categorical', N=N)
+    data = NumPy.read(EXPTS_DIR + '/realdata/ht_disc.data.gz',
+                      dstype='categorical', N=N)
 
     Timing.on(True)
     start = Timing.now()
 
     profiler = Profile()
     with profiler:
-        dag, trace = hc(data, context=context, params={'maxiter': 1})
+        dag, trace = hc(data, context=context, params={'maxiter': 1,
+                                                       'score': 'bic'})
     Timing.record('hc', N, start)
     profiler.dump_stats(TESTDATA_DIR + '/profiling/gaming.data')
 

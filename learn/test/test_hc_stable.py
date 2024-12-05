@@ -6,6 +6,7 @@ from pandas import DataFrame
 
 from fileio.common import TESTDATA_DIR
 from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from core.bn import BN
 from learn.hc import hc, set_stable_order, Stability
 from learn.hc_worker import HCWorker, Prefer
@@ -940,8 +941,11 @@ def test_stable_order_insurance_5_ok(d_params):  # Insurance, std order
 
 @pytest.mark.slow
 def test_stable_order_property_1_ok(d_params):  # Property, std order
+    print()
     bn = BN.read(TESTDATA_DIR + '/discrete/medium/property.dsc')
-    data = Pandas(df=bn.generate_cases(100))
+    # data = Pandas(df=bn.generate_cases(100))
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=True)
     HCWorker.init_score_cache()
     data, _ = set_stable_order(data, d_params)
 
@@ -960,8 +964,11 @@ def test_stable_order_property_1_ok(d_params):  # Property, std order
 
 @pytest.mark.slow
 def test_stable_order_property_2_ok(d_params):  # Property, rev std order
+    print()
     bn = BN.read(TESTDATA_DIR + '/discrete/medium/property.dsc')
-    data = Pandas(df=bn.generate_cases(100))
+    # data = Pandas(df=bn.generate_cases(100))
+    data = NumPy.from_df(bn.generate_cases(100), dstype='categorical',
+                         keep_df=True)
     print('\nStandard order starting from {}'.format(data.get_order()[0]))
     data.set_order(tuple(list(data.get_order())[::-1]))  # reverse order
     print('... reversed to start from {}'.format(data.get_order()[0]))
@@ -973,9 +980,10 @@ def test_stable_order_property_2_ok(d_params):  # Property, rev std order
          'propertyExpenses', 'borrowing', 'propertyManagement', 'incomeTax',
          'rentalGrossYield', 'capitalGains', 'rentalNetProfitBeforeInterest',
          'propertyExpensesGrowth', 'rentalIncomeLoss', 'capitalGrowth',
-         'rentalGrowth', 'rentalGrossProfit', 'interest', 'interestTaxRelief',
+         'rentalGrowth', 'rentalGrossProfit', 'interestTaxRelief', 'interest',
          'actualRentalIncome', 'propertyPurchaseValue', 'propertyValueT1',
          'rentalIncomeT1', 'interestRate', 'rentalIncome', 'netProfit')
+
 
     print('\n\nStable order for Property: {}'.format(data.get_order()))
 

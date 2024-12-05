@@ -309,7 +309,7 @@ def _score_order(data, params):
     """
     order = None  # entries are tuples: (score, cscore, [nodes])
     N = data.N
-    nvs = data.node_values if isinstance(data, Pandas) else None
+    nvs = data.node_values if isinstance(data, (NumPy, Pandas)) else None
 
     for node in data.get_order():
 
@@ -331,11 +331,12 @@ def _score_order(data, params):
                 # comparsion on the variables' sequences of values
 
                 vals_same = vals_after = None
-                if same_score and same_c_score and isinstance(data, Pandas):
+                if (same_score and same_c_score 
+                        and isinstance(data, (Pandas, NumPy))):
                     print('*** Scores same for {} and {}'
                           .format(node, entry[2][0]))
-                    vals_same = (data.sample[node].to_numpy() ==
-                                 data.sample[entry[2][0]].to_numpy()).all()
+                    vals_same = (data.as_df()[node].to_numpy() ==
+                                 data.as_df()[entry[2][0]].to_numpy()).all()
                     if not vals_same:
                         v_n = '{}'.format({v: nvs[node][v]
                                            for v in sorted(nvs[node])})

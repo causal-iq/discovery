@@ -229,7 +229,7 @@ def test_hc_stop_ab_cb_ok_1(showall):  # stop A->B
              None,  # B->C highest, not blocked
              None,  # A->C highest, not blocked
              ('stop_arc', True, 'stop_add', ('A', 'B')),  # add A->B blocked
-             ('stop_arc', True, 'stop_rev', ('B', 'A'))])  # rev B->A blocked
+             None])  # rev B->A blocked
 
 
 def test_hc_stop_ab_cb_ok_2(showall):  # stop A->B, B->C
@@ -374,8 +374,7 @@ def test_hc_stop_asia_ok_1(showall):  # stop either->lung
     assert (trace.trace['knowledge'] ==
             [None, None,
              ('stop_arc', True, 'stop_add', ('either', 'lung')),
-             None, None, None, None, None,
-             ('stop_arc', True, 'stop_rev', ('lung', 'either'))])
+             None, None, None, None, None, None])
 
 
 def test_hc_stop_asia_ok_2(showall):  # stop either->lung, either->tub, b->s
@@ -397,5 +396,4 @@ def test_hc_stop_asia_ok_2(showall):  # stop either->lung, either->tub, b->s
              ('stop_arc', True, 'stop_add', ('either', 'lung')),
              None, None,
              ('stop_arc', True, 'stop_add', ('bronc', 'smoke')),
-             None, None,
-             ('stop_arc', True, 'stop_rev', ('smoke', 'bronc'))])
+             None, None, None])

@@ -415,7 +415,7 @@ class Trace():
         return same
 
     @classmethod
-    def _compare_entry(self, entry, ref, strict):
+    def _compare_entry(self, entry, ref, strict, ignore):
         """
             Compare an individual entry from trace with one from reference
             trace.
@@ -424,29 +424,56 @@ class Trace():
             :param dict ref: ... entry from reference trace
             :param bool strict: whether floats are tested to be strictly the
                                 same or just reasonably similar
+            :param set ignore: features to ignore in comparison
 
             :returns DiffType/None: type of difference - major (arc or
                                     activity), score, other or None
         """
+
+        # compare entries arc and activity fields - difference -> MAJOR
+
         if (('arc' in entry and 'arc' in ref and entry['arc'] != ref['arc'])
                 or entry['activity'] != ref['activity']):
             return DiffType.MAJOR
+
+        # compare delta/score to reqd accuracy - difference -> SCORE
 
         if self._nums_diff(entry['delta/score'], ref['delta/score'], strict):
             print('Different scores are {} and {}'
                   .format(entry['delta/score'], ref['delta/score']))
             return DiffType.SCORE
 
-        for key in list(set(ref.keys()) -
-                        {'arc', 'activity', 'delta/score', 'blocked'}):
+        # compare other numeric fields - difference -> MINOR
+
+        for key in list(set(ref.keys()) - {'arc', 'activity', 'delta/score',
+                                           'blocked', 'knowledge'}):
             if self._nums_diff(entry[key], ref[key], strict):
                 print('*** Diff for {}: {}, {}'
                       .format(key, entry[key], ref[key]))
                 return DiffType.MINOR
 
-        if ('blocked' in entry and 'blocked' in ref and not
+        # compare blocked fields if reqd - difference -> MINOR
+
+        if ('blocked' in entry and 'blocked' in ref
+                and 'blocked' not in ignore and not
                 self._blocked_same(entry['blocked'], ref['blocked'], strict)):
             return DiffType.MINOR
+
+        # compare knowledge fields - difference -> MINOR
+
+        if ('knowledge' in ref and 'knowledge' in entry and 
+                entry['knowledge'] != ref['knowledge']):
+            print(ignore)
+            if 'act_cache' not in ignore:
+                return DiffType.MINOR
+
+            ref_none = ref['knowledge'] is None
+            ent_none = entry['knowledge'] is None
+            ref_a_c = not ref_none and ref['knowledge'][0] == 'act_cache'
+            ent_a_c = not ent_none and entry['knowledge'][0] == 'act_cache'
+
+            return None if ((ref_a_c and ent_none) or (ref_none and ent_a_c)
+                            or (ref_a_c and ent_a_c)) else DiffType.MINOR
 
         return None
 
@@ -531,6 +558,13 @@ class Trace():
         if not isinstance(ref, Trace):
             raise TypeError('Trace.diffs_from() bad arg type')
 
+        # hc_worker processing changed at v177 so determine if which
+        # trace properties/entries have to be ignored.
+
+        ignore = (set() if (self.context['software_version'] - 176.5) *
+                  (ref.context['software_version'] - 176.5) > 0.0
+                  else {'blocked', 'act_cache'})
+
         #   Will only compare columns which have some values in them in BOTH
         #   trace and reference, and will not compare time column
 
@@ -560,7 +594,8 @@ class Trace():
                 # print(iter, trace[iter], None)
                 _diffs = self._update_diffs(iter, trace[iter], None, _diffs)
             else:
-                diff = self._compare_entry(trace[iter], ref[iter], strict)
+                diff = self._compare_entry(trace[iter], ref[iter], strict,
+                                           ignore)
                 if diff in [DiffType.MAJOR, DiffType.SCORE]:
                     # print(iter, trace[iter], ref[iter])
                     _diffs = self._update_diffs(iter, trace[iter], ref[iter],
@@ -603,8 +638,9 @@ class Trace():
         for activity in ['add', 'delete', 'reverse']:
             diffs = self._merge_opposites(activity, diffs)
 
-        final_score_diff = self._compare_entry(trace[-1], ref[-1],
-                                               strict) == DiffType.SCORE
+        final_score_diff = (self._compare_entry(trace[-1], ref[-1],
+                                                strict, ignore)
+                            == DiffType.SCORE)
         summary = self._diffs_summary(diffs, final_score_diff,
                                       len(trace) - 1, len(ref) - 1)
 

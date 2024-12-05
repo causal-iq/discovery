@@ -139,27 +139,87 @@ def test_graph_partial_order_abcd_ok_3():
     assert order == [{'A', 'D'}, {'B'}, {'C'}]
 
 
-def test_graph_partial_order_cancer_ok_1():
+def test_graph_partial_order_cancer_ok_1():  # not adding new arc
     dag = ex_dag.cancer()
     order = DAG.partial_order(dag.parents, dag.nodes)
+
+    assert dag.nodes == ['Cancer', 'Dyspnoea', 'Pollution', 'Smoker', 'Xray']
+    assert dag.parents == \
+        {'Cancer': ['Pollution', 'Smoker'],
+         'Dyspnoea': ['Cancer'],
+         'Xray': ['Cancer']}
     assert order == [{'Pollution', 'Smoker'}, {'Cancer'},
                      {'Dyspnoea', 'Xray'}]
 
 
-def test_graph_partial_order_cancer_ok_2():
+def test_graph_partial_order_cancer_ok_2():  # add S --> X, order unchanged
     dag = ex_dag.cancer()
     order = DAG.partial_order(dag.parents, dag.nodes,
                               new_arc=('Smoker', 'Xray'))
+
+    assert dag.nodes == ['Cancer', 'Dyspnoea', 'Pollution', 'Smoker', 'Xray']
+    assert dag.parents == \
+        {'Cancer': ['Pollution', 'Smoker'],
+         'Dyspnoea': ['Cancer'],
+         'Xray': ['Cancer']}
     assert order == [{'Pollution', 'Smoker'}, {'Cancer'},
                      {'Dyspnoea', 'Xray'}]
 
 
-def test_graph_partial_order_cancer_ok_3():
+def test_graph_partial_order_cancer_ok_3():  # add S --> D, order changed
     dag = ex_dag.cancer()
     order = DAG.partial_order(dag.parents, dag.nodes,
                               new_arc=('Xray', 'Dyspnoea'))
+
+    assert dag.nodes == ['Cancer', 'Dyspnoea', 'Pollution', 'Smoker', 'Xray']
+    assert dag.parents == \
+        {'Cancer': ['Pollution', 'Smoker'],
+         'Dyspnoea': ['Cancer'],
+         'Xray': ['Cancer']}
     assert order == [{'Pollution', 'Smoker'}, {'Cancer'},
                      {'Xray'}, {'Dyspnoea'}]
+
+
+def test_graph_partial_order_cancer_ok_4():  # add P --> S, order changed
+    dag = ex_dag.cancer()
+    order = DAG.partial_order(dag.parents, dag.nodes,
+                              new_arc=('Pollution', 'Smoker'))
+
+    assert dag.nodes == ['Cancer', 'Dyspnoea', 'Pollution', 'Smoker', 'Xray']
+    assert dag.parents == \
+        {'Cancer': ['Pollution', 'Smoker'],
+         'Dyspnoea': ['Cancer'],
+         'Xray': ['Cancer']}
+    assert order == [{'Pollution'}, {'Smoker'}, {'Cancer'},
+                     {'Xray', 'Dyspnoea'}]
+
+
+def test_graph_partial_order_cancer_ok_5():  # Reverse P --> C, order changed
+    dag = ex_dag.cancer()
+    order = DAG.partial_order(dag.parents, dag.nodes,
+                              new_arc=('Cancer', 'Pollution'))
+
+    assert dag.nodes == ['Cancer', 'Dyspnoea', 'Pollution', 'Smoker', 'Xray']
+    assert dag.parents == \
+        {'Cancer': ['Pollution', 'Smoker'],
+         'Dyspnoea': ['Cancer'],
+         'Xray': ['Cancer']}
+    assert order == [{'Smoker'}, {'Cancer'},
+                     {'Dyspnoea', 'Pollution', 'Xray'}]
+
+
+def test_graph_partial_order_cancer_ok_6():  # Reverse C --> X, order changed
+    dag = ex_dag.cancer()
+    order = DAG.partial_order(dag.parents, dag.nodes,
+                              new_arc=('Xray', 'Cancer'))
+
+    assert dag.nodes == ['Cancer', 'Dyspnoea', 'Pollution', 'Smoker', 'Xray']
+    assert dag.parents == \
+        {'Cancer': ['Pollution', 'Smoker'],
+         'Dyspnoea': ['Cancer'],
+         'Xray': ['Cancer']}
+    assert order == [{'Smoker', 'Pollution', 'Xray'}, {'Cancer'},
+                     {'Dyspnoea'}]
 
 
 def test_graph_partial_order_asia_ok_1():
