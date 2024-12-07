@@ -151,7 +151,7 @@ def systest_trace_analysis_know_asia_3():  # Single trace, no randomisation
           'shd-b': 0.75, 'a-ok': 2, 'a-rev': 2, 'a-eqv': 0, 'a-non': 2,
           'a-ext': 1, 'a-mis': 4, 'p': 0.4, 'r': 0.25, 'f1': 0.308,
           'f1-b': 0.462, 'bsf': 0.325, 'f1-e': 0.0, 'e-ori': 4,
-          'loglik': None}]
+          'loglik': None, 'bsf-e': 0.2, 'shd-es': 1.12}]
     assert trace.trace == \
         {'time': [1.8073070049285889, 2.0106122493743896, 2.244967460632324,
                   2.4325642585754395, 2.674945116043091, 2.9089272022247314,
@@ -192,14 +192,16 @@ def systest_trace_analysis_know_asia_4():  # Two traces, randomisation
          '|A|': 8, 'shd': 8, 'shd-s': 1.0, 'shd-e': 8, 'shd-b': 0.75,
          'a-ok': 0, 'a-rev': 4, 'a-eqv': 0, 'a-non': 4, 'a-ext': 0,
          'a-mis': 4, 'p': 0.0, 'r': 0.0, 'f1': 0.0, 'f1-e': 0.0,
-         'f1-b': 0.333, 'bsf': 0.25, '|E|': 4, 'e-ori': 4, 'loglik': None}
+         'f1-b': 0.333, 'bsf': 0.25, '|E|': 4, 'e-ori': 4, 'loglik': None,
+         'bsf-e': 0.25, 'shd-es': 1.0}
     assert summaries[7] == \
         {'series': 'HC/ORDER/BASE', 'network': 'asia', 'sample': 7, 'N': 20,
          'iter': 4, 'time': 1.2, 'score': -3.47691, 'type': 'DAG', 'n': 8,
          '|A|': 8, 'shd': 6, 'shd-s': 0.75, 'shd-e': 8, 'shd-b': 0.62,
          'a-ok': 2, 'a-rev': 2, 'a-eqv': 0, 'a-non': 2, 'a-ext': 0,
          'a-mis': 4, 'p': 0.5, 'r': 0.25, 'f1': 0.333, 'f1-e': 0.0,
-         'f1-b': 0.5, 'bsf': 0.375, '|E|': 4, 'e-ori': 4, 'loglik': None}
+         'f1-b': 0.5, 'bsf': 0.375, '|E|': 4, 'e-ori': 4, 'loglik': None,
+         'bsf-e': 0.25, 'shd-es': 1.0}
     assert trace.context == \
         {'in': 'experiments/bn/asia.dsc', 'id': 'HC/ORDER/BASE/asia/N20_9',
          'randomise': [Randomise.ORDER],
@@ -248,7 +250,8 @@ def systest_trace_analysis_know_asia_5():  # First sub-sample only
          '|A|': 8, '|E|': 5, 'shd': 9, 'shd-s': 1.12, 'shd-e': 9,
          'shd-b': 0.88, 'a-ok': 0, 'a-rev': 4, 'a-eqv': 0, 'a-non': 4,
          'a-ext': 1, 'a-mis': 4, 'p': 0.0, 'r': 0.0, 'f1': 0.0, 'f1-e': 0.0,
-         'f1-b': 0.308, 'bsf': 0.2, 'e-ori': 4, 'loglik': None}
+         'f1-b': 0.308, 'bsf': 0.2, 'e-ori': 4, 'loglik': None, 'bsf-e': 0.2,
+         'shd-es': 1.12}
     assert trace.trace['delta/score'] == \
         [-4.544361, 0.307681, 0.194319, 0.071324, 0.071324, 0.018999, 0.0, 0.0,
          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -3.880712]
@@ -273,14 +276,16 @@ def systest_trace_analysis_know_asia_6():  # First two sub-sample only
          '|A|': 8, '|E|': 5, 'shd': 9, 'shd-s': 1.12, 'shd-e': 9,
          'shd-b': 0.88, 'a-ok': 0, 'a-rev': 4, 'a-eqv': 0, 'a-non': 4,
          'a-ext': 1, 'a-mis': 4, 'p': 0.0, 'r': 0.0, 'f1': 0.0, 'f1-e': 0.0,
-         'f1-b': 0.308, 'bsf': 0.2, 'e-ori': 4, 'loglik': None}
+         'f1-b': 0.308, 'bsf': 0.2, 'e-ori': 4, 'loglik': None, 'bsf-e': 0.2,
+         'shd-es': 1.12}
     assert summaries[1] == \
         {'series': 'TABU/BASE', 'network': 'asia', 'sample': 1, 'N': 10,
          'iter': 15, 'time': 0.7, 'score': -3.88071, 'type': 'DAG', 'n': 8,
          '|A|': 8, '|E|': 5, 'shd': 9, 'shd-s': 1.12, 'shd-e': 9,
          'shd-b': 0.88, 'a-ok': 0, 'a-rev': 4, 'a-eqv': 0, 'a-non': 4,
          'a-ext': 1, 'a-mis': 4, 'p': 0.0, 'r': 0.0, 'f1': 0.0, 'f1-e': 0.0,
-         'f1-b': 0.308, 'bsf': 0.2, 'e-ori': 4, 'loglik': None}
+         'f1-b': 0.308, 'bsf': 0.2, 'e-ori': 4, 'loglik': None, 'bsf-e': 0.2,
+         'shd-es': 1.12}
     assert trace.trace['delta/score'] == \
         [-4.544361, 0.307681, 0.194319, 0.071324, 0.071324, 0.018999, 0.0, 0.0,
          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -3.880712]

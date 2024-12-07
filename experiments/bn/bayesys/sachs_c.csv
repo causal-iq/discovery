@@ -1,0 +1,18 @@
+ID,Variable 1,Dependency,Variable 2
+1,PKC,->,PKA
+2,Plcg,->,PIP3
+3,PKA,->,Jnk
+4,PKC,->,Jnk
+5,PKA,->,P38
+6,PKC,->,P38
+7,PIP3,->,PIP2
+8,Plcg,->,PIP2
+9,PKA,->,Raf
+10,PKC,->,Raf
+11,PKA,->,Mek
+12,PKC,->,Mek
+13,Raf,->,Mek
+14,Mek,->,Erk
+15,PKA,->,Erk
+16,Erk,->,Akt
+17,PKA,->,Akt

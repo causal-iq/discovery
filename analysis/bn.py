@@ -9,6 +9,7 @@ from itertools import chain, combinations
 
 from core.graph import DAG, PDAG
 from core.bn import BN
+from core.cpt import CPT
 from core.metrics import kl
 from core.score import node_score
 from fileio.pandas import Pandas
@@ -300,30 +301,38 @@ class BNAnalysis(DAGAnalysis):
         super().__init__(bn.dag)
 
         nodes = []
-        for node, cpt in bn.cnds.items():
-            parents = cpt.parents()
-            node_values = cpt.node_values()
-            # print('Node {}, CPT:\n{}'.format(node, cpt))
-            if parents is not None:
-                mean_pmf = DataFrame(cpt.cpt.values()).mean()
-                # print('Mean PMF is {}'.format(mean_pmf.to_dict()))
-                total_kl = 0.0
-                for pmf in cpt.cpt.values():
-                    pmf = Series(pmf)
-                    pmf_kl = kl(pmf, mean_pmf)
-                    # print('PMF {} has K-L {}'.format(pmf.to_dict(), pmf_kl))
-                    total_kl += pmf_kl
-                pmf_kl = total_kl / len(cpt.cpt)
-            else:
-                unif_pmf = Series({v: 1.0/len(cpt.cpt) for v in cpt.cpt})
-                # print('Uniform pmf is {}'.format(unif_pmf.to_dict()))
-                pmf_kl = kl(Series(cpt.cpt), unif_pmf)
-                # print('PMF {} has K-L {}'.format(cpt.cpt, pmf_kl))
+        for node, cnd in bn.cnds.items():
+            if isinstance(cnd, CPT):
+                cpt = cnd
+                parents = cpt.parents()
+                node_values = cpt.node_values()
+                # print('Node {}, CPT:\n{}'.format(node, cpt))
+                if parents is not None:
+                    mean_pmf = DataFrame(cpt.cpt.values()).mean()
+                    # print('Mean PMF is {}'.format(mean_pmf.to_dict()))
+                    total_kl = 0.0
+                    for pmf in cpt.cpt.values():
+                        pmf = Series(pmf)
+                        pmf_kl = kl(pmf, mean_pmf)
+                        # print(
+                        # 'PMF {} has K-L {}'
+                        #       .format(pmf.to_dict(), pmf_kl))
+                        total_kl += pmf_kl
+                    pmf_kl = total_kl / len(cpt.cpt)
+                else:
+                    unif_pmf = Series({v: 1.0/len(cpt.cpt) for v in cpt.cpt})
+                    # print('Uniform pmf is {}'.format(unif_pmf.to_dict()))
+                    pmf_kl = kl(Series(cpt.cpt), unif_pmf)
+                    # print('PMF {} has K-L {}'.format(cpt.cpt, pmf_kl))
 
-            nodes.append({'node': node,
-                          'card': len(node_values),
-                          'free': cpt.free_params,
-                          'k-l': pmf_kl})
+                nodes.append({'node': node,
+                              'card': len(node_values),
+                              'free': cpt.free_params,
+                              'k-l': pmf_kl})
+
+            else:
+                nodes.append({'node': node, 'card': None, 'free': None,
+                              'k-l': None})
 
         nodes = DataFrame(nodes).set_index('node')
         self.nodes = self.nodes.join(nodes)

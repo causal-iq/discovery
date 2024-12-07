@@ -66,10 +66,14 @@ METRICS = {'f1': {'label': 'F1', 'size': 5, 'colour': '#000000',
                      'colour': '#d73027', 'dashes': (4, 1)},
            'shd-e': {'label': 'SHD (norm., CPDAG)', 'size': 3,
                      'colour': '#d73027', 'dashes': (4, 1)},
+           'shd-es': {'label': 'SHD (norm., CPDAG)', 'size': 3,
+                      'colour': '#d73027', 'dashes': (4, 1)},
            'f1-b': {'label': 'F1 (bayesys)', 'size': 3,
                     'colour': '#000000', 'dashes': (4, 1)},
            'bsf': {'label': 'BSF', 'size': 3,
                    'colour': '#21908d', 'dashes': (4, 1)},
+           'bsf-e': {'label': 'BSF', 'size': 3,
+                     'colour': '#21908d', 'dashes': (4, 1)},
            'score': {'label': 'score', 'size': 3, 'colour': '#FF0000',
                      'dashes': (1, 0)},
            'time': {'label': 'time', 'size': 3, 'colour': '#000000'},
@@ -1567,7 +1571,8 @@ def process_args(args, analyse):
                            for m in metrics]))
 
     if args['networks'] is None:
-        error += ' no --networks specified\n'
+        if action != 'bn':
+            error += ' no --networks specified\n'
         networks = None
     else:
         networks = args['networks'].split(',')

@@ -365,7 +365,8 @@ def test_trace_analysis_asia_4_ok():  # Asia, N=100, MI and OMI values
          'type': 'DAG', 'n': 8, '|A|': 8, '|E|': 6, 'shd': 5, 'shd-s': 0.62,
          'shd-e': 6, 'shd-b': 0.44, 'a-ok': 3, 'a-rev': 3, 'a-eqv': 1,
          'a-non': 2, 'a-ext': 0, 'a-mis': 2, 'p': 0.5, 'r': 0.375, 'f1': 0.429,
-         'f1-e': 0.286, 'f1-b': 0.643, 'bsf': 0.562, 'e-ori': 4}
+         'f1-e': 0.286, 'f1-b': 0.643, 'bsf': 0.562, 'e-ori': 4, 'bsf-e': 0.5,
+         'shd-es': 0.75}
 
     # Check log likelihood
 
@@ -418,7 +419,8 @@ def test_trace_analysis_asia_5_ok():  # Asia, N=1K, MI and OMI values
          'type': 'DAG', 'n': 8, '|A|': 8, '|E|': 9, 'shd': 8, 'shd-s': 1.0,
          'shd-e': 10, 'shd-b': 0.69, 'a-ok': 2, 'a-rev': 5, 'a-eqv': 2,
          'a-non': 3, 'a-ext': 2, 'a-mis': 1, 'p': 0.222, 'r': 0.25,
-         'f1': 0.235, 'f1-e': 0.0, 'f1-b': 0.529, 'bsf': 0.462, 'e-ori': 7}
+         'f1': 0.235, 'f1-e': 0.0, 'f1-b': 0.529, 'bsf': 0.462, 'e-ori': 7,
+         'bsf-e': 0.462, 'shd-es': 1.25}
 
     # Check log likelihood
 

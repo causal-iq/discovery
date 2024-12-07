@@ -157,7 +157,9 @@ class TraceAnalysis():
             pdag is None
 
         ref_cpdag = PDAG.fromDAG(ref)
-        equiv_metrics = (pdag.compared_to(ref_cpdag, identify_edges=True)
+        equiv_metrics = (pdag.compared_to(ref_cpdag,
+                                          bayesys=BAYESYS_VERSIONS[-1],
+                                          identify_edges=True)
                          if pdag is not None else None)
 
         # Compute Log-Likelihood if data provided
@@ -191,6 +193,8 @@ class TraceAnalysis():
                            round(metrics['shd'] / len(ref.edges), 2)),
                  'shd-e': (None if equiv_metrics is None else
                            equiv_metrics['shd']),
+                 'shd-es': (None if equiv_metrics is None else
+                            round(equiv_metrics['shd'] / len(ref.edges), 2)),
                  'shd-b': (None if not len(ref.edges) or not metrics else
                            round(metrics['shd-b'] / len(ref.edges), 2)),
                  'a-ok': metrics['arc_matched'] if metrics else None,
@@ -208,6 +212,8 @@ class TraceAnalysis():
                  'f1-b': (round(metrics['f1-b'], 3)
                           if metrics else None),
                  'bsf': round(metrics['bsf'], 3) if metrics else None,
+                 'bsf-e': (None if equiv_metrics is None else
+                           round(equiv_metrics['bsf'], 3)),
                  'f1-e': (round(equiv_metrics['f1'], 3)
                           if equiv_metrics['f1'] is not None else None),
                  'e-ori': (None if equiv_metrics is None else

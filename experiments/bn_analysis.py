@@ -6,9 +6,15 @@ from pandas import DataFrame
 from fileio.common import EXPTS_DIR
 from fileio.bayesys import write
 from fileio.pandas import Pandas
-from core.bn import BN
 from analysis.bn import BNAnalysis
 from experiments.plot import plot_degree_distribution
+from experiments.common import reference_bn
+
+NETWORKS = (['cancer', 'asia', 'sports', 'sachs', 'sachs_c', 'covid',
+             'covid_c', 'child', 'building_c', 'insurance', 'property',
+             'diarrhoea', 'water', 'mildew', 'alarm', 'magic-niab_c',
+             'ecoli70_c', 'barley', 'hailfinder', 'magic-irri_c', 'hepar2',
+             'win95pts', 'formed', 'arth150_c', 'pathfinder', 'gaming'])
 
 
 def bn_analysis():
@@ -17,16 +23,13 @@ def bn_analysis():
     """
     summary = []
     dist = {'network': [], 'metric': [], 'value': []}
-    for network in ['cancer', 'asia', 'sports', 'sachs', 'covid', 'child',
-                    'insurance', 'property', 'diarrhoea', 'water', 'mildew',
-                    'alarm', 'barley', 'hailfinder', 'hepar2', 'win95pts',
-                    'formed', 'pathfinder', 'gaming']:
+    for network in NETWORKS:
 
         #   Read in network description, write out Bayesys format file
         #   and anlyse the network
 
         print('Analysing {} network ...'.format(network))
-        bn = BN.read(EXPTS_DIR + '/bn/' + network + '.dsc')
+        bn = reference_bn(network)[0]
         write(bn.dag, EXPTS_DIR + '/bn/bayesys/' + network + '.csv')
         row = {'network': network}
         analysis = BNAnalysis(bn)

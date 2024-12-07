@@ -271,7 +271,8 @@ def bayesys_metrics(metrics, max_edges, num_ref_edges, version):
     # CPDAG comparisons
     # This implementation has extra protection against divide by zero errors
 
-    TP = float(metrics['arc_matched'] + metrics['arc_not_edge'])
+    TP = float(metrics['arc_matched'] + metrics['arc_not_edge'] +
+               metrics['edge_matched'])
     TP2 = float(metrics['arc_reversed'] + metrics['edge_not_arc'])
     FP = float(metrics['arc_extra'] + metrics['edge_extra'])
     TN = max_edges - num_ref_edges - FP

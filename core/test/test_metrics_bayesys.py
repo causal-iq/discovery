@@ -6,6 +6,7 @@ from core.metrics import dicts_same, values_same
 from fileio.noisy import evaluate_noisy
 from fileio.bayesys import read
 from fileio.common import TESTDATA_DIR
+from experiments.common import reference_bn
 
 
 def test_core_metrics_bayesys_single_edge():
@@ -61,12 +62,12 @@ def test_core_metrics_bayesys_single_edge():
                 'shd-b': 0.0, 'ddm': 1.0, 'bsf': 1.0, 'shd': 1, 'p': 0.666667,
                 'r': 0.666667, 'f1': 0.666667},
         'em':  {'arc_matched': 2, 'arc_reversed': 0, 'edge_not_arc': 0,
-                'arc_extra': 0, 'edge_extra': 0, 'edge_matched': 1,
-                'arc_not_edge': 0, 'arc_missing': 0, 'edge_missing': 0,
-                'missing_matched': 3, 'tp-b': 2, 'tp2-b': 0.0, 'fp-b': 0,
-                'tn-b': 3, 'fn-b': 1.0, 'p-b': 1.0, 'r-b': 0.666667,
-                'f1-b': 0.8, 'shd-b': 1.0, 'ddm': 0.333333, 'bsf': 0.666667,
-                'shd': 0, 'p': 1.0, 'r': 1.0, 'f1': 1.0},
+                'arc_not_edge': 0, 'edge_matched': 1, 'arc_extra': 0,
+                'edge_extra': 0, 'arc_missing': 0, 'edge_missing': 0,
+                'missing_matched': 3, 'shd': 0, 'p': 1.0, 'r': 1.0, 'f1': 1.0,
+                'tp-b': 3.0, 'tp2-b': 0.0, 'fp-b': 0.0, 'tn-b': 3.0,
+                'fn-b': 0.0, 'p-b': 1.0, 'r-b': 1.0, 'f1-b': 1.0, 'shd-b': 0.0,
+                'ddm': 1.0, 'bsf': 1.0},
         'fa':  {'arc_matched': 2, 'arc_reversed': 0, 'edge_not_arc': 0,
                 'arc_extra': 1, 'edge_extra': 0, 'edge_matched': 0,
                 'arc_not_edge': 0, 'arc_missing': 0, 'edge_missing': 0,
@@ -129,3 +130,31 @@ def test_core_metrics_bayesys_dhs():
                                               bayesys='v1.5+')['bsf'], 0.541)
     assert values_same(d8atr_fges3.compared_to(d8atr_fges,
                                                bayesys='v1.5+')['bsf'], 0.252)
+
+
+def test_core_metrics_bayesys_sachs():
+    dag = (reference_bn('sachs')[0]).dag
+    print('\n\n{}'.format(dag))
+    pdag = PDAG.fromDAG(dag)
+    print(pdag)
+
+    metrics = dag.compared_to(dag,  bayesys='v1.5+')
+    print('\nDAG metrics are:\n{}'.format(metrics))
+    assert metrics == \
+        {'arc_matched': 17, 'arc_reversed': 0, 'edge_not_arc': 0,
+         'arc_not_edge': 0, 'edge_matched': 0, 'arc_extra': 0, 'edge_extra': 0,
+         'arc_missing': 0, 'edge_missing': 0, 'missing_matched': 38, 'shd': 0,
+         'p': 1.0, 'r': 1.0, 'f1': 1.0, 'tp-b': 17.0, 'tp2-b': 0.0,
+         'fp-b': 0.0, 'tn-b': 38.0, 'fn-b': 0.0, 'p-b': 1.0, 'r-b': 1.0,
+         'f1-b': 1.0, 'shd-b': 0.0, 'ddm': 1.0, 'bsf': 1.0}
+
+    metrics = pdag.compared_to(pdag,  bayesys='v1.5+')
+    print('\nPDAG metrics are:\n{}'.format(metrics))
+    assert metrics == \
+        {'arc_matched': 0, 'arc_reversed': 0, 'edge_not_arc': 0,
+         'arc_not_edge': 0, 'edge_matched': 17, 'arc_extra': 0,
+         'edge_extra': 0, 'arc_missing': 0, 'edge_missing': 0,
+         'missing_matched': 38, 'shd': 0, 'p': 1.0, 'r': 1.0, 'f1': 1.0,
+         'tp-b': 17.0, 'tp2-b': 0.0, 'fp-b': 0.0, 'tn-b': 38.0, 'fn-b': 0.0,
+         'p-b': 1.0, 'r-b': 1.0, 'f1-b': 1.0, 'shd-b': 0.0, 'ddm': 1.0,
+         'bsf': 1.0}
