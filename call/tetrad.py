@@ -45,30 +45,38 @@ def _validate_learn_params(algorithm, params, dstype):
     params = {} if params is None else params.copy()
     if 'score' not in params:
         params.update({'score': 'bic'})
-    if 'k' not in params:
+    if params['score'] == 'bic' and 'k' not in params:
         params.update({'k': 1})
+    if params['score'] == 'bde' and 'iss' not in params:
+        params.update({'iss': 1})
 
     # check params are valid and have valid values
 
     if (not isinstance(params['score'], str)
-            or not isinstance(params['k'], int)):
+            or ('k' in params and not isinstance(params['k'], int))):
         raise TypeError('tetrad_learn() bad parameter TypeError')
 
     # check parameter values
 
-    if (len(set(params) - {'score', 'k'})
-        or (dstype == 'categorical' and params['score'] != 'bic')
+    if (len(set(params) - {'score', 'k', 'iss'})
+        or (dstype == 'categorical' and
+            params['score'] not in {'bic', 'bde'})
         or (dstype == 'continuous' and params['score'] != 'bic-g')
-            or dstype == 'mixed' or params['k'] != 1):
+            or dstype == 'mixed'
+            or ('k' in params and params['k'] != 1)
+            or ('iss' in params and params['iss'] != 1)):
         raise ValueError('tetrad_learn invalid parameter')
 
     # setup Tetrad parameters and version
 
     tetrad_v = '1.3.0'
     tetrad_p = '--algorithm fges --skip-latest'
-    tetrad_p += (' --data-type discrete --score disc-bic-score'
-                 if dstype == 'categorical' else
-                 ' --data-type continuous --score cg-bic-score')
+    tetrad_p += (' --data-type continuous --score cg-bic-score'
+                 if dstype == 'continuous' else
+                 (' --data-type discrete --score disc-bic-score'
+                  if params['score'] == 'bic' else
+                  ' --data-type discrete --score bdeu-score' +
+                  ' --priorEquivalentSampleSize 1.0'))
 
     return (params, tetrad_v, tetrad_p)
 
