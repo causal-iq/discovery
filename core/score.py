@@ -3,7 +3,8 @@
 #
 
 from numpy import ndarray, sum as npsum, sqrt as npsqrt, mean as npmean, \
-    zeros, log as nplog
+    zeros, log as nplog, float64, pi, cov, fill_diagonal
+from numpy.linalg import det
 from pandas import DataFrame
 import scipy.stats as stats
 from sklearn.linear_model import LinearRegression
@@ -16,12 +17,13 @@ from fileio.oracle import Oracle
 
 ENTROPY_SCORES = ['loglik', 'bic', 'aic']  # categorical entropy scores
 BAYESIAN_SCORES = ['bde', 'k2', 'bdj', 'bds']  # categorical Bayesian
-GAUSSIAN_SCORES = ['bic-g']  # Gaussian scores
+GAUSSIAN_SCORES = ['bic-g', 'bge']  # Gaussian scores
 
 SCORES = {'loglik': {'base'},  # Supported scores and their allowed parameters
           'aic': {'base', 'k'},
           'bic': {'base', 'k'},
           'bic-g': {'base', 'k'},
+          'bge': {},
           'bde': {'iss', 'prior'},
           'bds': {'iss', 'prior'},
           'bdj': {},
@@ -180,26 +182,141 @@ def node_score(node, parents, types, params, data, counts_reqd=False):
         return categorical_node_score(node, parents, types, params, data,
                                       counts_reqd)
     else:
-        scores = gaussian_node_score(node, parents, types, params, data)
-        return (scores if counts_reqd is False else
-                (scores, {'mean': 0, 'max': 0, 'min': 0, 'lt5': 0, 'fpa': 0}))
+        return gaussian_node_score(node, parents, types, params, data,
+                                   counts_reqd)
 
 
-def gaussian_node_score(node, parents, types, params, data):
+def gaussian_node_score(node, parents, types, params, data, counts_reqd):
     """
-        Return specified types of decomposable scores for a categorical node.
+        Return specified types of decomposable scores for a Gaussian node.
 
         :param str node: node scores are required for
         :param dict parents: parents of non-orphan nodes {node: [parents]}
-        :param list types: scores required e.g. ['loglik', 'aic', 'bde']
+        :param list types: scores required e.g. ['bic-g', 'bge]
         :param dict params: parameters for scores e.g. logarithm base
         :param Data data: data to learn graph from
         :param bool counts_reqd: not relevant for Gaussian node, but retained
                                  so returned data has structure consistent with
                                  categorical nodes.
 
-        :returns dict/tuple: scores {score_type: score} if counts not required
+        :returns dict/tuple: score {score_type: score} if counts not required
                              otherwise (scores, counts)
+    """
+    score = {}
+    if 'bic-g' in types:
+        score['bic-g'] = bic_gaussian_score(node, parents, params, data)
+    if 'bge' in types:
+        score['bge'] = bayesian_gaussian_score(node, parents, params, data)
+    return (score if counts_reqd is False else
+            (score, {'mean': 0, 'max': 0, 'min': 0, 'lt5': 0, 'fpa': 0}))
+
+
+def bayesian_gaussian_score(node, parents, params, data):
+    """
+        Compute Bayesian Gaussian Equivalent (BGE) for a node with specified
+        parents.
+
+        Based on the cwpost/wpost functions in bnlearn which are in
+        turn derived from Kuipers et al, 2014, Annals of Statistics which
+        corrects the orginal formulation by Geiger and Heckerman (2002).
+        Variable names follow those in equation (2) of Kuipers et al. This
+        implementation is simplified so that some hyperparameters have the
+        bnlearn default values:
+          - alpha_mu = 1.0 - weight assigned to prior means
+          - nu = observed means - prior means for each variable
+          - alpha_w = n + 2 - weight assigned to prior variances
+
+        :param str node: node scores are required for
+        :param dict parents: parents of non-orphan nodes {node: [parents]}
+        :param dict params: parameters for scores e.g. logarithm base
+        :param Data data: data to learn graph from
+
+        :returns float: BGE score
+    """
+    N = float64(data.N)
+    n = float64(len(data.nodes))
+    alpha_w = float64(n + 2)
+
+    # Term 1 is [alpha_mu / (alpha_mu + N)] ** (p / 2), where p is the number
+    # of parents + 1. Here we follow bnlearn which seems to INCORRECTLY set p
+    # to be 1 (in the orginal equation p is actually the letter "l", but we
+    # use p here for readability). alpha_mu takes its default value of 1.0.
+
+    bge = -0.5 * nplog(N + 1)
+    # print("\nBGE term 1 is {:.6f}".format(bge))
+
+    # Term 2 is the ratio of multivariate Gamma functions. Here again, we
+    # follow bnlearn where p is set to 1 (or 0 for orphan nodes) instead of
+    # actual number of parents, and additionally univariate Gamma functions
+    # are used. This seems a MISTAKE.
+
+    p = len(parents[node]) if node in parents else 0
+    bge += (gammaln(0.5 * (N + alpha_w - n + p + 1)) -
+            gammaln(0.5 * (alpha_w - n + p + 1)) -
+            0.5 * N * nplog(pi))
+    # print("\nBGE after term 2 is {:.6f}".format(bge))
+
+    # Term 3 is a complexity penalty which differs between orphan and
+    # non-orphan nodes.
+
+    prior = 0.5 * (alpha_w - n - 1)
+    if node not in parents:
+        values = data.values((node,))[:, 0]
+        mean = npmean(values)
+        sse = npsum((values - mean) ** 2)  # Sum of squared errors
+
+        bge += 0.5 * ((alpha_w - n + 1) * nplog(prior) -
+                      (N + alpha_w - n + 1) * nplog(prior + sse))
+
+    else:
+        values = data.values(tuple([node] + parents[node])).astype(float64)
+
+        # Ratio of determinants of the priors
+
+        bge += 0.5 * ((alpha_w - n + p + 1) * (p + 1) -
+                      (alpha_w - n + p) * (p)) * nplog(prior)
+        # print("\nBGE after term 3 is {:.6f}".format(bge))
+
+        # Ratio of the determinants of the posteriors with & without child.
+        # First, obtain the covariance matrix of the parents and child,
+        # scale it by (N - 1) add the prior to all diagonal elements,
+        # and then compute determinant.
+
+        Ryy_cov = cov(values, rowvar=False) * (N - 1)
+        fill_diagonal(Ryy_cov, Ryy_cov.diagonal() + prior)
+        Ryy_det = det(Ryy_cov)
+        # print("Ryy determinant:{:.6f}".format(Ryy_det))
+
+        # Now obtain determinant of Ryy with child variable omitted.
+
+        Tyy_det = det(Ryy_cov[1:, 1:])
+        # print("Tyy determinant:{:.6f}".format(Tyy_det))
+
+        # Add the determinant ratio into BGE score
+
+        bge += 0.5 * (N + alpha_w - n + p) * nplog(Tyy_det)
+        bge -= 0.5 * (N + alpha_w - n + p + 1) * nplog(Ryy_det)
+
+    if params is not None and 'base' in params and params['base'] != 'e':
+        bge /= nplog(params['base'])
+
+    # print('BGE for {} is {:.6f}'.format(node, bge))
+    return bge.item()
+
+
+def bic_gaussian_score(node, parents, params, data):
+    """
+        Return BIC score for a Gaussian node
+
+        :param str node: node scores are required for
+        :param dict parents: parents of non-orphan nodes {node: [parents]}
+        :param dict params: parameters for scores e.g. logarithm base
+        :param Data data: data to learn graph from
+        :param bool counts_reqd: not relevant for Gaussian node, but retained
+                                 so returned data has structure consistent with
+                                 categorical nodes.
+
+        :returns float: BIC score
     """
     start = Timing.now()
     scale = len(parents[node]) + 1 if node in parents else 1
@@ -259,7 +376,8 @@ def gaussian_node_score(node, parents, types, params, data):
     penalty = params * 0.5 * ln(data.N)
     bic_g = loglik - penalty
     # print('Penalty is {:.6f} making BIC {:.6f}'.format(penalty, bic_g))
-    return {'bic-g': bic_g}
+
+    return bic_g
 
 
 def categorical_node_score(node, parents, types, params, data,

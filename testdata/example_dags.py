@@ -82,7 +82,7 @@ def ab(check=None, is_bn=False):
     return None
 
 
-def xy(check=None, is_bn=False):
+def xy(check=None, is_bn=False):  # X --> Y
     if check is None:
         return DAG(['X', 'Y'], [('X', '->', 'Y')])
 
@@ -97,6 +97,25 @@ def xy(check=None, is_bn=False):
     assert check.parents == {'Y': ['X']}
     assert check.to_string() == '[X][Y|X]'
     assert check.to_adjmat().equals(adjmat({'X': [0, 0], 'Y': [1, 0]}))
+
+    return None
+
+
+def yx(check=None, is_bn=False):  # X <-- Y
+    if check is None:
+        return DAG(['X', 'Y'], [('Y', '->', 'X')])
+
+    assert (not is_bn and isinstance(check, DAG)) or (is_bn and
+                                                      isinstance(check, BN))
+    assert check.nodes == ['X', 'Y']
+    assert check.edges == {('Y', 'X'): EdgeType.DIRECTED}
+    assert check.is_directed is True
+    assert check.has_directed_cycles is False
+    assert check.is_DAG() is True
+    assert check.number_components() == 1
+    assert check.parents == {'X': ['Y']}
+    assert check.to_string() == '[X|Y][Y]'
+    assert check.to_adjmat().equals(adjmat({'X': [0, 1], 'Y': [0, 0]}))
 
     return None
 

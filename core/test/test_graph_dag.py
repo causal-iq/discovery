@@ -100,6 +100,10 @@ def test_graph_dag_xy_ok():  # X -> Y chain
     dag.xy(dag.xy())
 
 
+def test_graph_dag_yx_ok():  # X <- Y chain
+    dag.yx(dag.yx())
+
+
 def test_graph_dag_ba_ok():  # B -> A chain
     dag.ba(dag.ba())
 

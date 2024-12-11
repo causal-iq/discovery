@@ -10,6 +10,7 @@ from call.bnlearn import bnlearn_score
 import testdata.example_dags as dag
 from fileio.common import TESTDATA_DIR
 from fileio.numpy import NumPy
+from core.graph import DAG
 from core.metrics import dicts_same, values_same
 from core.bn import BN
 
@@ -285,5 +286,139 @@ def test_bnlearn_score_gauss_1_ok():  # scoring BNLearn example Gaussian
           .format(bnscores['bic-g'], dict(scores.sum())['bic-g']))
 
     # bnlearn and bnbench similar scores with so many rows
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+# Test Bayesian Gaussian Equivalent (bge) score
+
+def test_bnlearn_score_bge_x_y_1_ok():  # scoring X Y data
+    data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
+                 dstype='continuous', col_values={'X': None, 'Y': None})
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag.x_y(), data, ['bge'], {'k': 1.0})
+
+    scores = dag.x_y().score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_xy_1_ok():  # scoring X --> Y data
+    data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
+                 dstype='continuous', col_values={'X': None, 'Y': None})
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag.xy(), data, ['bge'], {'k': 1.0})
+
+    scores = dag.xy().score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_yx_1_ok():  # scoring X <-- Y data
+    data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
+                 dstype='continuous', col_values={'X': None, 'Y': None})
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag.yx(), data, ['bge'], {'k': 1.0})
+
+    scores = dag.yx().score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_f1_f2_1_ok():  # scoring F1 F2 data
+    data = NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv', dstype='continuous')
+    dag = DAG(['F1', 'F2'], [])
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag, data, ['bge'], {'k': 1.0})
+
+    scores = dag.score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_f1f2_1_ok():  # scoring F1 --> F2 data
+    data = NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv', dstype='continuous')
+    dag = DAG(['F1', 'F2'], [('F1', '->', 'F2')])
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag, data, ['bge'], {'k': 1.0})
+
+    scores = dag.score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_f2f1_1_ok():  # scoring F1 --> F2 data
+    data = NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv', dstype='continuous')
+    dag = DAG(['F1', 'F2'], [('F2', '->', 'F1')])
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag, data, ['bge'], {'k': 1.0})
+
+    scores = dag.score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_xyz_1_ok():  # scoring X --> Y --> Z
+    data = NumPy.read(TESTDATA_DIR + '/simple/xyz_10.csv', dstype='continuous')
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag.xyz(), data, ['bge'], {'k': 1.0})
+
+    scores = dag.xyz().score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_xy_zy_1_ok():  # scoring X --> Y <-- Z, 3 rows
+    data = NumPy.read(TESTDATA_DIR + '/simple/xyz_10.csv', dstype='continuous',
+                      N=3)
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag.xy_zy(), data, ['bge'], {'k': 1.0})
+
+    scores = dag.xy_zy().score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_xy_zy_2_ok():  # scoring X --> Y <-- Z, 10 rows
+    data = NumPy.read(TESTDATA_DIR + '/simple/xyz_10.csv', dstype='continuous')
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag.xy_zy(), data, ['bge'], {'k': 1.0})
+
+    scores = dag.xy_zy().score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_gauss_10_ok():  # gauss, 10 rows
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=10)
+    dag = BN.read(TESTDATA_DIR + '/xdsl/gauss.xdsl').dag
+    print('\n\n{}'.format(data.as_df()))
+    bnscores = bnlearn_score(dag, data, ['bge'], {'k': 1.0})
+
+    scores = dag.score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
+
+    assert dicts_same(bnscores, dict(scores.sum()), sf=7)
+
+
+def test_bnlearn_score_bge_gauss_1k_ok():  # gauss, 1k rows
+    data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype='continuous', N=1000)
+    dag = BN.read(TESTDATA_DIR + '/xdsl/gauss.xdsl').dag
+    print('\n\n{}'.format(data.as_df().tail()))
+    bnscores = bnlearn_score(dag, data, ['bge'], {'k': 1.0})
+
+    scores = dag.score(data, 'bge')
+    print('\n\nCausal-iq node scores are:\n{}'.format(scores))
 
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
