@@ -160,12 +160,14 @@ def _validate_hc_arguments(data, params, knowledge, context):
     if not set(params).issubset(HC_PARAMS):
         raise ValueError('hc() bad param name')
     if (('score' in params and params['score']
-         not in {'bde', 'bds', 'bic', 'loglik', 'bic-g'})
+         not in {'bde', 'bds', 'bic', 'loglik', 'bic-g', 'bge'})
         or ('maxiter' in params and
             (not isinstance(params['maxiter'], int) or params['maxiter'] < 1))
         or ('prefer' in params and (not isinstance(params['prefer'], Prefer)))
-        or (data.dstype == 'categorical' and 'bic-g' == params['score'])
-            or (data.dstype == 'continuous' and params['score'] != 'bic-g')):
+        or (data.dstype == 'categorical' and
+            params['score'] in {'bic-g', 'bge'})
+            or (data.dstype == 'continuous' and
+                params['score'] not in {'bic-g', 'bge'})):
         raise ValueError('hc() bad param value')
 
     # Check any tabulist and score related parameters
@@ -331,7 +333,7 @@ def _score_order(data, params):
                 # comparsion on the variables' sequences of values
 
                 vals_same = vals_after = None
-                if (same_score and same_c_score 
+                if (same_score and same_c_score
                         and isinstance(data, (Pandas, NumPy))):
                     print('*** Scores same for {} and {}'
                           .format(node, entry[2][0]))

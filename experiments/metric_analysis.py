@@ -322,8 +322,9 @@ def metric_analysis(compare_metrics, series, networks, metrics, Ns, params,
             del props['xaxis.range']  # needed for categorical x-axis
             del props['xaxis.scale']  # needed for categorical x-axis
 
-        plot_file = _plot_file(compare_metrics, fig_var, args['series'],
-                               args['metrics'], params)
+        plot_file = (args['file'] if 'file' in args else
+                     _plot_file(compare_metrics, fig_var, args['series'],
+                                args['metrics'], params))
 
         print('... generating plot file "{}"'.format(plot_file))
         relplot(data, props, plot_file)

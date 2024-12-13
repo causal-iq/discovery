@@ -33,8 +33,8 @@ SERIES2ALGO = {'TABU/STABLE3/SCORE_PLUS': 'Tabu-Stable',
                'BNLEARN/MMHC_BASE3': 'MMHC',
                'BNLEARN/H2PC_BASE3': 'H2PC',
                'BNLEARN/PC_BASE3': 'PC-Stable',
-               'BNLEARN/GS_BASE3': 'GS'
-               # 'BNLEARN/IIAMB_BASE3': 'Inter-IAMB'
+               'BNLEARN/GS_BASE3': 'GS',
+               'BNLEARN/IIAMB_BASE3': 'Inter-IAMB'
                }
 
 
@@ -75,6 +75,10 @@ def values_stab_hc_asia_10K():
 
 
 def chart_ijar_stab_cat_f1():
+    """
+        Chart showing F1 against sample size for each stability approach and
+        for each categorical variable network.
+    """
     args = {'action': 'series',
             'series': (
                        'TABU/BASE3,' +
@@ -82,10 +86,11 @@ def chart_ijar_stab_cat_f1():
                        'TABU/STABLE3/INC_SCORE,' +
                        'TABU/STABLE3/SCORE_PLUS'
                        ),
+            'file': EXPTS_DIR + '/papers/ijar_stability/ijar_stab_cat_f1.png',
             'metrics': 'f1-e',
             'networks': CATEGORICAL,
             'N': '100-100k',
-            'params': ('fig:tabu_stab_cat_f1;' +
+            'params': ('fig:ijar_stab_cat_f1;' +
                        'figure.title;' +
                        'legend.fontsize:24;' +
                        'xaxis.ticks_fontsize:24;' +
@@ -116,6 +121,10 @@ def chart_ijar_stab_cat_f1():
 
 
 def chart_ijar_stab_con_f1():
+    """
+        Chart showing F1 against sample size for each stability approach and
+        for each continuous variable network.
+    """
     args = {'action': 'series',
             'series': (
                        'TABU/BASE3,' +
@@ -123,6 +132,7 @@ def chart_ijar_stab_con_f1():
                        'TABU/STABLE3/INC_SCORE,' +
                        'TABU/STABLE3/SCORE_PLUS'
                        ),
+            'file': EXPTS_DIR + '/papers/ijar_stability/ijar_stab_con_f1.png',
             'metrics': 'f1-e',
             'networks': CONTINUOUS,
             'N': '100-100k',
@@ -156,7 +166,7 @@ def chart_ijar_stab_con_f1():
     run_analysis(args)
 
 
-def chart_ijar_stab_order_score():
+def chart_ijar_stab_cat_bic():
     """
         Chart of core vs. sample size for different stability approaches - cat
     """
@@ -165,6 +175,7 @@ def chart_ijar_stab_order_score():
                        'TABU/STABLE/INC_SCORE,' +
                        'TABU/STABLE/SCORE,' +
                        'TABU/STABLE/SCORE_PLUS'),
+            'file': EXPTS_DIR + '/papers/ijar_stability/ijar_stab_cat_bic.png',
             'metrics': 'score',
             'networks': CATEGORICAL,
             'N': '100-100k',
@@ -198,7 +209,7 @@ def table_ijar_stab_cat():
     SERIES = ('TABU/BASE3,' +
               'TABU/STABLE3/DEC_SCORE,' +
               'TABU/STABLE3/INC_SCORE,' +
-              'TABU/STABLE3/SCORE,' +
+              'TABU/STABLE3/SCORE_PLUS,' +
               'HC/BASE3,' +
               'HC/STABLE3/SCORE_PLUS'
               )
@@ -206,7 +217,34 @@ def table_ijar_stab_cat():
             'series': SERIES,
             'networks': CATEGORICAL,
             'N': '100-100k;1;0-24',
-            'metrics': 'f1-e,f1-e-std,score',  # 'expts,f1-e,f1-e-std,score,time,p-e,r-e',
+            # 'metrics': 'f1-e,f1-e-std,score',
+            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
+            # 'maxtime': '180',
+            'file': None}
+    run_analysis(args)
+
+
+def table_ijar_stab_bdeu_cat():
+    """
+        Table summarising HC/Tabu stability approaches - categorical, BDE
+    """
+    # CATEGORICAL = ('asia,sports,sachs,covid,child,insurance,property,' +
+    #                'diarrhoea,water')  # smaller networks
+    # CATEGORICAL = ('mildew,alarm,barley,hailfinder,hepar2,win95pts,' +
+    #                'formed,pathfinder,gaming')  # larger networks
+    SERIES = ('TABU/STABLE3/BDEU_BASE,' +
+              'TABU/STABLE3/BDEU_DEC,' +
+              'TABU/STABLE3/BDEU_INC,' +
+              'TABU/STABLE3/BDEU_PLUS,' +
+              'HC/STABLE3/BDEU_BASE,' +
+              'HC/STABLE3/BDEU_PLUS,' +
+              'TETRAD/FGES_BDEU'
+              )
+    args = {'action': 'summary',
+            'series': SERIES,
+            'networks': CATEGORICAL,
+            'N': '100-100k;1;0-24',
+            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
             # 'maxtime': '180',
             'file': None}
     run_analysis(args)
@@ -232,15 +270,41 @@ def table_ijar_stab_con():
     SERIES = ('TABU/BASE3,' +
               'TABU/STABLE3/DEC_SCORE,' +
               'TABU/STABLE3/INC_SCORE,' +
-              'TABU/STABLE3/SCORE,' +
+              'TABU/STABLE3/SCORE_PLUS,' +
               'HC/BASE3,' +
-              'HC/STABLE3/SCORE_PLUS'
+              'HC/STABLE3/SCORE_PLUS' +
               )
     args = {'action': 'summary',
             'series': SERIES,
             'networks': CONTINUOUS,
             'N': '100-100k;1;0-24',
-            'metrics': 'f1-e,f1-e-std,score',  # 'expts,f1-e,f1-e-std,f1,score,time,p-e,r-e',
+            # 'metrics': 'f1-e,f1-e-std,score',
+            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
+            # 'maxtime': '180',
+            'file': None}
+    run_analysis(args)
+
+
+def table_ijar_stab_bdeu_con():
+    """
+        Table summarising HC/Tabu stability approaches - continuous, BDE
+    """
+    # CATEGORICAL = ('asia,sports,sachs,covid,child,insurance,property,' +
+    #                'diarrhoea,water')  # smaller networks
+    # CATEGORICAL = ('mildew,alarm,barley,hailfinder,hepar2,win95pts,' +
+    #                'formed,pathfinder,gaming')  # larger networks
+    SERIES = ('TABU/STABLE3/BDEU_BASE,' +
+              'TABU/STABLE3/BDEU_DEC,'
+              'TABU/STABLE3/BDEU_INC,'
+              'TABU/STABLE3/BDEU_PLUS,'
+              'HC/STABLE3/BDEU_BASE,'
+              'HC/STABLE3/BDEU_PLUS'
+              )
+    args = {'action': 'summary',
+            'series': SERIES,
+            'networks': CONTINUOUS,
+            'N': '100-100k;1;0-24',
+            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
             # 'maxtime': '180',
             'file': None}
     run_analysis(args)
@@ -394,7 +458,7 @@ def chart_ijar_stab_algos_cat():
                    'xaxis.shared': False,
                    'yaxis.shared': False},
             plot_file=(EXPTS_DIR +
-                       '/papers/tabu_stable/ijar_stab_algos_cat.png'))
+                       '/papers/ijar_stable/ijar_stab_algos_cat.png'))
 
 
 def chart_ijar_stab_algos_con():

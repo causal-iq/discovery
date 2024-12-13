@@ -242,6 +242,10 @@ def run_learn(args, root_dir=EXPTS_DIR):
                     and props['params']['score'] == 'bic'
                         and dstype == 'continuous'):
                     props['params']['score'] = 'bic-g'
+                if ('params' in props and 'score' in props['params']
+                    and props['params']['score'] == 'bde'
+                        and dstype == 'continuous'):
+                    props['params']['score'] = 'bge'
                 if ('params' in props and 'test' in props['params']
                     and props['params']['test'] == 'mi'
                         and dstype == 'continuous'):
