@@ -272,7 +272,7 @@ def table_ijar_stab_con():
               'TABU/STABLE3/INC_SCORE,' +
               'TABU/STABLE3/SCORE_PLUS,' +
               'HC/BASE3,' +
-              'HC/STABLE3/SCORE_PLUS' +
+              'HC/STABLE3/SCORE_PLUS'
               )
     args = {'action': 'summary',
             'series': SERIES,
