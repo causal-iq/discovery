@@ -1,0 +1,227 @@
+PS C:\dev\causal-iq\discovery> pytest -c papers.ini -s -k ijar_stab_ord_cat_bdeu
+====================================================================== test session starts =======================================================================
+platform win32 -- Python 3.8.2, pytest-6.2.5, py-1.11.0, pluggy-1.0.0
+rootdir: C:\dev\causal-iq\discovery, configfile: papers.ini
+plugins: forked-1.4.0, xdist-2.5.0
+collected 120 items / 119 deselected / 1 selected
+
+experiments\papers\ijar_stability\tabu_stable_ijar_v1.py 
+
+Sample sizes are [100, 1000, 10000, 100000]
+
+
+**Series ['TABU/STABLE3/BDEU_BASE', 'TABU/STABLE3/BDEU_DEC', 'TABU/STABLE3/BDEU_INC', 'TABU/STABLE3/BDEU_PLUS', 'HC/STABLE3/BDEU_BASE', 'HC/STABLE3/BDEU_PLUS', 'TETRAD/FGES_BDEU']
+Scanning traces of asia in TABU/STABLE3/BDEU_BASE
+Scanning traces of asia in TABU/STABLE3/BDEU_DEC
+Scanning traces of asia in TABU/STABLE3/BDEU_INC
+Scanning traces of asia in TABU/STABLE3/BDEU_PLUS
+Scanning traces of asia in HC/STABLE3/BDEU_BASE
+Scanning traces of asia in HC/STABLE3/BDEU_PLUS
+Scanning traces of asia in TETRAD/FGES_BDEU
+Scanning traces of sports in TABU/STABLE3/BDEU_BASE
+Scanning traces of sports in TABU/STABLE3/BDEU_DEC
+Scanning traces of sports in TABU/STABLE3/BDEU_INC
+Scanning traces of sports in TABU/STABLE3/BDEU_PLUS
+Scanning traces of sports in HC/STABLE3/BDEU_BASE
+Scanning traces of sports in HC/STABLE3/BDEU_PLUS
+Scanning traces of sports in TETRAD/FGES_BDEU
+Scanning traces of sachs in TABU/STABLE3/BDEU_BASE
+Scanning traces of sachs in TABU/STABLE3/BDEU_DEC
+Scanning traces of sachs in TABU/STABLE3/BDEU_INC
+Scanning traces of sachs in TABU/STABLE3/BDEU_PLUS
+Scanning traces of sachs in HC/STABLE3/BDEU_BASE
+Scanning traces of sachs in HC/STABLE3/BDEU_PLUS
+Scanning traces of sachs in TETRAD/FGES_BDEU
+Scanning traces of covid in TABU/STABLE3/BDEU_BASE
+Scanning traces of covid in TABU/STABLE3/BDEU_DEC
+Scanning traces of covid in TABU/STABLE3/BDEU_INC
+Scanning traces of covid in TABU/STABLE3/BDEU_PLUS
+Scanning traces of covid in HC/STABLE3/BDEU_BASE
+Scanning traces of covid in HC/STABLE3/BDEU_PLUS
+Scanning traces of covid in TETRAD/FGES_BDEU
+Scanning traces of child in TABU/STABLE3/BDEU_BASE
+Scanning traces of child in TABU/STABLE3/BDEU_DEC
+Scanning traces of child in TABU/STABLE3/BDEU_INC
+Scanning traces of child in TABU/STABLE3/BDEU_PLUS
+Scanning traces of child in HC/STABLE3/BDEU_BASE
+Scanning traces of child in HC/STABLE3/BDEU_PLUS
+Scanning traces of child in TETRAD/FGES_BDEU
+Scanning traces of insurance in TABU/STABLE3/BDEU_BASE
+Scanning traces of insurance in TABU/STABLE3/BDEU_DEC
+Scanning traces of insurance in TABU/STABLE3/BDEU_INC
+Scanning traces of insurance in TABU/STABLE3/BDEU_PLUS
+Scanning traces of insurance in HC/STABLE3/BDEU_BASE
+Scanning traces of insurance in HC/STABLE3/BDEU_PLUS
+Scanning traces of insurance in TETRAD/FGES_BDEU
+Scanning traces of property in TABU/STABLE3/BDEU_BASE
+Scanning traces of property in TABU/STABLE3/BDEU_DEC
+Scanning traces of property in TABU/STABLE3/BDEU_INC
+Scanning traces of property in TABU/STABLE3/BDEU_PLUS
+Scanning traces of property in HC/STABLE3/BDEU_BASE
+Scanning traces of property in HC/STABLE3/BDEU_PLUS
+Scanning traces of property in TETRAD/FGES_BDEU
+Scanning traces of diarrhoea in TABU/STABLE3/BDEU_BASE
+Scanning traces of diarrhoea in TABU/STABLE3/BDEU_DEC
+Scanning traces of diarrhoea in TABU/STABLE3/BDEU_INC
+Scanning traces of diarrhoea in TABU/STABLE3/BDEU_PLUS
+Scanning traces of diarrhoea in HC/STABLE3/BDEU_BASE
+Scanning traces of diarrhoea in HC/STABLE3/BDEU_PLUS
+Scanning traces of diarrhoea in TETRAD/FGES_BDEU
+Scanning traces of water in TABU/STABLE3/BDEU_BASE
+Scanning traces of water in TABU/STABLE3/BDEU_DEC
+Scanning traces of water in TABU/STABLE3/BDEU_INC
+Scanning traces of water in TABU/STABLE3/BDEU_PLUS
+Scanning traces of water in HC/STABLE3/BDEU_BASE
+Scanning traces of water in HC/STABLE3/BDEU_PLUS
+Scanning traces of water in TETRAD/FGES_BDEU
+Scanning traces of mildew in TABU/STABLE3/BDEU_BASE
+Scanning traces of mildew in TABU/STABLE3/BDEU_DEC
+Scanning traces of mildew in TABU/STABLE3/BDEU_INC
+Scanning traces of mildew in TABU/STABLE3/BDEU_PLUS
+Scanning traces of mildew in HC/STABLE3/BDEU_BASE
+Scanning traces of mildew in HC/STABLE3/BDEU_PLUS
+Scanning traces of mildew in TETRAD/FGES_BDEU
+Scanning traces of alarm in TABU/STABLE3/BDEU_BASE
+Scanning traces of alarm in TABU/STABLE3/BDEU_DEC
+Scanning traces of alarm in TABU/STABLE3/BDEU_INC
+Scanning traces of alarm in TABU/STABLE3/BDEU_PLUS
+Scanning traces of alarm in HC/STABLE3/BDEU_BASE
+Scanning traces of alarm in HC/STABLE3/BDEU_PLUS
+Scanning traces of alarm in TETRAD/FGES_BDEU
+Scanning traces of barley in TABU/STABLE3/BDEU_BASE
+Scanning traces of barley in TABU/STABLE3/BDEU_DEC
+Scanning traces of barley in TABU/STABLE3/BDEU_INC
+Scanning traces of barley in TABU/STABLE3/BDEU_PLUS
+Scanning traces of barley in HC/STABLE3/BDEU_BASE
+Scanning traces of barley in HC/STABLE3/BDEU_PLUS
+Scanning traces of barley in TETRAD/FGES_BDEU
+Scanning traces of hailfinder in TABU/STABLE3/BDEU_BASE
+Scanning traces of hailfinder in TABU/STABLE3/BDEU_DEC
+Scanning traces of hailfinder in TABU/STABLE3/BDEU_INC
+Scanning traces of hailfinder in TABU/STABLE3/BDEU_PLUS
+Scanning traces of hailfinder in HC/STABLE3/BDEU_BASE
+Scanning traces of hailfinder in HC/STABLE3/BDEU_PLUS
+Scanning traces of hailfinder in TETRAD/FGES_BDEU
+Scanning traces of hepar2 in TABU/STABLE3/BDEU_BASE
+Scanning traces of hepar2 in TABU/STABLE3/BDEU_DEC
+Scanning traces of hepar2 in TABU/STABLE3/BDEU_INC
+Scanning traces of hepar2 in TABU/STABLE3/BDEU_PLUS
+Scanning traces of hepar2 in HC/STABLE3/BDEU_BASE
+Scanning traces of hepar2 in HC/STABLE3/BDEU_PLUS
+Scanning traces of hepar2 in TETRAD/FGES_BDEU
+Scanning traces of win95pts in TABU/STABLE3/BDEU_BASE
+Scanning traces of win95pts in TABU/STABLE3/BDEU_DEC
+Scanning traces of win95pts in TABU/STABLE3/BDEU_INC
+Scanning traces of win95pts in TABU/STABLE3/BDEU_PLUS
+Scanning traces of win95pts in HC/STABLE3/BDEU_BASE
+Scanning traces of win95pts in HC/STABLE3/BDEU_PLUS
+Scanning traces of win95pts in TETRAD/FGES_BDEU
+Scanning traces of formed in TABU/STABLE3/BDEU_BASE
+Scanning traces of formed in TABU/STABLE3/BDEU_DEC
+Scanning traces of formed in TABU/STABLE3/BDEU_INC
+Scanning traces of formed in TABU/STABLE3/BDEU_PLUS
+Scanning traces of formed in HC/STABLE3/BDEU_BASE
+Scanning traces of formed in HC/STABLE3/BDEU_PLUS
+Scanning traces of formed in TETRAD/FGES_BDEU
+Scanning traces of pathfinder in TABU/STABLE3/BDEU_BASE
+Scanning traces of pathfinder in TABU/STABLE3/BDEU_DEC
+Scanning traces of pathfinder in TABU/STABLE3/BDEU_INC
+Scanning traces of pathfinder in TABU/STABLE3/BDEU_PLUS
+Scanning traces of pathfinder in HC/STABLE3/BDEU_BASE
+Scanning traces of pathfinder in HC/STABLE3/BDEU_PLUS
+Scanning traces of pathfinder in TETRAD/FGES_BDEU
+
+expts metric
+                        asia  sports  sachs  covid  child  insurance  property  diarrhoea  water  mildew  alarm  barley  hailfinder  hepar2  win95pts  formed  pathfinder       MEAN
+series                                                                                                                                                             
+
+TABU/STABLE3/BDEU_PLUS    20      20     20     20     20         20        20         20     20      20     20      20          20      20        20      20          20  20.000000
+TABU/STABLE3/BDEU_BASE    20      20     20     20     20         20        20         20     20      20     20      20          20      20        20      20          20  20.000000
+TABU/STABLE3/BDEU_DEC     20      20     20     20     20         20        20         20     20      20     20      20          20      20        20      20          20  20.000000
+TETRAD/FGES_BDEU          20      20     20     20     20         20        20         20     20      20     20      20          19      20        20      20           5  19.058824
+HC/STABLE3/BDEU_PLUS      20      20     20     20     20         20        20         20     20      20     20      20          20      20        20      20          20  20.000000
+TABU/STABLE3/BDEU_INC     20      20     20     20     20         20        20         20     20      20     20      20          20      20        20      20          20  20.000000
+HC/STABLE3/BDEU_BASE      20      20     20     20     20         20        20         20     20      20     20      20          20      20        20      20          20  20.000000
+
+
+f1-e metric
+                          asia  sports   sachs   covid   child  insurance  property  diarrhoea   water  mildew   alarm  barley  hailfinder  hepar2  win95pts  formed  pathfinder      MEAN
+series                                                                                                                                                             
+
+TABU/STABLE3/BDEU_PLUS  0.8972  0.7083  0.7883  0.7055  0.7678     0.4962    0.7983     0.3327  0.4602  0.2225  0.5268  0.2672      0.4640  0.5365    0.4854  0.6126      0.2590  0.548735
+TABU/STABLE3/BDEU_BASE  0.8085  0.5545  0.7576  0.6041  0.7511     0.5272    0.6208     0.3293  0.2702  0.2307  0.5878  0.3393      0.4284  0.4243    0.3514  0.4601      0.2402  0.487382
+TABU/STABLE3/BDEU_DEC   0.6787  0.4905  0.7677  0.6040  0.7220     0.4735    0.5235     0.3267  0.4602  0.2442  0.5807  0.2853      0.4659  0.4445    0.4985  0.2751      0.2640  0.476765
+TETRAD/FGES_BDEU        0.8702  0.7083  0.7252  0.6165  0.6993     0.6292    0.6338     0.2883  0.2610  0.3613  0.8237  0.5387      0.5052  0.4888    0.7245  0.6722      0.0754  0.565976
+HC/STABLE3/BDEU_PLUS    0.5975  0.7083  0.6820  0.6150  0.6765     0.4450    0.7983     0.3357  0.4565  0.1940  0.4943  0.2672      0.4056  0.5152    0.4925  0.5691      0.2690  0.501276
+TABU/STABLE3/BDEU_INC   0.8972  0.7083  0.7955  0.6727  0.7780     0.5020    0.7983     0.3030  0.2518  0.2453  0.4390  0.3407      0.2841  0.5310    0.2306  0.6420      0.2757  0.511482
+HC/STABLE3/BDEU_BASE    0.4884  0.4340  0.7126  0.4271  0.5782     0.4494    0.4749     0.3408  0.2342  0.2087  0.4777  0.3191      0.3700  0.3999    0.3233  0.4294      0.2431  0.406518
+
+
+f1-e-std metric
+                          asia  sports   sachs   covid   child  insurance  property  diarrhoea   water  mildew   alarm  barley  hailfinder  hepar2  win95pts  formed  pathfinder      MEAN
+series                                                                                                                                                             
+
+TABU/STABLE3/BDEU_PLUS  0.0000  0.0000  0.0000  0.0000  0.0000     0.0000    0.0000     0.0000  0.0000  0.0000  0.0000  0.0000      0.0517  0.0000    0.0164  0.0026      0.0007  0.004200
+TABU/STABLE3/BDEU_BASE  0.1756  0.1806  0.0647  0.1649  0.0797     0.0613    0.0918     0.0463  0.0440  0.0351  0.1355  0.0637      0.0964  0.1013    0.0439  0.1032      0.0363  0.089665
+TABU/STABLE3/BDEU_DEC   0.0000  0.0000  0.0000  0.0000  0.0000     0.0000    0.0000     0.0000  0.0000  0.0000  0.0000  0.0000      0.0512  0.0000    0.0165  0.0026      0.0007  0.004176
+TETRAD/FGES_BDEU        0.0000  0.0000  0.0000  0.0000  0.0000     0.0000    0.0000     0.0000  0.0000  0.0000  0.0000  0.0000      0.0229  0.0000    0.0266  0.0022      0.0031  0.003224
+HC/STABLE3/BDEU_PLUS    0.0000  0.0000  0.0000  0.0000  0.0000     0.0000    0.0000     0.0000  0.0000  0.0000  0.0000  0.0000      0.0287  0.0000    0.0167  0.0026      0.0007  0.002865
+TABU/STABLE3/BDEU_INC   0.0000  0.0000  0.0000  0.0000  0.0000     0.0000    0.0000     0.0000  0.0000  0.0000  0.0000  0.0000      0.0356  0.0000    0.0145  0.0027      0.0000  0.003106
+HC/STABLE3/BDEU_BASE    0.3916  0.2396  0.0763  0.0631  0.1259     0.0686    0.1328     0.0466  0.0452  0.0327  0.1109  0.0564      0.1129  0.0784    0.0383  0.1019      0.0399  0.103594
+
+
+f1 metric
+                          asia  sports   sachs   covid   child  insurance  property  diarrhoea   water  mildew   alarm  barley  hailfinder  hepar2  win95pts  formed  pathfinder      MEAN
+series                                                                                                                                                             
+
+TABU/STABLE3/BDEU_PLUS  0.7410  0.6805  0.5078  0.7245  0.7325     0.6235    0.8528     0.5072  0.4305  0.3435  0.5975  0.2970      0.5028  0.5585    0.4981  0.6252      0.3359  0.562282
+TABU/STABLE3/BDEU_BASE  0.6958  0.4188  0.4802  0.6722  0.7580     0.6059    0.6626     0.5040  0.3054  0.3497  0.6356  0.3721      0.4661  0.5134    0.3753  0.4902      0.3423  0.508682
+TABU/STABLE3/BDEU_DEC   0.6198  0.2918  0.4440  0.6707  0.7055     0.5717    0.5587     0.4878  0.4305  0.3653  0.6060  0.3062      0.5050  0.4947    0.5112  0.3030      0.3405  0.483082
+TETRAD/FGES_BDEU        0.6053  0.1723  0.0563  0.6018  0.2787     0.4880    0.5387     0.1745  0.1705  0.3613  0.7572  0.5220      0.4519  0.4695    0.6577  0.5691      0.1484  0.413129
+HC/STABLE3/BDEU_PLUS    0.4487  0.6805  0.5118  0.6880  0.6817     0.5665    0.8528     0.5142  0.4318  0.3245  0.5640  0.2970      0.4773  0.5507    0.5033  0.5993      0.3337  0.530929
+TABU/STABLE3/BDEU_INC   0.7410  0.6805  0.5262  0.6770  0.7635     0.5992    0.8528     0.5030  0.3013  0.3173  0.5222  0.3688      0.3908  0.5613    0.2381  0.6480      0.3430  0.531412
+series
+TABU/STABLE3/BDEU_PLUS  0.075   0.185  0.255  1.195  0.715      2.205     1.360      1.860  2.110    7.605  3.375  13.160      7.7250  12.235    30.150  31.275      43.485   9.351176
+TABU/STABLE3/BDEU_BASE  0.035   0.125  0.150  0.970  0.505      1.240     0.880      1.250  1.250    4.230  2.085   8.185      3.8400   7.670    16.645  16.820      22.025   5.170882
+TABU/STABLE3/BDEU_DEC   0.070   0.155  0.245  1.455  0.525      1.735     1.440      1.525  1.345    4.645  2.300  10.255      5.4200   9.410    17.780  20.500      33.005   6.577059
+TETRAD/FGES_BDEU        0.050   0.500  0.600  1.150  9.900      8.800     0.950     13.700  1.150  101.150  1.950   6.950    752.5875   4.350     6.100   9.350       3.000  54.249265
+HC/STABLE3/BDEU_PLUS    0.080   0.165  0.260  1.470  0.760      2.550     1.570      2.420  3.190    9.160  4.435  18.285     10.7700  18.315    36.435  33.770      43.190  10.989706
+TABU/STABLE3/BDEU_INC   0.045   0.125  0.175  0.700  0.650      1.340     0.995      1.460  2.345    5.550  3.120  10.560      5.3600   9.410    23.150  18.950      30.395   6.725294
+HC/STABLE3/BDEU_BASE    0.025   0.060  0.100  0.760  0.370      1.080     0.695      1.215  1.290    4.665  1.825  10.775      4.5450  10.030    20.565  21.900      25.045   6.173235
+
+
+p-e metric
+                          asia  sports   sachs   covid   child  insurance  property  diarrhoea   water  mildew   alarm  barley  hailfinder  hepar2  win95pts  formed  pathfinder      MEAN
+series
+TABU/STABLE3/BDEU_PLUS  0.9271  1.0000  0.8278  0.7649  0.7905     0.5348    0.8479     0.4352  0.6016  0.2377  0.4973  0.3392      0.4683  0.5977    0.4186  0.6021      0.2646  0.597371
+TABU/STABLE3/BDEU_BASE  0.8319  0.8245  0.7993  0.6615  0.7693     0.5760    0.6520     0.4230  0.3533  0.2434  0.5651  0.4283      0.4230  0.4678    0.2950  0.4418      0.2455  0.529453
+TABU/STABLE3/BDEU_DEC   0.6806  0.7812  0.8218  0.6666  0.7364     0.5109    0.5470     0.4068  0.6016  0.2555  0.5513  0.3574      0.4688  0.4948    0.4326  0.2577      0.2701  0.520065
+TETRAD/FGES_BDEU        0.9500  1.0000  0.7857  0.6865  0.7574     0.7210    0.6780     0.4956  0.3872  0.4039  0.8617  0.7211      0.5502  0.6518    0.8029  0.7610      0.1325  0.667441
+HC/STABLE3/BDEU_PLUS    0.6111  1.0000  0.7183  0.6786  0.6881     0.4741    0.8479     0.4482  0.5988  0.2140  0.4617  0.3392      0.4094  0.5713    0.4253  0.5584      0.2762  0.548271
+TABU/STABLE3/BDEU_INC   0.9271  1.0000  0.8417  0.7271  0.7987     0.5412    0.8479     0.3995  0.3374  0.2793  0.4150  0.4246      0.2731  0.5985    0.1842  0.6319      0.2815  0.559335
+HC/STABLE3/BDEU_BASE    0.4871  0.6021  0.7569  0.4782  0.5725     0.4869    0.4883     0.4438  0.3084  0.2186  0.4420  0.4027      0.3622  0.4345    0.2676  0.4119      0.2494  0.436065
+
+
+r-e metric
+                          asia  sports   sachs   covid  child  insurance  property  diarrhoea   water  mildew   alarm  barley  hailfinder  hepar2  win95pts  formed  pathfinder      MEAN
+series
+TABU/STABLE3/BDEU_PLUS  0.8750  0.6000  0.7647  0.6757  0.750     0.4663    0.7581     0.2831  0.3750  0.2174  0.5598  0.2381      0.4674  0.4919    0.5795  0.6246      0.2533  0.528229
+TABU/STABLE3/BDEU_BASE  0.7937  0.4600  0.7294  0.5770  0.736     0.4913    0.5968     0.2824  0.2220  0.2283  0.6141  0.2988      0.4432  0.3935    0.4357  0.4826      0.2351  0.471759
+TABU/STABLE3/BDEU_DEC   0.6875  0.3833  0.7353  0.5743  0.710     0.4471    0.5081     0.2831  0.3750  0.2446  0.6141  0.2560      0.4712  0.4085    0.5906  0.3022      0.2585  0.461729
+TETRAD/FGES_BDEU        0.8125  0.6000  0.6912  0.5811  0.660     0.5673    0.6048     0.2279  0.2045  0.3424  0.7935  0.4524      0.4773  0.4167    0.6714  0.6246      0.0523  0.516465
+HC/STABLE3/BDEU_PLUS    0.5938  0.6000  0.6618  0.5811  0.670     0.4231    0.7581     0.2831  0.3712  0.1848  0.5326  0.2381      0.4106  0.4736    0.5862  0.5812      0.2623  0.483035
+TABU/STABLE3/BDEU_INC   0.8750  0.6000  0.7647  0.6486  0.760     0.4712    0.7581     0.2574  0.2045  0.2283  0.4674  0.3006      0.3015  0.4837    0.3098  0.6529      0.2705  0.491424
+HC/STABLE3/BDEU_BASE    0.4938  0.3667  0.6882  0.4081  0.588     0.4231    0.4710     0.2904  0.1924  0.2076  0.5207  0.2815      0.3871  0.3748    0.4094  0.4518      0.2369  0.399500
+
+
+
+Means across all sample sizes and networks:
+
+                          expts    f1-e  f1-e-std      f1   bsf-e    score  time     p-e     r-e
+TABU/STABLE3/BDEU_PLUS  20.0000  0.5487    0.0042  0.5623  0.6178 -24.2630   9.4  0.5974  0.5282
+TABU/STABLE3/BDEU_BASE  20.0000  0.4874    0.0897  0.5087  0.5809 -24.2932   5.2  0.5295  0.4718
+TABU/STABLE3/BDEU_DEC   20.0000  0.4768    0.0042  0.4831  0.5656 -24.2906   6.6  0.5201  0.4617
+TETRAD/FGES_BDEU        19.0588  0.5660    0.0032  0.4131  0.5838 -24.9014  54.2  0.6674  0.5165
+HC/STABLE3/BDEU_PLUS    20.0000  0.5013    0.0029  0.5309  0.5944 -24.2680  11.0  0.5483  0.4830
+TABU/STABLE3/BDEU_INC   20.0000  0.5115    0.0031  0.5314  0.5958 -24.3066   6.7  0.5593  0.4914
+HC/STABLE3/BDEU_BASE    20.0000  0.4065    0.1036  0.4353  0.5366 -24.3327   6.2  0.4361  0.3995
