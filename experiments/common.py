@@ -83,10 +83,13 @@ METRICS = {'f1': {'label': 'F1', 'size': 5, 'colour': '#000000',
            'loglik': {'label': 'loglik', 'size': 3, 'colour': '#0000FF',
                       'dashes': (1, 0)},
            'f1-e-std': {'label': 'S.D. of f1-e'},
+           'score-std': {'label': 'S.D. of score'},
            'p-e': {'label': 'precision'},
            'r-e': {'label': 'recall'},
            'expts': {'label': 'Number of experiments'},
            'dens': {'label': 'Learnt graph density'},
+           'dens-std': {'label': 'Learnt graph density SD'},
+           'nonex': {'label': 'Non-extendable PDAG'},
            'pretime': {'label': 'Preprocessing time'}}
 
 METRIC_GROUPS = {'arcs': ['a-ok', 'a-ext', 'a-rev', 'a-non', 'a-eqv',

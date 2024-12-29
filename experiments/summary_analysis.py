@@ -2,10 +2,9 @@
 # Performs analysis for the tree runs
 
 from itertools import chain
-from statistics import mean, stdev
 from pandas import DataFrame, set_option
-from numpy import NaN
 from math import isnan
+from statistics import mean, stdev
 
 from fileio.common import EXPTS_DIR
 from experiments.common import SERIES_GROUPS, reference_bn
@@ -13,59 +12,142 @@ from core.graph import PDAG
 from learn.trace import Trace
 from analysis.trace import TraceAnalysis
 
+NaN = float("nan")
 
-def _generate_table(reqd_metric, raw_metrics):
+
+def impute_missing(metric, reqd_metric):
+    """
+        Impute missing metric values as average value of that metric over the
+        other series that do have a value for the same network and sample
+        size.
+    """
+    def impute(network, N):  # compute a single imputed metric value
+        values = []
+        for series in metric[network]:
+            if not isnan(metric[network][series][N]):
+                values.append(metric[network][series][N])
+        return mean(values) if len(values) else NaN
+
+    # Loop over all combinations of network, series and sample size imputing
+    # any missing values with mean over other series for that sample size and
+    # network.
+
+    imputed = {}
+    for network, _series in metric.items():
+        for series, Ns in _series.items():
+            for N in Ns:
+                if isnan(metric[network][series][N]):
+                    if network not in imputed:
+                        imputed[network] = {}
+                    if series not in imputed[network]:
+                        imputed[network][series] = {}
+                    imputed[network][series][N] = impute(network, N)
+
+    # Copy over any imputed values into metric structure:
+
+    for network, _series in imputed.items():
+        for series, Ns in _series.items():
+            for N in Ns:
+                metric[network][series][N] = imputed[network][series][N]
+                print("{} imputed for {}/{}/N{} as {:.4f}"
+                      .format(reqd_metric, network, series, N,
+                              imputed[network][series][N]))
+
+
+def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
     """
         Generate the tree analysis tables
 
         :param str reqd_metric: metric which is shown in table
         :param dict raw_metrics: raw data metrics
+        :param set ignore: {(network, N), ...} of cases to ignore
+        :param set impute: set of metrics to impute values for
 
         :returns dict: {series: mean value} of metric for each series
     """
-    def _round(value, dp=3):
-        return NaN if all([isnan(v) for v in value]) else round(value, dp)
 
-    # Generate the basic rows in the table
+    # Construct empty metrics table - ensure it has all combinations of
+    # network, series and N even if there is no corresponding entry in
+    # raw_metrics, but don't include networks and ssample sizes in "ignore".
 
-    table = {}
+    metric = {}
+    all_series = set()
+    all_Ns = set()
     for network, _series in raw_metrics.items():
-        table[network] = {}
         for series, Ns in _series.items():
+            all_series.add(series)
+            for N in Ns:
+                all_Ns.add(N)
+    for network in raw_metrics:
+        metric[network] = {}
+        for series in all_series:
+            metric[network][series] = {}
+            for N in all_Ns:
+                if (network, N) not in ignore:
+                    metric[network][series][N] = (0 if reqd_metric == 'expts'
+                                                  else NaN)
 
-            values = []  # array of metric values across sample sizes
+    # Place values in metric linked-lists structure
 
+    for network, _series in raw_metrics.items():
+        for series, Ns in _series.items():
             for N, samples in Ns.items():
-
-                # samples is array of metrics dict for each sub-sample
+                if (network, N) in ignore:
+                    continue
 
                 if reqd_metric == 'f1-e-std':  # st. dev of f1-e values
-                    values += ([stdev([s['f1-e'] for s in samples])]
-                               if len(samples) > 2 else [NaN])
+                    values = [s['f1-e'] for s in samples
+                              if not isnan(s['f1-e'])]
+                    value = stdev(values) if len(values) > 2 else NaN
+
+                elif reqd_metric == 'score-std':  # st. dev of score values
+                    values = [s['score'] for s in samples
+                              if not isnan(s['score'])]
+                    value = stdev(values) if len(values) > 2 else NaN
 
                 elif reqd_metric == 'expts':  # number of sub-samples
-                    values += [len(samples)]
+                    value = len(samples)
 
-                elif reqd_metric == 'dens':  # # edges / # nodes i.e. density
-                    values += [s['|E|'] / s['n'] for s in samples]
+                elif reqd_metric == 'dens':  # edges / # nodes i.e. density
+                    values = [s['|E|'] / s['n'] for s in samples
+                              if not isnan(s['|E|'])]
+                    value = mean(values) if len(values) else NaN
 
-                else:  # just take metric from TraceAnalysis
-                    values += [s[reqd_metric] for s in samples]
+                elif reqd_metric == 'dens-std':  # density SD
+                    values = [s['|E|'] / s['n'] for s in samples
+                              if not isnan(s['|E|'])]
+                    value = stdev(values) if len(values) > 2 else NaN
 
-            # if reqd_metric == 'time':  # use first time to avoid caching bias
-            #     values = [samples[0]['time'] if samples[0]['time'] > 0.1
-            #              else 0.1]
+                elif reqd_metric == 'nonex':  # non-extendable PDAGs
+                    values = [1 for s in samples if s['type'] == 'NONEX']
+                    value = len(values)
 
-            if reqd_metric == 'expts':  # we want total sum for this metric
-                values = [sum(values)]
+                else:  # just take metric as-is from TraceAnalysis
+                    values = [s[reqd_metric] for s in samples
+                              if not isnan(s[reqd_metric])]
+                    value = mean(values) if len(values) else NaN
 
-            # We now take mean value over all sample sizes except for expts
-            # which we sum
+                metric[network][series][N] = value
 
-            table[network][series] = (round(sum(values), 0) if reqd_metric ==
-                                      'expts' else round(mean(values), 4)
-                                      if len(values) else None)
-    table = DataFrame(table)
+    # impute missing metrics here if possible - NEED TO HANDLE IGNORE
+
+    if reqd_metric in impute:
+        impute_missing(metric, reqd_metric)
+
+    # Now average metric over sample sizes
+
+    for network, _series in metric.items():
+        for series, Ns in _series.items():
+            values = [v for v in Ns.values() if not isnan(v)]
+            value = (NaN if not len(values) else
+                     (round(sum(values)) if reqd_metric in ['expts', 'nonex']
+                      else round(mean(values), 4)))
+            metric[network][series] = value
+
+    # Convert linked list structure to a Dataframe, and add column of mean
+    # values over networks which is returned from this function.
+
+    table = DataFrame(metric)
     if 'series' in table.columns:
         table.set_index('series')
     table.index.name = 'series'
@@ -90,7 +172,9 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
         :param list metrics: metrics to obtain data for
         :param int maxtime: maximum execution time in minutes
         :param str file: output file name
-        :param dict/None params: trace-specific parameters
+        :param dict/None params: analysis-specific parameters:
+                                 'impute': ('metric1', ....)
+                                 'ignore': ('network1@N', ...)
         :param str root_dir: root directory holding trace files
 
         :returns DataFrame: means of each metric for each series
@@ -113,7 +197,9 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
     ignore = ({(e.split('@')[0], int(e.split('@')[1]))
                for e in params['ignore']}
               if 'ignore' in params else set())
-    # print('\n\n** {} \n'.format(ignore))
+    if len(ignore):
+        print('\n\nIgnoring these experiments: {} \n'.format(ignore))
+    impute = set(params['impute']) if 'impute' in params else set()
 
     # Loop over specified networks and series
 
@@ -187,7 +273,8 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
                     summaries.append(summary)
 
                     if (maxtime is None
-                            or analysis.summary['time'] <= maxtime * 60):
+                            or (analysis.summary['time'] <= maxtime * 60
+                                and analysis.summary['time'] >= 0)):
                         raw_metrics[network][_series][N] \
                             .append(analysis.summary)
 
@@ -198,7 +285,7 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
 
         means = {}
         for metric in metrics:
-            stat_means = _generate_table(metric, raw_metrics)
+            stat_means = _generate_table2(metric, raw_metrics, ignore, impute)
             means.update({metric: stat_means})
         means = DataFrame(means)
         print('\n\nMeans across all sample sizes and networks:\n\n{}'
