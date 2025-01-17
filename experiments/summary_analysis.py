@@ -125,7 +125,8 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
                 else:  # just take metric as-is from TraceAnalysis
                     values = [s[reqd_metric] for s in samples
                               if not isnan(s[reqd_metric])]
-                    value = mean(values) if len(values) else NaN
+                    value = ((values[0] if reqd_metric == 'time'
+                              else mean(values)) if len(values) else NaN)
 
                 metric[network][series][N] = value
 

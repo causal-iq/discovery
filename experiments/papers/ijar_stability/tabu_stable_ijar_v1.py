@@ -63,18 +63,18 @@ ALGO_BAR_PROPS = {  # Properties of the algorithm comparison bar plots
     'yaxis.label': {'f1-e': 'F1', 'f1-e-std': 'F1 S.D.',
                     'p-e': 'Precision', 'r-e': 'Recall',
                     'score': 'BIC', 'score-std': 'BIC SD',
-                    'bsf': 'BSF', 'time': 'Time'},
+                    'bsf-e': 'BSF', 'time': 'Time'},
     'subplot.title': {'f1-e': '(a) F1', 'f1-e-std': '(b) F1 SD',
                       'p-e': '(c) Precision', 'r-e': '(d) Recall',
                       'score': '(e) BIC', 'score-std': '(f) BIC SD',
                       'bsf-e': '(g) BSF', 'time': '(h) Time (seconds)'},
-    'subplot.aspect': 1.5,
+    'subplot.aspect': 1.6,
     'legend.title': ('Exclude\nidentical &\nsingle-valued\nvariables'),
     'figure.subplots_wspace': 0.3,
     'figure.subplots_hspace': 0.55,
-    'figure.subplots_bottom': 0.12,
+    'figure.subplots_bottom': 0.06,
     'figure.subplots_left': 0.04,
-    'figure.subplots_right': 0.90,
+    'figure.subplots_right': 0.92,
     'subplot.grid': True,
     'xaxis.shared': False,
     'yaxis.shared': False}
@@ -503,8 +503,9 @@ def table_ijar_stab_ord_cat_bic():
     args = {'action': 'summary',
             'series': SERIES,
             'networks': CATEGORICAL,
-            'N': '100-100k;1;0-24',
-            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
+            'N': '100k;1;0-24',
+            'metrics': ('expts,f1-e,f1-e-std,f1,bsf-e,score,score-std,' +
+                        'time,p-e,r-e'),
             'maxtime': '180',
             'file': None}
     run_analysis(args)
@@ -527,9 +528,9 @@ def table_ijar_stab_ord_con_bic():
             'series': SERIES,
             'networks': CONTINUOUS,
             'N': '100-100k;1;0-24',
-            # 'metrics': 'f1-e,f1-e-std,score',
-            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
-            # 'maxtime': '180',
+            'metrics': ('expts,f1-e,f1-e-std,f1,bsf-e,score,score-std,' +
+                        'time,p-e,r-e'),
+            'maxtime': '180',
             'file': None}
     run_analysis(args)
 
@@ -550,7 +551,8 @@ def table_ijar_stab_ord_cat_bdeu():
             'series': SERIES,
             'networks': CATEGORICAL,
             'N': '100-100k;1;0-24',
-            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
+            'metrics': ('expts,f1-e,f1-e-std,f1,bsf-e,score,score-std,' +
+                        'time,p-e,r-e'),
             'maxtime': '180',
             'file': None}
     run_analysis(args)
@@ -571,8 +573,9 @@ def table_ijar_stab_ord_con_bdeu():
             'series': SERIES,
             'networks': CONTINUOUS,
             'N': '100-100k;1;0-24',
-            'metrics': 'expts,f1-e,f1-e-std,f1,bsf-e,score,time,p-e,r-e',
-            # 'maxtime': '180',
+            'metrics': ('expts,f1-e,f1-e-std,f1,bsf-e,score,score-std,' +
+                        'time,p-e,r-e'),
+            'maxtime': '180',
             'file': None}
     run_analysis(args)
 
