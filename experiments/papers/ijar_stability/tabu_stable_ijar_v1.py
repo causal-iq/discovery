@@ -62,11 +62,13 @@ ALGO_BAR_PROPS = {  # Properties of the algorithm comparison bar plots
     'xaxis.label': 'Algorithm',
     'yaxis.label': {'f1-e': 'F1', 'f1-e-std': 'F1 S.D.',
                     'p-e': 'Precision', 'r-e': 'Recall',
-                    'score': 'BIC', 'score-std': 'BIC SD',
+                    'score': 'Normalised BIC',
+                    'score-std': 'Normalised BIC SD',
                     'bsf-e': 'BSF', 'time': 'Time'},
     'subplot.title': {'f1-e': '(a) F1', 'f1-e-std': '(b) F1 SD',
                       'p-e': '(c) Precision', 'r-e': '(d) Recall',
-                      'score': '(e) BIC', 'score-std': '(f) BIC SD',
+                      'score': '(e) Normalised BIC',
+                      'score-std': '(f) Normalised BIC SD',
                       'bsf-e': '(g) BSF', 'time': '(h) Time (seconds)'},
     'subplot.aspect': 1.6,
     'legend.title': ('Exclude\nidentical &\nsingle-valued\nvariables'),
@@ -162,6 +164,7 @@ def _pgm_fges_correct(series, metrics):
 
     networks = CATEGORICAL.replace('lfinder',
                                    'lfinder2').replace('pts', 'pts2')
+
     means = summary_analysis(series=list(series),
                              networks=networks.split(','), Ns=Ns, Ss=Ss,
                              metrics=metrics, params={'ignore': SING_VAL})
@@ -186,7 +189,7 @@ def _pgm_fges_correct(series, metrics):
                              Ns=failure_Ns, Ss=Ss,
                              metrics=metrics, params={'ignore': SING_VAL})
     others = DataFrame(_pivot(others, means, 'no'))
-    for metric in set(metrics) & {'f1-e', 'p-e', 'r-e', 'bsf-e'}:
+    for metric in set(metrics) & {'f1-e', 'p-e', 'r-e', 'bsf-e', 'score'}:
         data = _fges_correct(metric, data, others, failure_rate)
 
     return data
@@ -411,7 +414,8 @@ def chart_ijar_stab_cat_f1():
                        ','.join([n + ',' + n
                                  for n in CATEGORICAL.split(',')]) + '};' +
                        'legend.labels:{' +
-                       'TABU/BASE3,Tabu using\nvariable order\n,' +
+                       'TABU/BASE3,Standard unstable Tabu \n' +
+                       'using variable order\n,' +
                        'TABU/STABLE3/DEC_SCORE,Tabu using' +
                        '\ndecreasing score order\n,' +
                        'TABU/STABLE3/INC_SCORE,Tabu using' +
@@ -616,8 +620,21 @@ def chart_ijar_stab_algos_cat_bic():
                              params={'ignore': SING_VAL})
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
 
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.2, 0.6),
+                                  'p-e': (0.3, 0.6),
+                                  'r-e': (0.1, 0.6),
+                                  'bsf-e': (0.2, 0.7),
+                                  'score': (-31.0, -24.0)}})
     print(data)
-    relplot(data=data, props=ALGO_BAR_PROPS,
+    relplot(data=data, props=props,
             plot_file=(EXPTS_DIR +
                        '/papers/ijar_stability/algos-cat-bic.png'))
 
@@ -633,8 +650,23 @@ def chart_ijar_stab_algos_cat_pgm_bic():
                'bsf-e', 'time', 'nonex', 'expts', 'dens', 'dens-std',
                'n', '|E|', '|A|']
     data = _pgm_fges_correct(SERIES2ALGO, metrics)
+
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.2, 0.6),
+                                  'p-e': (0.3, 0.6),
+                                  'r-e': (0.1, 0.6),
+                                  'bsf-e': (0.2, 0.7),
+                                  'score': (-31.0, -24.0)}})
+
     print(data)
-    relplot(data=data, props=ALGO_BAR_PROPS,
+    relplot(data=data, props=props,
             plot_file=(EXPTS_DIR +
                        '/papers/ijar_stability/algos-cat-pgm-bic.png'))
 
@@ -643,8 +675,48 @@ def chart_ijar_stab_algos_cat_impute_bic():
     """
         Algorithm comparson for categorical data learnt using BIC score using
         modified Hailfinder and Pathfinder networks.
-        Experiments with single-valued datasets ignored, and f1-e and bsf-e
-        corrected using method in PGM paper.
+        Experiments with single-valued datasets ignored, and impute method
+        used.
+    """
+    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
+               'bsf-e', 'time', 'nonex', 'expts', 'dens', 'dens-std',
+               'n', '|E|', '|A|']
+    networks = CATEGORICAL.replace('lfinder',
+                                   'lfinder2').replace('pts', 'pts2')
+    
+    means = summary_analysis(series=list(SERIES2ALGO),
+                             networks=networks.split(','), Ns=SAMPLE_SIZES,
+                             Ss=RANDOM, metrics=metrics, maxtime=180,
+                             params={'ignore': SING_VAL,
+                                     'impute': ('f1-e', 'p-e', 'r-e',
+                                                'bsf-e', 'score')})
+    data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
+
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.2, 0.6),
+                                  'p-e': (0.3, 0.6),
+                                  'r-e': (0.1, 0.6),
+                                  'bsf-e': (0.2, 0.7),
+                                  'score': (-31.0, -24.0)}})
+    print(data)
+    relplot(data=data, props=props,
+            plot_file=(EXPTS_DIR +
+                       '/papers/ijar_stability/algos-cat-impute-bic.png'))
+
+
+def chart_ijar_stab_algos_cat_ignore_bic():
+    """
+        Algorithm comparson for categorical data learnt using BIC score using
+        modified Hailfinder and Pathfinder networks.
+        Experiments with single-valued datasets AND where FGES failed are
+        ignored
     """
     metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
                'bsf-e', 'time', 'nonex', 'expts', 'dens', 'dens-std',
@@ -652,18 +724,34 @@ def chart_ijar_stab_algos_cat_impute_bic():
     networks = CATEGORICAL.replace('lfinder',
                                    'lfinder2').replace('pts', 'pts2')
 
-    summary_analysis(series=list(SERIES2ALGO),
-                     networks=networks.split(','), Ns=SAMPLE_SIZES,
-                     Ss=RANDOM, metrics=metrics, maxtime=180,
-                     params={'ignore': SING_VAL,
-                             'impute': ('f1-e', 'p-e', 'r-e', 'bsf-e')})
+    ignore = SING_VAL + ['hailfinder2@10000', 'hailfinder2@100000',
+                         'pathfinder@10000', 'pathfinder@100000']
+    means = summary_analysis(series=list(SERIES2ALGO),
+                             networks=networks.split(','), Ns=SAMPLE_SIZES,
+                             Ss=RANDOM, metrics=metrics, maxtime=180,
+                             params={'ignore': ignore})
+    data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
 
-    # data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
-    # print(data)
-    # relplot(data=data, props=ALGO_BAR_PROPS,
-    #         plot_file=(EXPTS_DIR +
-    #                    '/papers/ijar_stability/algos-cat-impute_bic.png'))
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.2, 0.6),
+                                  'p-e': (0.3, 0.6),
+                                  'r-e': (0.1, 0.6),
+                                  'bsf-e': (0.2, 0.7),
+                                  'score': (-31.0, -24.0)}})
+    print(data)
+    relplot(data=data, props=props,
+            plot_file=(EXPTS_DIR +
+                       '/papers/ijar_stability/algos-cat-ignore-bic.png'))
 
+
+# Algorithm comparison for continuous networks
 
 def chart_ijar_stab_algos_con_bic():
     """
@@ -678,9 +766,56 @@ def chart_ijar_stab_algos_con_bic():
                              Ss=RANDOM, metrics=metrics, maxtime=180,
                              params={'ignore': ['arth150_c@100000']})
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.4, 0.7),
+                                  'p-e': (0.4, 0.8),
+                                  'r-e': (0.3, 0.7),
+                                  'bsf-e': (0.5, 0.8),
+                                  'score': (-60.0, -50.0)}})
     print(data)
-    relplot(data=data, props=ALGO_BAR_PROPS, plot_file=EXPTS_DIR +
+    relplot(data=data, props=props, plot_file=EXPTS_DIR +
             '/papers/ijar_stability/algos-con-bic.png')
+
+
+def chart_ijar_stab_algos_con_ignore_bic():
+    """
+        Comparsion of different algorithms with continuous data and using
+        BIC score. Ignores every experiment with any failure.
+    """
+    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
+               'bsf-e', 'time', 'nonex', 'expts', 'dens', 'dens-std',
+               'n', '|E|', '|A|']
+    means = summary_analysis(series=list(SERIES2ALGO),
+                             networks=CONTINUOUS.split(','), Ns=SAMPLE_SIZES,
+                             Ss=RANDOM, metrics=metrics, maxtime=180,
+                             params={'ignore': ['arth150_c@100000',
+                                                'arth150_c@10000',
+                                                'magic-irri_c@100000',
+                                                'magic-niab_c@100000']})
+    data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.4, 0.7),
+                                  'p-e': (0.4, 0.8),
+                                  'r-e': (0.3, 0.7),
+                                  'bsf-e': (0.5, 0.8),
+                                  'score': (-60.0, -50.0)}})
+    print(data)
+    relplot(data=data, props=props, plot_file=EXPTS_DIR +
+            '/papers/ijar_stability/algos-con-ignore-bic.png')
 
 
 def chart_ijar_stab_algos_con_impute_bic():
@@ -691,11 +826,27 @@ def chart_ijar_stab_algos_con_impute_bic():
     metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
                'bsf-e', 'time', 'nonex', 'expts', 'dens', 'dens-std',
                'n', '|E|', '|A|']
-    summary_analysis(series=list(SERIES2ALGO),
-                     Ss=RANDOM, metrics=metrics, maxtime=180,
-                     params={'ignore': ['arth150_c@100000'],
-                             'impute': ('f1-e', 'p-e', 'r-e', 'bsf-e')})
-    # data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
-    # print(data)
-    # relplot(data=data, props=ALGO_BAR_PROPS, plot_file=EXPTS_DIR +
-    #         '/papers/ijar_stability/algos-con-bic.png')
+    means = summary_analysis(series=list(SERIES2ALGO),
+                             networks=CONTINUOUS.split(','), Ns=SAMPLE_SIZES,
+                             Ss=RANDOM, metrics=metrics, maxtime=180,
+                             params={'ignore': ['arth150_c@100000'],
+                                     'impute': ('f1-e', 'p-e', 'r-e',
+                                                'bsf-e', 'score')})
+
+    data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
+    props = ALGO_BAR_PROPS.copy()
+    props.update({'xaxis.ticks_fontsize': 14,
+                  'yaxis.ticks_fontsize': 14,
+                  'subplot.title_fontsize': 16,
+                  'subplot.axes_fontsize': 14,
+                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_left': 0.06,
+                  'figure.subplots_bottom': 0.08,
+                  'yaxis.range': {'f1-e': (0.4, 0.7),
+                                  'p-e': (0.4, 0.8),
+                                  'r-e': (0.3, 0.7),
+                                  'bsf-e': (0.5, 0.8),
+                                  'score': (-60.0, -50.0)}})
+    print(data)
+    relplot(data=data, props=props, plot_file=EXPTS_DIR +
+            '/papers/ijar_stability/algos-con-impute-bic.png')

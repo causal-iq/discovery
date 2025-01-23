@@ -109,12 +109,12 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
                     value = len(samples)
 
                 elif reqd_metric == 'dens':  # edges / # nodes i.e. density
-                    values = [s['|E|'] / s['n'] for s in samples
+                    values = [2.0 * s['|E|'] / s['n'] for s in samples
                               if not isnan(s['|E|'])]
                     value = mean(values) if len(values) else NaN
 
                 elif reqd_metric == 'dens-std':  # density SD
-                    values = [s['|E|'] / s['n'] for s in samples
+                    values = [2.0 * s['|E|'] / s['n'] for s in samples
                               if not isnan(s['|E|'])]
                     value = stdev(values) if len(values) > 2 else NaN
 
