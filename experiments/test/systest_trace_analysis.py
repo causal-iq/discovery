@@ -304,3 +304,84 @@ def systest_trace_analysis_know_asia_6():  # First two sub-sample only
          ('delete', 'extra'): {('dysp', 'asia'): (14, None)},
          ('add', 'opposite'): {('dysp', 'asia'): [7, 9],
                                ('bronc', 'asia'): [8, 11]}}
+
+
+# Test relative sample sizes
+
+def systest_trace_analysis_know_asia_7():  # TABU/BASE3, N=0.1
+    series = ['TABU/BASE3']
+    networks = ['asia']
+    Ns = [0.1]
+    Ss = (0, 1)
+    root_dir = TESTDATA_DIR + '/experiments'
+    summaries, trace, diffs = trace_analysis(series, networks, Ns, Ss, None,
+                                             None, root_dir)
+
+    # Two summaries, identical grahs produced for these two subsamples
+
+    assert summaries[0] == \
+        {'series': 'TABU/BASE3', 'network': 'asia', 'sample': 0, 'N': 2,
+         'iter': 11, 'time': 0.0, 'score': -1.21301, 'type': 'DAG',
+         'n': 8, '|A|': 8, '|E|': 1, 'shd': 8, 'shd-s': 1.0, 'shd-e': 8,
+         'shd-es': 1.0, 'shd-b': 0.94, 'a-ok': 0, 'a-rev': 1, 'a-eqv': 0,
+         'a-non': 1, 'a-ext': 0, 'a-mis': 7, 'p': 0.0, 'r': 0.0, 'f1': 0.0,
+         'f1-b': 0.111, 'bsf': 0.062, 'bsf-e': 0.062, 'f1-e': 0.0, 'e-ori': 1,
+         'loglik': None}
+    assert summaries[1] == \
+        {'series': 'TABU/BASE3', 'network': 'asia', 'sample': 1, 'N': 2,
+         'iter': 11, 'time': 0.0, 'score': -1.21301, 'type': 'DAG', 'n': 8,
+         '|A|': 8, '|E|': 1, 'shd': 8, 'shd-s': 1.0, 'shd-e': 8, 'shd-es': 1.0,
+         'shd-b': 0.94, 'a-ok': 0, 'a-rev': 1, 'a-eqv': 0, 'a-non': 1,
+         'a-ext': 0, 'a-mis': 7, 'p': 0.0, 'r': 0.0, 'f1': 0.0, 'f1-b': 0.111,
+         'bsf': 0.062, 'bsf-e': 0.062, 'f1-e': 0.0, 'e-ori': 1, 'loglik': None}
+    assert trace.trace['delta/score'] == \
+        [-1.732868, 0.51986, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+         -1.213008]
+
+    # Small differences in order of changes and later iterations
+
+    assert diffs[0] == \
+        {('add', 'order'): {('xray', 'dysp'): (2, 11),
+                            ('xray', 'asia'): (6, 9),
+                            ('xray', 'tub'): (7, 10)},
+         ('add', 'missing'): {('lung', 'asia'): (None, 3),
+                              ('lung', 'tub'): (None, 4),
+                              ('lung', 'either'): (None, 6),
+                              ('lung', 'smoke'): (None, 7),
+                              ('lung', 'bronc'): (None, 8)},
+         ('add', 'extra'): {('xray', 'bronc'): (3, None),
+                            ('xray', 'either'): (4, None),
+                            ('xray', 'smoke'): (8, None),
+                            ('dysp', 'either'): (9, None),
+                            ('dysp', 'asia'): (11, None)},
+         ('add', 'opposite'): {('xray', 'lung'): [5, 2],
+                               ('dysp', 'lung'): [10, 5]}}
+
+
+def systest_trace_analysis_know_asia_8():  # TABU/EQVP/L050, N=2.0
+    series = ['TABU/EQVP/L050']
+    networks = ['asia']
+    Ns = [2.0]
+    Ss = (0, 1)
+    root_dir = TESTDATA_DIR + '/experiments'
+    summaries, trace, diffs = trace_analysis(series, networks, Ns, Ss, None,
+                                             None, root_dir)
+
+    # Two summaries, identical grahs produced for these two subsamples
+
+    assert summaries[0] == \
+        {'series': 'TABU/EQVP/L050', 'network': 'asia', 'sample': 0, 'N': 36,
+         'iter': 19, 'time': 0.1, 'score': -3.18839, 'type': 'DAG', 'n': 8,
+         '|A|': 8, '|E|': 6, 'shd': 3, 'shd-s': 0.38, 'shd-e': 3,
+         'shd-es': 0.38, 'shd-b': 0.31, 'a-ok': 5, 'a-rev': 1, 'a-eqv': 1,
+         'a-non': 0, 'a-ext': 0, 'a-mis': 2, 'p': 0.833, 'r': 0.625,
+         'f1': 0.714, 'f1-b': 0.786, 'bsf': 0.688, 'bsf-e': 0.688,
+         'f1-e': 0.714, 'e-ori': 1, 'loglik': None}
+    assert summaries[1] == \
+        {'series': 'TABU/EQVP/L050', 'network': 'asia', 'sample': 1, 'N': 36,
+         'iter': 19, 'time': 0.1, 'score': -3.18839, 'type': 'DAG', 'n': 8,
+         '|A|': 8, '|E|': 6, 'shd': 3, 'shd-s': 0.38, 'shd-e': 3,
+         'shd-es': 0.38, 'shd-b': 0.31, 'a-ok': 5, 'a-rev': 1, 'a-eqv': 1,
+         'a-non': 0, 'a-ext': 0, 'a-mis': 2, 'p': 0.833, 'r': 0.625,
+         'f1': 0.714, 'f1-b': 0.786, 'bsf': 0.688, 'bsf-e': 0.688,
+         'f1-e': 0.714, 'e-ori': 1, 'loglik': None}

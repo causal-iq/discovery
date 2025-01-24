@@ -1470,22 +1470,27 @@ def convert_str(string):
     return value
 
 
-def to_int(string):
+def to_num(string):
     """
-        Converts a string to integer allowing syntax like "50K".
+        Converts a string to numeric allowing syntax like "50K".
 
         :param string str: string to be converted.
 
         :raises TypeError: is string is not str type
 
-        :returns int/None: integer value if valid string else None.
+        :returns int/float/None: integer/float value if valid string else None.
     """
+    INT_PATTERN = compile(r'^(\d+)([KMG]*)$')
+    FLOAT_PATTERN = compile(r'^\d+\.\d+$')
+
     if not isinstance(string, str):
-        raise TypeError('to_int() bad arg type')
+        raise TypeError('to_num() bad arg type')
 
     mult = {'': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9}
-    i = compile(r'^(\d+)([KMG]*)$').match(string.upper())
-    return int(i.group(1)) * mult[i.group(2)] if i is not None else i
+    i = INT_PATTERN.match(string.upper())
+    f = FLOAT_PATTERN.match(string)
+    return (int(i.group(1)) * mult[i.group(2)] if i is not None else
+            (float(f.group(0)) if f is not None else f))
 
 
 def run_help(analysis):
@@ -1753,31 +1758,38 @@ def sample_sizes(N_arg='10-1m'):
         raises TypeError: if bad arg type
         raises ValueError: if bad arg values
 
-        :returns tuple: list: of integer sample sizes to use.
+        :returns tuple: list: of numeric sample sizes to use.
                         tuple/None: range of subsamples
     """
     if not isinstance(N_arg, str):
         raise TypeError('sample_sizes() bad arg type')
 
+    # Split into range, multipliers and subsample parts
+
     parts = N_arg.split(';')
+
+    # Parse the range specification
 
     N_range = parts[0].split('-')
     N_range = N_range + N_range if len(N_range) == 1 else N_range
-    N_range = tuple([to_int(N) for N in N_range])
+    N_range = tuple([to_num(N) for N in N_range])
+    if (len(N_range) != 2
+        or (not all([isinstance(N, int) for N in N_range])
+            and not all([isinstance(N, float) for N in N_range]))):
+        raise TypeError('sample_sizes() bad arg type')
+    if ((isinstance(N_range[0], int) and N_range[0] < 2)
+            or N_range[1] < N_range[0]):
+        raise ValueError('sample_sizes() bad arg value')
 
-    mantissa = ([to_int(m) for m in parts[1].split(',')]
+    # obtain the mantissa specification
+
+    mantissa = ([to_num(m) for m in parts[1].split(',')]
                 if len(parts) > 1 and len(parts[1])
                 else [1, 2, 4, 5, 8])
-
-    if (len(N_range) != 2
-            or not isinstance(N_range[0], int)
-            or not isinstance(N_range[1], int)
-            or not all([isinstance(m, int) for m in mantissa])):
+    if not all([isinstance(m, int) for m in mantissa]):
         raise TypeError('sample_sizes() bad arg type')
-
-    if (N_range[0] < 1 or N_range[1] < N_range[0] or
-            any([m < 1 or m > 9 for m in mantissa]) or
-            any([(mantissa[i - 1] >= mantissa[i])
+    if (any([m < 1 or m > 9 for m in mantissa])
+        or any([(mantissa[i - 1] >= mantissa[i])
                 for i in range(1, len(mantissa))])):
         raise ValueError('sample_sizes() bad arg value')
 
@@ -1796,8 +1808,15 @@ def sample_sizes(N_arg='10-1m'):
     else:
         s_range = None
 
+    # Generate the individual sample numbers
+
     emin = floor(ln(N_range[0], 10))
     emax = ceil(ln(N_range[1], 10))
-    return ([m * 10**c for c in range(emin, emax + 1) for m in mantissa
-             if N_range[0] <= m * 10**c and m * 10**c <= N_range[1]],
-            s_range)
+    print(N_range, mantissa, emin, emax)
+    Ns = [int(m * 10**c) if isinstance(N_range[0], int) else float(m * 10**c)
+          for c in range(emin, emax + 1) for m in mantissa
+          if N_range[0] <= m * 10**c and m * 10**c <= N_range[1]]
+    if not len(Ns):
+        raise ValueError('sample_sizes() bad arg value')
+
+    return (Ns, s_range)

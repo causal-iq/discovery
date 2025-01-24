@@ -65,5 +65,5 @@ def systest_summary_analysis_base2_4_ok():  # multi series, multi metrics
                          ROOT_DIR).to_dict('index')
     assert isnan(means['TABU/STD'].pop('f1-e-std'))  # can't compare nans
     assert means == \
-        {'TABU/BASE2': {'f1-e': 0.7204, 'f1-e-std': 0.2306, 'time': 3.4},
+        {'TABU/BASE2': {'f1-e': 0.7204, 'f1-e-std': 0.2306, 'time': 3.1},
          'TABU/STD': {'f1-e': 0.733, 'time': 19.1}}

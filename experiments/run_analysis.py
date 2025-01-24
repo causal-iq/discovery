@@ -76,7 +76,7 @@ def run_analysis(args, root_dir=EXPTS_DIR):
     elif action == 'score3':
         score3_analysis()
     elif action == 'impact':
-        impact_analysis(series, networks, metrics, Ns, params, args)
+        impact_analysis(series, networks, metrics, Ns, Ss, params, args)
     elif action == 'bn':
         bn_analysis()
     elif action == 'network':

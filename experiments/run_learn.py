@@ -228,10 +228,11 @@ def run_learn(args, root_dir=EXPTS_DIR):
             existing = Trace.read(series + '/' + network, root_dir)
             existing = existing if existing else {}
 
-            #   Get BN for network
+            #   Get BN for network, and free params scaling if Ns are floats
 
             ref_bn, bn_file = reference_bn(network, root_dir)
             context = {'in': bn_file}
+            N_scale = 1 if isinstance(Ns[0], int) else ref_bn.free_params
 
             #   If learning from data, generate with largest sample size
 
@@ -251,7 +252,8 @@ def run_learn(args, root_dir=EXPTS_DIR):
                         and dstype == 'continuous'):
                     props['params']['test'] = 'mi-g'
                 data = NumPy.read(root_dir + '/datasets/' + network +
-                                  '.data.gz', dstype=dstype, N=Ns[-1])
+                                  '.data.gz', dstype=dstype,
+                                  N=round(Ns[-1] * N_scale))
             else:
                 print('\nLearning from distribution (oracle)')
                 data = Oracle(bn=ref_bn)
@@ -272,6 +274,9 @@ def run_learn(args, root_dir=EXPTS_DIR):
                   .format(network, Ns[0], Ns[-1], num_samples))
             all_ok = True
             for N in Ns:
+                N = round(N * N_scale)
+                if N < 2:
+                    continue
                 init_cache = True  # cache values depend upon sample size
                 for i in range(num_samples):
                     if Ss is not None and (i < Ss[0] or i > Ss[1]):

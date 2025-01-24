@@ -536,9 +536,7 @@ class BN():
         edges = [(e[0], t.value[3], e[1]) for e, t in self.dag.edges.items()
                  if e[0] not in remove and e[1] not in remove]
 
-        print(data)
         data = Pandas(df=data)
-        print(data.node_values)
         return (BN.fit(DAG(nodes, edges), data), data.sample, remove)
 
     def __eq__(self, other):

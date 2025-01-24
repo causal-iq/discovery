@@ -2,12 +2,12 @@
 # system testing of run_learn structure learning entry point
 # - checking that traces are repeatable for TABU/BASE learning
 
-import pytest
-
 from run_learn import run_learn
 from fileio.common import TESTDATA_DIR
 from experiments.trace_analysis import trace_analysis
 
+
+# Test run_learn with absolute sample sizes
 
 def systest_run_learn_tabu_base_asia_10_ok():  # TABU/BASE asia N=10
     root_dir = TESTDATA_DIR + '/experiments'
@@ -46,19 +46,17 @@ def systest_run_learn_tabu_base_asia_100_ok():  # TABU/BASE asia N=100
 
     # Check keye elements of trace from subsample 1
 
-    print(trace.trace['activity'])
-    print(trace.trace['arc'])
-    print(trace.context['var_order'])
-    return
     assert trace.trace['activity'] == \
-        ['init', 'add', 'add', 'add', 'add', 'add', 'add', 'add', 'add', 'add',
-         'add', 'add', 'add', 'delete', 'delete', 'add', 'stop']
+        ['init', 'add', 'add', 'add', 'add', 'add', 'add', 'reverse',
+         'reverse', 'reverse', 'reverse', 'reverse', 'delete', 'add',
+         'reverse', 'reverse', 'reverse', 'reverse', 'reverse', 'stop']
     assert trace.trace['arc'] == \
-        [None, ('dysp', 'bronc'), ('xray', 'either'), ('either', 'lung'),
-         ('either', 'tub'), ('tub', 'smoke'), ('xray', 'asia'),
-         ('dysp', 'asia'), ('bronc', 'asia'), ('either', 'asia'),
-         ('lung', 'asia'), ('asia', 'tub'), ('asia', 'smoke'),
-         ('xray', 'asia'), ('dysp', 'asia'), ('xray', 'asia'), None]
+        [None, ('xray', 'either'), ('either', 'lung'), ('dysp', 'bronc'),
+         ('lung', 'smoke'), ('lung', 'dysp'), ('either', 'tub'),
+         ('xray', 'either'), ('either', 'lung'), ('either', 'tub'),
+         ('lung', 'dysp'), ('dysp', 'bronc'), ('dysp', 'lung'),
+         ('smoke', 'bronc'), ('lung', 'smoke'), ('smoke', 'bronc'),
+         ('bronc', 'dysp'), ('tub', 'either'), ('dysp', 'bronc'), None]
     assert trace.context['var_order'] == \
         ['xray', 'dysp', 'bronc', 'either', 'lung', 'asia', 'tub', 'smoke']
 
@@ -187,3 +185,67 @@ def systest_run_learn_tabu_base_sports_1k_ok():  # TABU/BASE sports N=1k
     assert trace.context['var_order'] == \
         ['possession', 'ATshotsOnTarget', 'ATshots', 'HDA', 'HTgoals',
          'HTshotOnTarget', 'RDlevel', 'HTshots', 'ATgoals']
+
+
+# Do some runs with relative sample sizes
+
+def systest_run_learn_tabu_base_asia_0_1_ok():  # TABU/BASE asia N=0.1
+    root_dir = TESTDATA_DIR + '/experiments'
+    assert run_learn({'action': 'compare', 'series': 'TABU/BASE3',
+                      'networks': 'asia', 'N': '0.1;;0-1', 'nodes': None},
+                     root_dir)
+
+    _, trace, _ = \
+        trace_analysis(series=['TABU/BASE3'], networks=['asia'], Ns=[2],
+                       Ss=(0, 1), params=None, root_dir=root_dir)
+
+    # Check key elements of trace from subsample 1
+
+    print(trace.trace['activity'])
+    print(trace.trace['arc'])
+    print(trace.context['var_order'])
+    # return
+    assert trace.trace['activity'] == \
+        ['init', 'add', 'add', 'add', 'add', 'add', 'add', 'add', 'add',
+         'add', 'add', 'add', 'stop']
+    assert trace.trace['arc'] == \
+        [None, ('dysp', 'bronc'), ('xray', 'dysp'), ('xray', 'bronc'),
+         ('xray', 'either'), ('xray', 'lung'), ('xray', 'asia'),
+         ('xray', 'tub'), ('xray', 'smoke'), ('dysp', 'either'),
+         ('dysp', 'lung'), ('dysp', 'asia'), None]
+    assert trace.context['var_order'] == \
+        ['X005xray', 'X001dysp', 'X002bronc', 'X003either', 'X004lung',
+         'X007asia', 'X006tub', 'X000smoke']
+
+
+def systest_run_learn_tabu_base_asia_2_0_ok():  # TABU/BASE asia N=2.0
+    root_dir = TESTDATA_DIR + '/experiments'
+    assert run_learn({'action': 'compare', 'series': 'TABU/BASE3',
+                      'networks': 'asia', 'N': '2.0;;0-1', 'nodes': None},
+                     root_dir)
+
+    _, trace, _ = \
+        trace_analysis(series=['TABU/BASE3'], networks=['asia'], Ns=[36],
+                       Ss=(0, 1), params=None, root_dir=root_dir)
+
+    # Check key elements of trace from subsample 1
+
+    print(trace.trace['activity'])
+    print(trace.trace['arc'])
+    print(trace.context['var_order'])
+    assert trace.trace['activity'] == \
+        ['init', 'add', 'add', 'add', 'add', 'add', 'reverse', 'reverse',
+         'reverse', 'add', 'reverse', 'delete', 'reverse', 'delete', 'add',
+         'reverse', 'reverse', 'reverse', 'reverse', 'reverse', 'reverse',
+         'add', 'stop']
+    assert trace.trace['arc'] == \
+        [None, ('xray', 'either'), ('either', 'lung'), ('dysp', 'bronc'),
+         ('bronc', 'smoke'), ('either', 'tub'), ('xray', 'either'),
+         ('dysp', 'bronc'), ('bronc', 'smoke'), ('lung', 'smoke'),
+         ('either', 'xray'), ('lung', 'smoke'), ('smoke', 'bronc'),
+         ('either', 'tub'), ('xray', 'tub'), ('xray', 'either'),
+         ('bronc', 'dysp'), ('either', 'xray'), ('xray', 'tub'),
+         ('dysp', 'bronc'), ('bronc', 'smoke'), ('lung', 'smoke'), None]
+    assert trace.context['var_order'] == \
+        ['X005xray', 'X001dysp', 'X002bronc', 'X003either', 'X004lung',
+         'X007asia', 'X006tub', 'X000smoke']

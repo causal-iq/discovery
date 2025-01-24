@@ -236,6 +236,8 @@ def trace_analysis(series, networks, Ns, Ss=None, file=None, params=None,
             # get series properties, reference BN and learning traces
 
             ref, _ = reference_bn(network)
+            N_scale = 1 if isinstance(Ns[0], int) else ref.free_params
+            _Ns = [round(N_scale * N) for N in Ns]
             traces = Trace.read(_series + '/' + network, root_dir)
             if traces is None:
                 print('\nNo traces available for network {} in series {}'
@@ -258,7 +260,7 @@ def trace_analysis(series, networks, Ns, Ss=None, file=None, params=None,
                            for t in sorted_keys}
             for N, samples in sorted_keys.items():
                 N = int(N.replace('N', ''))
-                if N not in Ns:
+                if N not in _Ns:
                     continue  # ignore sample sizes not required
 
                 samples = [None] if samples == [] else samples

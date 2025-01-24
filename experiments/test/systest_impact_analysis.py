@@ -19,8 +19,8 @@ def systest_impact_analysis_know_asia_1():  # N=10, no, 4, 16 know requests
     N_range = (10, 10)
     expts_dir = TESTDATA_DIR + '/experiments'
     data, props, stats = impact_analysis(series_arg, networks, metrics_arg,
-                                         N_range, {}, {'series': 'unused'},
-                                         expts_dir)
+                                         N_range, None, {},
+                                         {'series': 'unused'}, expts_dir)
 
     data = data.to_dict(orient='records')
     assert len(data) == 20
@@ -45,8 +45,8 @@ def systest_impact_analysis_know_asia_2():  # N=20, no, 4, 16 know requests
     N_range = (20, 20)
     expts_dir = TESTDATA_DIR + '/experiments'
     data, props, stats = impact_analysis(series_arg, networks, metrics_arg,
-                                         N_range, {}, {'series': 'unused'},
-                                         expts_dir)
+                                         N_range, None, {},
+                                         {'series': 'unused'}, expts_dir)
 
     data = data.to_dict(orient='records')
     assert len(data) == 20
@@ -71,8 +71,8 @@ def systest_impact_analysis_know_asia_3():  # N=10&20, no, 4, 16 know requests
     N_range = (10, 20)
     expts_dir = TESTDATA_DIR + '/experiments'
     data, props, stats = impact_analysis(series_arg, networks, metrics_arg,
-                                         N_range, {}, {'series': 'unused'},
-                                         expts_dir)
+                                         N_range, None, {},
+                                         {'series': 'unused'}, expts_dir)
 
     data = data.to_dict(orient='records')
     assert len(data) == 40
@@ -98,8 +98,8 @@ def systest_impact_analysis_know_asia_4():  # N=100, expert=no,1.0,.67,.50
     N_range = (100, 100)
     expts_dir = TESTDATA_DIR + '/experiments'
     data, props, stats = impact_analysis(series_arg, networks, metrics_arg,
-                                         N_range, {}, {'series': 'unused'},
-                                         expts_dir)
+                                         N_range, None, {},
+                                         {'series': 'unused'}, expts_dir)
 
     data = data.to_dict(orient='records')
     assert len(data) == 30
@@ -120,3 +120,27 @@ def systest_impact_analysis_know_asia_4():  # N=100, expert=no,1.0,.67,.50
     assert (stats['unused']['expertise = 1.0'] ==
             {'min': 0.000, 'max': 0.857, 'mean': 0.657, 'std': 0.287,
              'count': 10})
+
+
+# using relative sample sizes
+
+
+def systest_impact_analysis_know_asia_5():  # N=0.1, expert=no,.50
+    series_arg = ['TABU/BASE3', 'TABU/EQVP/L050']
+    networks = ['asia']
+    metrics_arg = ['f1']
+    N_range = (0.1, 2.0)
+    expts_dir = TESTDATA_DIR + '/experiments'
+    data, _, stats = impact_analysis(series_arg, networks, metrics_arg,
+                                     N_range, None, {}, {'series': 'unused'},
+                                     expts_dir)
+    data = data.to_dict(orient='records')
+
+    assert data == \
+        [{'subplot': 'unused', 'x_val': '', 'y_val': 0.222},
+         {'subplot': 'unused', 'x_val': '', 'y_val': 0.222},
+         {'subplot': 'unused', 'x_val': '', 'y_val': 0.0},
+         {'subplot': 'unused', 'x_val': '', 'y_val': 0.285}]
+    assert stats == \
+        {'unused': {'': {'min': 0.0, 'max': 0.285, 'mean': 0.182, 'std': 0.125,
+                         'count': 4}}}

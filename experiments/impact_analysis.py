@@ -56,7 +56,7 @@ def _props_key(series=None, property=None):
                   for p in SERIES_COMPARATORS])
 
 
-def _get_rawdata(series, networks, metrics, Ns, expts_dir):
+def _get_rawdata(series, networks, metrics, Ns, Ss, expts_dir):
     """
         Return rawdata required for impact analysis.
 
@@ -64,12 +64,17 @@ def _get_rawdata(series, networks, metrics, Ns, expts_dir):
         :param list networks: networks being analysed
         :param str metric: metric being analysed
         :param list Ns: list of sample sizes to process
+        :param tuple Ss: sub-samples to process
         :param str expts_dir: location of experiments directory
 
-        :returns dict: of metrics keyed by
-                       (N, series properties, metric, network)
+        :returns tuple: dict of metric values:
+                        {(N, series properties, metric, network): value}
+                        Sample sizes which have data:
+                        {N1, N2, ...} or {network1: {N1, N2, ...}, ...}
     """
     rawdata = {}  # contains all metric values for all series, networks and N
+    Ns_data = set() if isinstance(Ns[0], int) else {}
+
     for _series in series:
         print('Processing series {} with properties {} ...'
               .format(_series, series_props(_series)))
@@ -81,19 +86,31 @@ def _get_rawdata(series, networks, metrics, Ns, expts_dir):
             traces = Trace.read(_series + '/' + network, root_dir=expts_dir)
             if traces is None:
                 continue
+            N_scale = 1 if isinstance(Ns[0], int) else ref.free_params
+            _Ns = [round(N_scale * N) for N in Ns]
+
+            if isinstance(Ns[0], int):
+                Ns_set = Ns_data
+            else:
+                Ns_set = Ns_data[network] = set()
+
             print('... {} traces read for {}'.format(len(traces), network))
             for trace in traces.values():
                 summary = TraceAnalysis(trace, ref.dag).summary
                 N = summary['N']
-                if N not in Ns:
+                sample = summary['sample']
+                if (N not in _Ns or (Ss is not None and
+                                     (sample < Ss[0] or sample > Ss[1]))):
                     continue
+                Ns_set.add(N)
+
                 for metric in metrics:
                     if metric is None:
                         continue
                     key = (network, N, summary['sample'],
                            *_props_key(series=_series), metric)
                     rawdata[key] = summary[metric]
-    return rawdata
+    return rawdata, Ns_data
 
 
 def _sample_impact(series, networks, metric, rawdata, data,
@@ -174,7 +191,7 @@ def series_comparable(required, props1, props2):
 
 
 def series_impact(required, series, networks, metric, rawdata, data,
-                  x_val=None):
+                  x_val=None, Ns=None):
     """
         Assembles the plot data measuring the impact of changing one
         of the series properties
@@ -187,10 +204,13 @@ def series_impact(required, series, networks, metric, rawdata, data,
         :param dict rawdata: data keyed by series properties, network & N
         :param dict data: data in 'long format' required by plot functions
         :param str x_val: optionally specify the x_val to use
+        :param set/dict/None Ns: optionally, sample sizes which have rawdata
 
         :returns dict: updated plot data
     """
+    Ns = set(sample_sizes('10-10m')[0]) if Ns is None else Ns
 
+    print('\n\nIn series_impact, Ns are: {}\n\n'.format(Ns))
     # Collect the series properties of each series and formulate _required in
     # the structure needed by series_comparable. Also construct samples as a
     # list of the number of randomisation num_samples in each series in the
@@ -230,8 +250,9 @@ def series_impact(required, series, networks, metric, rawdata, data,
     for comparison in comparisons:
         samples = ([None] if comparison[2] is None
                    else [s for s in range(comparison[2])])
-        for N in sample_sizes('10-10m')[0]:
-            for network in networks:
+        for network in networks:
+            _Ns = Ns[network] if isinstance(Ns, dict) else Ns
+            for N in _Ns:
                 y_val0 = []
                 y_val1 = []
                 for sample in samples:
@@ -510,7 +531,7 @@ def impact_vs_algo_plot_data(networks, metric, rawdata, different):
              'figure.subplots_bottom': 0.13,
              'subplot.aspect': 1.4}
 
-    return(data, props)
+    return (data, props)
 
 
 def sensitivity_vs_algo_plot_data(networks, metric, rawdata, different):
@@ -554,14 +575,16 @@ def sensitivity_vs_algo_plot_data(networks, metric, rawdata, different):
     return (data, props)
 
 
-def impact_vs_knowledge_plot_data(series, networks, metric, rawdata, common,
-                                  different, params, xtick_labels):
+def impact_vs_knowledge_plot_data(series, networks, Ns, metric, rawdata,
+                                  common, different, params, xtick_labels):
     """
         Generate plot format data showing impact of knowledge on the bnbench
         HC algorithm.
 
         :param list series: series being analysed
         :param list networks: networks being analysed
+        :param set/dict Ns: sample sizes which have rawdata - a set if
+                            absolute sizes or {network: {N1, N2, ...}, ...}
         :param str metric: metric being analysed
         :param dict rawdata: data keyed by series properties, network & N
         :param dict common: properties common to all series
@@ -608,7 +631,7 @@ def impact_vs_knowledge_plot_data(series, networks, metric, rawdata, common,
                  else xtick_labels[i-1])
 
         data = series_impact(compare, series, networks, metric, rawdata, data,
-                             x_val=x_val)
+                             x_val=x_val, Ns=Ns)
 
     if 'N.impact' in params:
         data = _sample_impact([base], networks, metric, rawdata, data,
@@ -629,10 +652,10 @@ def impact_vs_knowledge_plot_data(series, networks, metric, rawdata, common,
              'figure.subplots_bottom': 0.3,
              'subplot.aspect': 1.7}
 
-    return(data, props)
+    return (data, props)
 
 
-def _get_plot_data(series, networks, metric, rawdata, common, different,
+def _get_plot_data(series, networks, Ns, metric, rawdata, common, different,
                    params):
     """
         Extract the data in long-form required by the plotting function for
@@ -640,6 +663,8 @@ def _get_plot_data(series, networks, metric, rawdata, common, different,
 
         :param list series: series being analysed
         :param list networks: networks being analysed
+        :param set/dict Ns: sample sizes which have rawdata - a set if
+                            absolute sizes or {network: {N1, N2, ...}, ...}
         :param str metric: metric being analysed
         :param dict rawdata: data keyed by series properties, network & N
         :param dict common: properties common to all series
@@ -669,9 +694,10 @@ def _get_plot_data(series, networks, metric, rawdata, common, different,
 
         # analyse effect of knowledge
 
-        data, props = impact_vs_knowledge_plot_data(series, networks, metric,
-                                                    rawdata, common, different,
-                                                    params, xtick_labels)
+        data, props = impact_vs_knowledge_plot_data(series, networks, Ns,
+                                                    metric, rawdata, common,
+                                                    different, params,
+                                                    xtick_labels)
 
     elif diff_props == {'algorithm'} or diff_props == {'algorithm', 'package'}:
 
@@ -700,7 +726,7 @@ def _get_plot_data(series, networks, metric, rawdata, common, different,
     return (DataFrame(data), props)
 
 
-def impact_analysis(series, networks, metrics, Ns, params, args,
+def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
                     expts_dir=EXPTS_DIR):
     """
         Analyse and plot impact of var. ordering, sample size, score and
@@ -710,6 +736,7 @@ def impact_analysis(series, networks, metrics, Ns, params, args,
         :param list networks: networks to include
         :param list metrics: metrics required
         :param list Ns: list of sample sizes to process
+        :param tuple Ss: sub-samples to process
         :param dict params: command line parameters
         :param dicts args: raw command line args used to name plot file
         :param str expts_dir: location of experiments dir - use non-default
@@ -727,7 +754,7 @@ def impact_analysis(series, networks, metrics, Ns, params, args,
 
     # get all the raw data metrcs for all series, networks and sample sizes
 
-    rawdata = _get_rawdata(series, networks, metrics, Ns, expts_dir)
+    rawdata, Ns = _get_rawdata(series, networks, metrics, Ns, Ss, expts_dir)
 
     # plot chart for each metric requested
 
@@ -736,12 +763,11 @@ def impact_analysis(series, networks, metrics, Ns, params, args,
         # Get long-form data and chart properties required for this specific
         # chart
 
-        data, _props = _get_plot_data(series, networks, metric, rawdata,
+        data, _props = _get_plot_data(series, networks, Ns, metric, rawdata,
                                       common, different, params)
         if not len(data):
             print('\n*** No data to plot\n')
             break
-        print(data)
         subplot_kind = 'bar' if 'y_var' in data.columns else 'box'
 
         # Compute some more statistics for each x_val in boxplot e.g. mean
