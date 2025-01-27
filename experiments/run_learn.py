@@ -188,7 +188,7 @@ def run_learn(args, root_dir=EXPTS_DIR):
         be parallelised.
 
         :param dict args: relevant command line arguments {name: value}:
-                            - action: skip/compare/replace previous result
+                            - action: skip/compare/strict/replace
                             - series: series to run e.g. HC_N_1
                             - networks: networks to use e.g. 'asia,cancer'
                             - N: range of sample sizes, e.g. 100,2000
@@ -288,6 +288,7 @@ def run_learn(args, root_dir=EXPTS_DIR):
                     if trace is not None and Randomise.NAMES not in randomise:
                         init_cache = False
                     if diffs is not False:
+                        print(diffs)
                         all_ok = False
 
     return all_ok

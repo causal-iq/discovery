@@ -114,7 +114,7 @@ def _get_rawdata(series, networks, metrics, Ns, Ss, expts_dir):
 
 
 def _sample_impact(series, networks, metric, rawdata, data,
-                   multiples=[10, 100]):
+                   multiples=[10, 100], Ns=None):
     """
         Assembles the plot data measuring the impact of increasing the sample
         size by specified multiples
@@ -128,12 +128,14 @@ def _sample_impact(series, networks, metric, rawdata, data,
 
         :returns dict: updated plot data
     """
+    Ns = set(sample_sizes('10-10m')[0]) if Ns is None else Ns
     for _series in series:
         props = series_props(_series)
         samples = ([s for s in range(props['randomise'][1])]
                    if props['randomise'] is not False else [None])
         for network in networks:
-            for N in sample_sizes('10-10m')[0]:
+            _Ns = Ns[network] if isinstance(Ns, dict) else Ns
+            for N in sorted(_Ns):
                 for sample in samples:
                     key1 = (network, N, sample, *_props_key(series=_series),
                             metric)
@@ -141,13 +143,13 @@ def _sample_impact(series, networks, metric, rawdata, data,
                         continue
                     value1 = rawdata[key1]
                     for mult in multiples:
-                        key2 = (network, mult * N, sample,
+                        key2 = (network, round(N / mult), sample,
                                 *_props_key(series=_series), metric)
                         if key2 not in rawdata:
                             continue
                         data['x_val'].append(('Increase sample\nsize by {}' +
                                               ' times').format(mult))
-                        data['y_val'].append(rawdata[key2] - value1)
+                        data['y_val'].append(value1 - rawdata[key2])
                         data['subplot'].append('unused')
 
     return data
@@ -598,9 +600,6 @@ def impact_vs_knowledge_plot_data(series, networks, Ns, metric, rawdata,
                'threshold', 'earlyok', 'partial', 'stop', 'nodes']
     data = {'subplot': [], 'x_val': [], 'y_val': []}
     print('\nDifferent is {}, common {}'.format(different, common))
-    # print(rawdata)
-    # for key, val in rawdata.items():
-    #     print(key, val)
 
     # Identify 'base' series which doesn't use knowledge
 
@@ -635,7 +634,7 @@ def impact_vs_knowledge_plot_data(series, networks, Ns, metric, rawdata,
 
     if 'N.impact' in params:
         data = _sample_impact([base], networks, metric, rawdata, data,
-                              multiples=[10, 100])
+                              multiples=[10, 100], Ns=Ns)
 
     props = {'figure.title': 'Impact of ' + xaxis_label,
              'xaxis.label': 'Change made: ' + xaxis_label,
@@ -678,6 +677,9 @@ def _get_plot_data(series, networks, Ns, metric, rawdata, common, different,
                     if 'fig' in params and params['fig'] in FIGURE_PARAMS
                     and 'xaxis.tick_labels' in FIGURE_PARAMS[params['fig']]
                     else None)
+    xtick_labels = (params['xaxis.tick_labels']
+                    if xtick_labels is None and 'xaxis.tick_labels' in params
+                    else xtick_labels)
 
     diff_props = set(different[series[0]])
     print('\nDifferent properties are {}\n'.format(diff_props))
@@ -768,6 +770,7 @@ def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
         if not len(data):
             print('\n*** No data to plot\n')
             break
+        print(data)
         subplot_kind = 'bar' if 'y_var' in data.columns else 'box'
 
         # Compute some more statistics for each x_val in boxplot e.g. mean
@@ -811,6 +814,7 @@ def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
                      + ((args['series']).replace('/', '_').replace(',', '_') +
                         '_' + metric if 'fig' not in params
                         else params['fig']) + '.png')
+        plot_file = args['file'] if 'file' in args else plot_file
 
         if expts_dir == EXPTS_DIR:
             print('... generating plot file "{}"'.format(plot_file))
