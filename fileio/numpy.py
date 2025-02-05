@@ -195,7 +195,7 @@ class NumPy(Data):
 
         return NumPy(data, dstype, col_values)
 
-    def set_N(self, N, seed=None):
+    def set_N(self, N, seed=None, random_selection=False):
         """
             Set current working sample size, and optionally randomise the row
             order.
@@ -203,11 +203,14 @@ class NumPy(Data):
             :param int N: current working sample size
             :param int/None seed: seed for row order randomisation if reqd.,
                                   0 and None both imply original order.
+            :param bool random_selection: whether rows selected is also
+                                          randomised.
 
             :raises TypeError: if bad argument type
             :raises ValueError: if bad argument value
         """
         if (not isinstance(N, int) or isinstance(N, bool) or
+            not isinstance(random_selection, bool) or
             seed is not None and (not isinstance(seed, int)
                                   or isinstance(seed, bool))):
             raise TypeError('NumPy.set_N() bad arg type')
@@ -217,12 +220,35 @@ class NumPy(Data):
             raise ValueError('NumPy.set_N() bad arg value')
 
         self.N = N
+        rng = (default_rng(seed) if seed is not None and seed != 0
+               else default_rng(0))
 
-        # if sample contains all rows in data then it is just a reference to
-        # self.data, otherwise it is a copy of the required subset of rows.
+        if random_selection is True:
 
-        self.sample = (self.data if N == self.data.shape[0]
-                       else self.data[:N, :])
+            # Choose a random selection of rows from data
+
+            indices = rng.choice(self.data.shape[0], size=N, replace=False)
+            self.sample = (self.data[sorted(indices)]
+                           if seed is None or seed == 0
+                           else self.data[indices])
+
+            # Shuffle sample row order if needed (this second shuffle is
+            # redundant but is retained to maintain compatability with)
+
+            # if seed is not None and seed != 0:
+            #     rng.shuffle(self.sample)  # Shuffle in-place
+
+        else:
+
+            # Always use first N rows of data
+
+            self.sample = self.data[:N, :]
+
+            # Shuffle sample row order if seed is specified
+
+            if seed is not None and seed != 0:
+                order = rng.permutation(N)
+                self.sample = self.sample[order]
 
         # compute the node values and counts for categorical variables for
         # the sample
@@ -234,12 +260,6 @@ class NumPy(Data):
                           in enumerate(bincount(self.sample[:, j]))}
                 counts = {v: counts[v] for v in sorted(counts)}
                 self.node_values[self.orig_to_ext[self.nodes[j]]] = counts
-
-        # Randomise the row order in self.sample if required
-
-        if seed is not None and seed != 0:
-            order = default_rng(seed).permutation(N)
-            self.sample = self.sample[order]
 
         # change continuous data to float64 for precision in score calcs. Doing
         # it here means it is only done once for each sample.

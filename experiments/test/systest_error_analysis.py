@@ -77,36 +77,39 @@ def systest_error_analysis_value_error_1():  # bad params keys
     series = ['HC/STD']
     networks = ['asia']
     Ns = [10, 20]
+    Ss = None
     with pytest.raises(ValueError):
-        error_analysis(series, networks, Ns, {})
+        error_analysis(series, networks, Ns, Ss, {})
     with pytest.raises(ValueError):
-        error_analysis(series, networks, Ns, {'unknown': 1})
+        error_analysis(series, networks, Ns, Ss, {'unknown': 1})
     with pytest.raises(ValueError):
-        error_analysis(series, networks, Ns, {'criterion': 'eqv',
-                                              'unknown': 1})
+        error_analysis(series, networks, Ns, Ss, {'criterion': 'eqv',
+                                                  'unknown': 1})
     with pytest.raises(ValueError):
-        error_analysis(series, networks, Ns, {'metric': 'ok'})
+        error_analysis(series, networks, Ns, Ss, {'metric': 'ok'})
 
 
 def systest_error_analysis_value_error_2():  # bad params values
     series = ['HC/STD']
     networks = ['asia']
     Ns = [10, 20]
+    Ss = None
     with pytest.raises(ValueError):
-        error_analysis(series, networks, Ns, {'criterion': 'unknown',
-                                              'metric': 'ok'})
+        error_analysis(series, networks, Ns, Ss,
+                       {'criterion': 'unknown', 'metric': 'ok'})
     with pytest.raises(ValueError):
-        error_analysis(series, networks, Ns, {'criterion': 'eqv',
-                                              'metric': 'unknown'})
+        error_analysis(series, networks, Ns, Ss,
+                       {'criterion': 'eqv', 'metric': 'unknown'})
 
 
 def systest_error_analysis_asia_ok_1():  # Asia 10 rows, eqv crit, ok metric
     series = ['HC/STD']
     networks = ['asia']
     Ns = [10]
+    Ss = None
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns, {'criterion': 'eqv',
-                                               'metric': 'ok'}, root_dir)
+    ct = error_analysis(series, networks, Ns, Ss,
+                        {'criterion': 'eqv', 'metric': 'ok'}, root_dir)
     assert ct == {'err': {'eqv': 1, 'non': 2}, 'ok': {'eqv': 2, 'non': 0}}
 
 
@@ -114,8 +117,9 @@ def systest_error_analysis_asia_ok_2():  # Asia N=10, eqv crit, ok-eqv metric
     series = ['HC/STD']
     networks = ['asia']
     Ns = [10]
+    Ss = None
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns,
+    ct = error_analysis(series, networks, Ns, Ss,
                         {'criterion': 'eqv', 'metric': 'ok-eqv'}, root_dir)
     assert ct == {'err': {'eqv': 1, 'non': 2}, 'ok': {'eqv': 2, 'non': 0}}
 
@@ -125,8 +129,8 @@ def systest_error_analysis_asia_ok_3():  # Asia N=10, mi crit, ok metric
     networks = ['asia']
     Ns = [10]
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns, {'criterion': 'mi',
-                                               'metric': 'ok'}, root_dir)
+    ct = error_analysis(series, networks, Ns, None,
+                        {'criterion': 'mi', 'metric': 'ok'}, root_dir)
     assert ct == {'err': {'eqv-hi': 1, 'eqv-sim': 0, 'non-hi': 2},
                   'ok': {'eqv-hi': 1, 'eqv-sim': 1, 'non-hi': 0}}
 
@@ -136,7 +140,7 @@ def systest_error_analysis_asia_ok_4():  # Asia N=10, mi crit, ok metric
     networks = ['asia']
     Ns = [10]
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns,
+    ct = error_analysis(series, networks, Ns, None,
                         {'criterion': 'mi', 'metric': 'status'}, root_dir)
 
     assert ct == {'ext': {'eqv-hi': 0, 'eqv-sim': 0, 'non-hi': 1},
@@ -149,8 +153,8 @@ def systest_error_analysis_asia_ok_5():  # Asia N=10, lt5 crit, ok metric
     networks = ['asia']
     Ns = [10]
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns, {'criterion': 'lt5',
-                                               'metric': 'ok'}, root_dir)
+    ct = error_analysis(series, networks, Ns, None,
+                        {'criterion': 'lt5', 'metric': 'ok'}, root_dir)
     assert ct == {'err': {'1/2 --> 1': 3}, 'ok': {'1/2 --> 1': 2}}
 
 
@@ -159,8 +163,8 @@ def systest_error_analysis_asia_ok_6():  # Asia N=1K, eqv crit, ok metric
     networks = ['asia']
     Ns = [1000]
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns, {'criterion': 'eqv',
-                                               'metric': 'ok'}, root_dir)
+    ct = error_analysis(series, networks, Ns, None,
+                        {'criterion': 'eqv', 'metric': 'ok'}, root_dir)
     print(ct)
     assert ct == {'err': {'eqv': 4, 'non': 3}, 'ok': {'eqv': 2, 'non': 0}}
 
@@ -170,7 +174,7 @@ def systest_error_analysis_asia_ok_7():  # Asia N=1K, eqv crit, ok metric
     networks = ['asia']
     Ns = [1000]
     root_dir = TESTDATA_DIR + '/experiments'
-    ct = error_analysis(series, networks, Ns,
+    ct = error_analysis(series, networks, Ns, None,
                         {'criterion': 'lt5', 'metric': 'status'}, root_dir)
     print(ct)
     assert ct == \

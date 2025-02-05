@@ -32,6 +32,7 @@ class Rule(EnumWithAttrs):
         :ivar str value: short string code for rule
         :ivar str label: human-readable label for rule
     """
+
     EQUIV_ADD = "equiv_add", "Choose equivalent add"
     EQUIV_SEQ = "equiv_seq", "Equivalent add sequence"
     STOP_ARC = "stop_arc", "Prohibited arc"
@@ -44,9 +45,14 @@ class Rule(EnumWithAttrs):
     LO_DELTA = "lo_delta", "Low score delta"
     HI_LT5 = "hi_lt5", "High <5 cell counts"
 
-    # ignore the first param since it's set by __new__ in superclass
     def __init__(self, _: str, label: str):
         self._label_ = label
+
+    @classmethod
+    def get_seed(cls):
+        cls._seed = getattr(cls, "_seed", 0)  # Ensure _seed exists
+        cls._seed = 1 if cls._seed == 100 else cls._seed + 1
+        return cls._seed  # Read static variable
 
     def match(self, best, second, date, parents, knowledge, sf):
         """
@@ -178,17 +184,19 @@ class Rule(EnumWithAttrs):
             # node value so that the bug where parents are effectively
             # ignored persists because these are results used in paper.
 
+            seed = Rule.get_seed()
+            data.set_N(N, seed)
             parents = {} if len(parents) == 0 else {'node': parents}
             ll = node_score(node, parents, ['loglik'], {'base': 'e'},
                             data)['loglik']
-            data.set_N(half)
+            data.set_N(half, seed, random_selection=True)
             ll_h = node_score(node, parents, ['loglik'], {'base': 'e'},
                               data)['loglik']
             data.set_N(N)
             instability = (abs(round((ll - 2 * ll_h) / ll, 3)) if ll < 0.0
                            else 0.0)
-            print('\n*** BIC INSTABILITY: {} {}: {:.3f} vs {:.3f} -> {}'
-                  .format(node, parents, (ll - ll_h), ll_h, instability))
+            print('\n*** BIC INSTABILITY [{}]: {} {}: {:.3f} vs {:.3f} -> {}'
+                  .format(seed, node, parents, (ll - ll_h), ll_h, instability))
             if instability > threshold:
                 return Rule.BIC_UNSTABLE
 

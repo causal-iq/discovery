@@ -461,7 +461,7 @@ class Trace():
 
         # compare knowledge fields - difference -> MINOR
 
-        if ('knowledge' in ref and 'knowledge' in entry and 
+        if ('knowledge' in ref and 'knowledge' in entry and
                 entry['knowledge'] != ref['knowledge']):
             print(ignore)
             if 'act_cache' not in ignore:
@@ -570,9 +570,9 @@ class Trace():
 
         ref = ref.get()
         trace = self.get()
-        compare = set(trace.columns[trace.notnull().any()]) \
-            .intersection(set(ref.columns[ref.notnull().any()])) \
-            - {'time'} | {'arc', 'activity', 'delta/score'}
+        compare = list(set(trace.columns[trace.notnull().any()])
+                       .intersection(set(ref.columns[ref.notnull().any()]))
+                       - {'time'} | {'arc', 'activity', 'delta/score'})
 
         ref = ref[compare].to_dict('records')  # list of ref entries (dicts)
         trace = trace[compare].to_dict('records')  # list of trace entries

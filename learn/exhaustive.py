@@ -1,7 +1,7 @@
 
 # Naive exhaustive score-based search with no attempt at optimisation
 
-from pandas import DataFrame
+from pandas import DataFrame, concat
 from itertools import combinations
 
 from fileio.data import Data
@@ -49,8 +49,9 @@ def exhaustive(data, types=['bic', 'loglik', 'bde'], params={'base': 2},
 
     if normalise:
         normaliser = results.loc['[' + (']['.join(data.nodes)) + ']']
-        results = results.subtract(normaliser) \
-            .append(normaliser.rename('normalisation'))
+        results = results.subtract(normaliser)
+        results = concat([results,
+                          (normaliser.rename('normalisation')).to_frame().T])
 
     return results
 

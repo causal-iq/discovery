@@ -174,13 +174,14 @@ def _analyse_errors(criterion, metric, analysis):
     return errors
 
 
-def error_analysis(series, networks, Ns, params=None, root_dir=EXPTS_DIR):
+def error_analysis(series, networks, Ns, Ss, params=None, root_dir=EXPTS_DIR):
     """
         Entry point into analysing learning errors
 
         :param list series: series to include
         :param list networks: networks to include
         :param list Ns: list of sample sizes to process
+        :param tuple Ss: sub-samples to process
         :param dict params: error analysis specific parameters
         :param str root_dir: root directory holding trace files
 
@@ -210,6 +211,8 @@ def error_analysis(series, networks, Ns, params=None, root_dir=EXPTS_DIR):
                 print('\nNo traces available for network {} in series {}'
                       .format(network, _series))
                 continue
+            print('Analysing trace for network {} in series {} ...'
+                  .format(network, series))
 
             # get dataset so MI can be computed
 
@@ -230,13 +233,17 @@ def error_analysis(series, networks, Ns, params=None, root_dir=EXPTS_DIR):
 
                 samples = [None] if samples == [] else samples
                 for sample in samples:
+                    if (Ss is not None 
+                            and (int(sample) < Ss[0] or int(sample) > Ss[1])):
+                        continue
                     key = 'N{}'.format(N) + ('' if sample is None
                                              else '_{}'.format(sample))
                     trace = traces[key]
 
                     analysis = TraceAnalysis(trace, ref.dag,
-                                             data[:N] if N <= n_max else None)
-                    print(analysis)
+                                             data[:N] if criterion in 
+                                             {'lt5', 'mi'} and N <= n_max
+                                             else None)
 
                     errors += _analyse_errors(criterion, metric, analysis)
 
@@ -252,10 +259,10 @@ def error_analysis(series, networks, Ns, params=None, root_dir=EXPTS_DIR):
     print('-------------------------  ---------------------------------------')
     for criterion, dist in ct.to_dict().items():
         frac_crit = num_in_crit[criterion] / total_num
-        # dist = ', '.join(['{}: {:1.3f}'.format(k, v / sum(dist.values()))
+        # dist = ', '.join(['{}: {:1.4f}'.format(k, v / sum(dist.values()))
         #                  for k, v in dist.items()])
-        dist = ', '.join(['{}: {:1.3f}'.format(k, v / total_num)
+        dist = ', '.join(['{}: {:1.4f}'.format(k, v / total_num)
                          for k, v in dist.items()])
-        print('{:>16s} ({:1.3f})    {}'.format(criterion, frac_crit, dist))
+        print('{:>16s} ({:1.4f})    {}'.format(criterion, frac_crit, dist))
 
     return ct.to_dict(orient='index')

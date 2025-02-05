@@ -102,12 +102,14 @@ class Data(ABC):
                                 for ext, orig in self.ext_to_orig.items()}
 
     @abstractmethod
-    def set_N(self, N, seed=None):
+    def set_N(self, N, seed=None, random_selection=False):
         """
             Set current working sample size.
 
             :param int N: current working sample size
             :param int/None seed: seed for row order randomisation if reqd.
+            :param bool random_selection: whether rows selected is also
+                                          randomised.
 
             :raises TypeError: if bad argument type
             :raises ValueError: if bad argument value

@@ -164,9 +164,12 @@ class Pandas(Data):
             if df[col].dtype in ['float32', 'float64']:
                 df[col] = df[col].apply(lambda x: rndsf(x, sf, zero))
 
-        df.to_csv(filename, index=False, na_rep='*',
-                  quoting=QUOTE_MINIMAL, escapechar='+',
-                  compression="gzip" if compress is True else 'infer')
+        try:
+            df.to_csv(filename, index=False, na_rep='*',
+                      quoting=QUOTE_MINIMAL, escapechar='+',
+                      compression="gzip" if compress is True else 'infer')
+        except OSError:
+            raise FileNotFoundError('Pandas.write() failed')
 
     def _update_sample(self, old_N=None, old_ext_to_orig=None):
         """
@@ -209,23 +212,26 @@ class Pandas(Data):
             self.node_types = {old_to_new[old]: _type
                                for old, _type in self.node_types.items()}
 
-    def set_N(self, N, seed=None):
+    def set_N(self, N, seed=None, random_selection=False):
         """
             Set current working sample size, and optionally randomise the row
             order
 
             :param int N: current working sample size
             :param int/None seed: seed for row order randomisation if reqd.
+            :param bool random_selection: whether rows selected is also
+                                          randomised.
 
             :raises TypeError: if bad argument type
             :raises ValueError: if bad argument value
         """
         if (not isinstance(N, int) or isinstance(N, bool) or
+            not isinstance(random_selection, bool) or
             seed is not None and (not isinstance(seed, int)
                                   or isinstance(seed, bool))):
             raise TypeError('Data.set_N() bad arg type')
 
-        if (N < 1 or N > len(self.df) or
+        if (N < 1 or N > len(self.df) or random_selection is True or
                 (seed is not None and (seed < 0 or seed > 100))):
             raise ValueError('Pandas.set_N() bad arg value')
 

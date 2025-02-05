@@ -82,6 +82,6 @@ def run_analysis(args, root_dir=EXPTS_DIR):
     elif action == 'network':
         network_impact()
     elif action == 'error':
-        error_analysis(series, networks, Ns, params)
+        error_analysis(series, networks, Ns, Ss, params)
 
     return res

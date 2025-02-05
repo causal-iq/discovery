@@ -272,6 +272,20 @@ def test_set_N_type_error_3():  # Asia, N=100 - invalid seed type
         data.set_N(N=10, seed=2.1)
 
 
+def test_set_N_type_error_4():  # Asia, N=100 - invalid random_selection type
+    df = read_csv(TESTDATA_DIR + '/experiments/datasets/asia.data.gz',
+                  dtype='category', nrows=100)
+
+    data = Pandas(df=df)
+
+    with pytest.raises(TypeError):
+        data.set_N(N=10, random_selection=1)
+    with pytest.raises(TypeError):
+        data.set_N(N=10, random_selection=1)
+    with pytest.raises(TypeError):
+        data.set_N(N=10, random_selection={True})
+
+
 def test_set_N_value_error_1():  # Asia, N=100 - set non-positive N
     df = read_csv(TESTDATA_DIR + '/experiments/datasets/asia.data.gz',
                   dtype='category', nrows=100)
@@ -306,7 +320,17 @@ def test_set_N_value_error_3():  # Asia, N=100 - invalid seed values
         data.set_N(80, seed=101)
 
 
-def test_set_N_abc5_1_ok():  # ABC, 5 discrete rows, randmising order
+def test_set_N_value_error_4():  # Asia, N=100 - random_selection unsupported
+    df = read_csv(TESTDATA_DIR + '/experiments/datasets/asia.data.gz',
+                  dtype='category', nrows=100)
+
+    data = Pandas(df=df)
+
+    with pytest.raises(ValueError):
+        data.set_N(80, random_selection=True)
+
+
+def test_set_N_abc5_1_ok():  # ABC, 5 discrete rows, randomising order
     df = read_csv(TESTDATA_DIR + '/simple/abc_5.csv', dtype='category')
     data = Pandas(df=df)
     print('\n\nOriginal Dataset:\n{}\n'.format(data.as_df()))
@@ -364,7 +388,7 @@ def test_set_N_abc5_1_ok():  # ABC, 5 discrete rows, randmising order
          'C': ['0', '0', '0', '1', '0']}
 
 
-def test_set_N_xyz10_1_ok():  # XYZ, 10 continuous rows, randmising order
+def test_set_N_xyz10_1_ok():  # XYZ, 10 continuous rows, randomising order
     df = read_csv(TESTDATA_DIR + '/simple/xyz_10.csv', dtype='float32')
     data = Pandas(df=df)
 

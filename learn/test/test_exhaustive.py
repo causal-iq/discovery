@@ -1,10 +1,10 @@
 
 import pytest
-from pandas import DataFrame
+from numpy import array
 
 from learn.exhaustive import exhaustive
 from fileio.common import TESTDATA_DIR
-from fileio.pandas import Pandas
+from fileio.numpy import NumPy
 from core.metrics import dicts_same
 from core.bn import BN
 
@@ -18,8 +18,8 @@ def test_exhaustive_type_error_1():
         exhaustive(['asf'])
     with pytest.raises(TypeError):  # boolean for data
         exhaustive(True)
-    data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/heckerman.csv',
+                      dstype='categorical')
     with pytest.raises(TypeError):
         exhaustive(data, 32)  # numeric score type
     with pytest.raises(TypeError):
@@ -31,15 +31,15 @@ def test_exhaustive_type_error_1():
 
 
 def test_exhaustive_value_error_1():  # too many variables in data
-    data = Pandas.read(TESTDATA_DIR + '/alarm/ALARM_N_1k.csv.zip',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/alarm/ALARM_N_1k.csv.zip',
+                      dstype='categorical')
     with pytest.raises(ValueError):
         exhaustive(data, 'bic')
 
 
 def test_exhaustive_value_error_2():  # invalid score types
-    data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/heckerman.csv',
+                      dstype='categorical')
     with pytest.raises(ValueError):  # unknown score
         exhaustive(data, types='unknown')
     with pytest.raises(ValueError):  # unknown score in list
@@ -47,8 +47,8 @@ def test_exhaustive_value_error_2():  # invalid score types
 
 
 def test_exhaustive_value_error_3():  # unknown scoring parameters
-    data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/heckerman.csv',
+                      dstype='categorical')
     with pytest.raises(ValueError):  # unknown score
         exhaustive(data, params={'unknown': 0})
     with pytest.raises(ValueError):  # unknown score
@@ -56,8 +56,8 @@ def test_exhaustive_value_error_3():  # unknown scoring parameters
 
 
 def test_exhaustive_value_error_4():  # unknown scoring parameter values
-    data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/heckerman.csv',
+                      dstype='categorical')
     with pytest.raises(ValueError):  # unknown score
         exhaustive(data, params={'base': 0})
     with pytest.raises(ValueError):  # unknown score
@@ -65,24 +65,26 @@ def test_exhaustive_value_error_4():  # unknown scoring parameter values
 
 
 def test_exhaustive_ab_1_ok():
-    data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['1', '0']},
-                            dtype='category'))
+    data = NumPy(array([[1, 1], [0, 0]], dtype='uint8'), dstype='categorical',
+                 col_values={'A': ('0', '1'), 'B': ('0', '1')})
     dags = exhaustive(data)
     print('\nAll possible DAGs with two nodes, two identical rows\n')
     print(dags)
 
 
 def test_exhaustive_abc_1_ok():
-    data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['1', '0'],
-                             'C': ['0', '1']}, dtype='category'))
+    data = NumPy(array([[0, 1, 0], [1, 0, 1]], dtype='uint8'),
+                 dstype='categorical',
+                 col_values={'A': ('0', '1'), 'B': ('0', '1'),
+                             'C': ('0', '1')})
     dags = exhaustive(data)
     print('\nDAGs with three nodes, data (0,1,0), (1,0,1), best BIC first\n')
     print(dags)
 
 
 def test_exhaustive_ab_random_1_ok():
-    data = Pandas.read(TESTDATA_DIR + '/simple/ab_random.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/ab_random.csv',
+                      dstype='categorical')
     dags = exhaustive(data, params={'base': 2})
     print('\nn=2, N=100, perfectly random data')
     print(dags)
@@ -92,32 +94,32 @@ def test_exhaustive_ab_random_1_ok():
 
 
 def test_exhaustive_ab_deterministic_1_ok():
-    data = Pandas.read(TESTDATA_DIR + '/simple/ab_deterministic.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/ab_deterministic.csv',
+                      dstype='categorical')
     dags = exhaustive(data, params={'base': 2})
     print('\nn=2, N=20, completely deterministic data')
     print(dags)
 
 
 def test_exhaustive_ab_strong_1_ok():
-    data = Pandas.read(TESTDATA_DIR + '/simple/ab_strong.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/ab_strong.csv',
+                      dstype='categorical')
     dags = exhaustive(data, params={'base': 2})
     print('\nn=2, N=20, close to deterministic data')
     print(dags)
 
 
 def test_exhaustive_ab_moderate_1_ok():
-    data = Pandas.read(TESTDATA_DIR + '/simple/ab_moderate.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/ab_moderate.csv',
+                      dstype='categorical')
     dags = exhaustive(data, params={'base': 2})
     print('\nn=2, N=20, moderate correlation')
     print(dags)
 
 
 def test_exhaustive_file_abc_36_ok():
-    data = Pandas.read(TESTDATA_DIR + '/simple/abc_36.csv',
-                       dstype='categorical')
+    data = NumPy.read(TESTDATA_DIR + '/simple/abc_36.csv',
+                      dstype='categorical')
     dags = exhaustive(data, types='loglik')
     print('\nAll possible DAGs with three nodes, BIC with abc_36 data')
     print(dags)
@@ -131,7 +133,8 @@ def test_exhaustive_ab_100_ok():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
     global_dist = bn.global_distribution()
     print('\n\n{}'.format(global_dist))
-    data = Pandas(bn.generate_cases(100))
+    data = NumPy.from_df(df=bn.generate_cases(100), dstype='categorical',
+                         keep_df=True)
     dags = exhaustive(data, types=['bic', 'loglik', 'bde'],
                       params={'base': 'e'}, normalise=False)
     print("CPDAG scores (base e) using 100 random rows from A->B:\n{}"
@@ -158,7 +161,8 @@ def test_exhaustive_abc_100_ok():
     assert bn.free_params == 5
     global_dist = bn.global_distribution()
     print('\n\n{}'.format(global_dist))
-    data = Pandas(bn.generate_cases(100))
+    data = NumPy.from_df(df=bn.generate_cases(100), dstype='categorical',
+                         keep_df=True)
     dags = exhaustive(data, types=['bic', 'loglik', 'bde'],
                       params={'base': 10}, normalise=True)
     print("CPDAG scores using 100 random rows from A->B->C:\n{}".format(dags))
@@ -183,7 +187,8 @@ def test_exhaustive_abc_1K_ok():
     assert bn.free_params == 5
     global_dist = bn.global_distribution()
     print('\n\n{}'.format(global_dist))
-    data = Pandas(bn.generate_cases(1000))
+    data = NumPy.from_df(df=bn.generate_cases(1000), dstype='categorical',
+                         keep_df=True)
     dags = exhaustive(data, types=['bic', 'loglik', 'bde'],
                       params={'base': 10}, normalise=True)
     print("CPDAG scores using 1000 random rows from A->B->C:\n{}".format(dags))
@@ -208,7 +213,8 @@ def test_exhaustive_ab_cb_100_ok():
     assert bn.free_params == 6
     global_dist = bn.global_distribution()
     print('\n\n{}'.format(global_dist))
-    data = Pandas(bn.generate_cases(100))
+    data = NumPy.from_df(df=bn.generate_cases(100), dstype='categorical',
+                         keep_df=True)
     dags = exhaustive(data, types=['bic', 'loglik', 'bde'],
                       params={'base': 10}, normalise=True)
     print("CPDAG scores using 100 random rows from A->B<-C:\n{}".format(dags))
@@ -233,7 +239,8 @@ def test_exhaustive_ab_cb_1K_ok():
     assert bn.free_params == 6
     global_dist = bn.global_distribution()
     print('\n\n{}'.format(global_dist))
-    data = Pandas(bn.generate_cases(1000))
+    data = NumPy.from_df(df=bn.generate_cases(1000), dstype='categorical',
+                         keep_df=True)
     dags = exhaustive(data, types=['bic', 'loglik', 'bde'],
                       params={'base': 10}, normalise=True)
     print("CPDAG scores using 1000 random rows from A->B<-C:\n{}".format(dags))

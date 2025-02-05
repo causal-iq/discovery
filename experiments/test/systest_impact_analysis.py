@@ -32,10 +32,10 @@ def systest_impact_analysis_know_asia_1():  # N=10, no, 4, 16 know requests
     assert list(stats['unused'].keys()) == ['limit = 16', 'limit = 4']
     assert (stats['unused']['limit = 4'] ==
             {'min': 0.000, 'max': 0.615, 'mean': 0.461, 'std': 0.205,
-             'count': 10})
+             'count': 10, 'ci': 0.147})
     assert (stats['unused']['limit = 16'] ==
             {'min': 0.000, 'max': 0.615, 'mean': 0.461, 'std': 0.205,
-             'count': 10})
+             'count': 10, 'ci': 0.147})
 
 
 def systest_impact_analysis_know_asia_2():  # N=20, no, 4, 16 know requests
@@ -58,10 +58,10 @@ def systest_impact_analysis_know_asia_2():  # N=20, no, 4, 16 know requests
     assert list(stats['unused'].keys()) == ['limit = 16', 'limit = 4']
     assert (stats['unused']['limit = 4'] ==
             {'min': 0.000, 'max': 0.667, 'mean': 0.500, 'std': 0.222,
-             'count': 10})
+             'count': 10, 'ci': 0.159})
     assert (stats['unused']['limit = 16'] ==
             {'min': 0.000, 'max': 0.667, 'mean': 0.500, 'std': 0.222,
-             'count': 10})
+             'count': 10, 'ci': 0.159})
 
 
 def systest_impact_analysis_know_asia_3():  # N=10&20, no, 4, 16 know requests
@@ -84,10 +84,10 @@ def systest_impact_analysis_know_asia_3():  # N=10&20, no, 4, 16 know requests
     assert list(stats['unused'].keys()) == ['limit = 16', 'limit = 4']
     assert (stats['unused']['limit = 4'] ==
             {'min': 0.000, 'max': 0.667, 'mean': 0.481, 'std': 0.209,
-             'count': 20})
+             'count': 20, 'ci': 0.098})
     assert (stats['unused']['limit = 16'] ==
             {'min': 0.000, 'max': 0.667, 'mean': 0.481, 'std': 0.209,
-             'count': 20})
+             'count': 20, 'ci': 0.098})
 
 
 def systest_impact_analysis_know_asia_4():  # N=100, expert=no,1.0,.67,.50
@@ -113,13 +113,13 @@ def systest_impact_analysis_know_asia_4():  # N=100, expert=no,1.0,.67,.50
                                             'expertise = 1.0']
     assert (stats['unused']['expertise = 0.5'] ==
             {'min': -0.857, 'max': 0.571, 'mean': 0.129, 'std': 0.406,
-             'count': 10})
+             'count': 10, 'ci': 0.291})
     assert (stats['unused']['expertise = 0.67'] ==
             {'min': -0.857, 'max': 0.714, 'mean': 0.285, 'std': 0.457,
-             'count': 10})
+             'count': 10, 'ci': 0.327})
     assert (stats['unused']['expertise = 1.0'] ==
             {'min': 0.000, 'max': 0.857, 'mean': 0.657, 'std': 0.287,
-             'count': 10})
+             'count': 10, 'ci': 0.206})
 
 
 # using relative sample sizes
@@ -143,4 +143,4 @@ def systest_impact_analysis_know_asia_5():  # N=0.1, expert=no,.50
          {'subplot': 'unused', 'x_val': '', 'y_val': 0.285}]
     assert stats == \
         {'unused': {'': {'min': 0.0, 'max': 0.285, 'mean': 0.182, 'std': 0.125,
-                         'count': 4}}}
+                         'count': 4, 'ci': 0.199}}}

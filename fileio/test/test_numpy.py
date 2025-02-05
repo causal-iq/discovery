@@ -532,7 +532,7 @@ def test_from_df_xy3_1_ok():  # XY 3 rows of continuous data, keep_df = True
     assert data.node_types == {'F1': 'float32', 'F2': 'float32'}
 
     assert data.as_df().applymap(lambda x:
-                                 round(x, 2)).to_dict(orient='lists') == \
+                                 round(x, 2)).to_dict(orient='list') == \
         {'F1': [-0.45, 1.01, 1.22], 'F2': [0.67, 1.21, -1.41]}
 
 
@@ -557,7 +557,7 @@ def test_from_df_xy3_2_ok():  # XY 3 rows of continuous data, keep_df = False
     assert data.node_types == {'F1': 'float32', 'F2': 'float32'}
 
     assert data.as_df().applymap(lambda x:
-                                 round(x, 2)).to_dict(orient='lists') == \
+                                 round(x, 2)).to_dict(orient='list') == \
         {'F1': [-0.45, 1.01, 1.22], 'F2': [0.67, 1.21, -1.41]}
 
 
@@ -587,7 +587,7 @@ def test_from_df_xyz10_1_ok():  # XYZ 10 rows of continuous data
     assert data.node_types == {'X': 'float32', 'Y': 'float32', 'Z': 'float32'}
 
     assert data.as_df().applymap(lambda x:
-                                 round(x, 2)).to_dict(orient='lists') == \
+                                 round(x, 2)).to_dict(orient='list') == \
         {'X': [0.0, 0.1, 0.2, 0.6, 1.1, 2.2, 4.0, 4.4, 6.0, 7.1],
          'Y': [3.1, 0.0, 5.4, 2.8, 0.3, 3.1, 6.0, 6.6, 0.2, 3.9],
          'Z': [4.0, 2.2, 1.7, 9.9, 0.3, 0.8, 9.0, 1.9, 0.5, 1.4]}
@@ -639,7 +639,7 @@ def test_set_N_type_error_2(ab3):  # Invalid type for N
         data.set_N([2])
 
 
-def test_set_N_type_error_3(ab3):  # Invalid type for N
+def test_set_N_type_error_3(ab3):  # Invalid type for seed
     data = NumPy(ab3['d'], ab3['t'], ab3['v'])
 
     with pytest.raises(TypeError):
@@ -648,6 +648,15 @@ def test_set_N_type_error_3(ab3):  # Invalid type for N
         data.set_N(N=2, seed=[1])
     with pytest.raises(TypeError):
         data.set_N(N=2, seed=2.1)
+
+
+def test_set_N_type_error_4(ab3):  # random_selection not bool
+    data = NumPy(ab3['d'], ab3['t'], ab3['v'])
+
+    with pytest.raises(TypeError):
+        data.set_N(N=3, random_selection='bad')
+    with pytest.raises(TypeError):
+        data.set_N(N=3, random_selection=1)
 
 
 def test_set_N_value_error_1(ab3):  # set non-positive N
@@ -725,6 +734,54 @@ def test_set_N_abc5_1_ok():  # ABC, 5 discrete rows, randomising order
 
     data.set_N(5)
     print('\n\nSetting N=5, no seed:\n{}\n'.format(data.as_df()))
+    assert data.node_values == \
+        {'A': {'1': 3, '0': 2},
+         'B': {'1': 3, '0': 2},
+         'C': {'0': 4, '1': 1}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['0', '0', '1', '1', '1'],
+         'B': ['0', '1', '0', '1', '1'],
+         'C': ['0', '0', '0', '1', '0']}
+
+
+def test_set_N_abc5_2_ok():  # ABC, 5 discrete rows, randomising selection
+    pandas = Pandas.read(TESTDATA_DIR + '/simple/abc_5.csv',
+                         dstype='categorical')
+    data = NumPy.from_df(df=pandas.as_df(), dstype='categorical', keep_df=True)
+
+    print('\n\nOriginal Dataset:\n{}\n'.format(data.as_df()))
+    assert data.node_values == \
+        {'A': {'1': 3, '0': 2},
+         'B': {'1': 3, '0': 2},
+         'C': {'0': 4, '1': 1}}
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['0', '0', '1', '1', '1'],
+         'B': ['0', '1', '0', '1', '1'],
+         'C': ['0', '0', '0', '1', '0']}
+
+    data.set_N(N=3, random_selection=True)
+    print('\n\nN=3, seed=None, random selection:\n{}\n'.format(data.as_df()))
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['1', '1', '1'],
+         'B': ['0', '1', '1'],
+         'C': ['0', '1', '0']}
+
+    data.set_N(N=3, seed=1, random_selection=True)
+    print('\n\nN=3, seed=1, random selection:\n{}\n'.format(data.as_df()))
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['1', '0', '1'],
+         'B': ['0', '1', '1'],
+         'C': ['0', '0', '1']}
+
+    data.set_N(N=2, seed=None, random_selection=True)
+    print('\n\nN=2, seed=None, random selection:\n{}\n'.format(data.as_df()))
+    assert data.as_df().to_dict(orient='list') == \
+        {'A': ['1', '1'],
+         'B': ['1', '1'],
+         'C': ['1', '0']}
+
+    data.set_N(N=5)
+    print('\n\nN=5, seed=None:\n{}\n'.format(data.as_df()))
     assert data.node_values == \
         {'A': {'1': 3, '0': 2},
          'B': {'1': 3, '0': 2},

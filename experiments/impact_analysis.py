@@ -2,10 +2,12 @@
 # Analysis of the overall impact of a factor e.g. sample size, var. ordering
 # on the learnt graphs
 
-from pandas import DataFrame, set_option, read_csv
+from pandas import DataFrame, Series, set_option, read_csv
 from statistics import mean
 from enum import Enum
-from numpy import std
+from numpy import std, sqrt
+from scipy.stats import t
+from pingouin import pairwise_tests
 
 from fileio.common import EXPTS_DIR
 from learn.trace import Trace
@@ -151,6 +153,9 @@ def _sample_impact(series, networks, metric, rawdata, data,
                                               ' times').format(mult))
                         data['y_val'].append(value1 - rawdata[key2])
                         data['subplot'].append('unused')
+                        if 'expt' in data:
+                            data['expt'].append('{}_{}_{}'.format(network, N,
+                                                                  sample))
 
     return data
 
@@ -266,6 +271,9 @@ def series_impact(required, series, networks, metric, rawdata, data,
                         data['x_val'].append(x_val)
                         data['y_val'].append(rawdata[key1] - rawdata[key0])
                         data['subplot'].append('unused')
+                        if 'expt' in data:
+                            data['expt'].append('{}_{}_{}'.format(network, N,
+                                                                  sample))
                         # print('** value is {}'.format(rawdata[key0]))
                         y_val0.append(rawdata[key0])
                         y_val1.append(rawdata[key1])
@@ -598,7 +606,7 @@ def impact_vs_knowledge_plot_data(series, networks, Ns, metric, rawdata,
     """
     KPARAMS = ['knowledge', 'limit', 'ignore', 'expertise', 'reqd',
                'threshold', 'earlyok', 'partial', 'stop', 'nodes']
-    data = {'subplot': [], 'x_val': [], 'y_val': []}
+    data = {'subplot': [], 'x_val': [], 'y_val': [], 'expt': []}
     print('\nDifferent is {}, common {}'.format(different, common))
 
     # Identify 'base' series which doesn't use knowledge
@@ -728,6 +736,21 @@ def _get_plot_data(series, networks, Ns, metric, rawdata, common, different,
     return (DataFrame(data), props)
 
 
+def ci(row):
+    """
+        Compute 95% confidence intervals
+
+        :param Series row: row to compute CI for
+
+        :returns Series: compute CI value
+    """
+    count = row[('y_val', 'count')]
+    std = row[('y_val', 'std')]
+    t_crit = t.ppf((1.0 + 0.95) * 0.5, (count - 1))  # 2-tailed, 95% CI
+    sem = std / sqrt(count)
+    return Series({('y_val', 'ci'): sem * t_crit})
+
+
 def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
                     expts_dir=EXPTS_DIR):
     """
@@ -773,6 +796,18 @@ def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
         print(data)
         subplot_kind = 'bar' if 'y_var' in data.columns else 'box'
 
+        if 'expt' in data.columns:
+            set_option('display.max_rows', None)
+            try:
+                results = pairwise_tests(dv="y_val", within="x_val",
+                                         subject="expt", data=data,
+                                         parametric=True)
+            except ValueError:
+                results = None
+            print("\nPairwise test results are:\n{}".format(results))
+            data = data.drop(columns=['expt'])
+            set_option('display.max_rows', 10)
+
         # Compute some more statistics for each x_val in boxplot e.g. mean
 
         if subplot_kind in {'box', 'violin'}:
@@ -780,6 +815,7 @@ def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
             stats = data.copy().groupby(['subplot', 'x_val']
                                         ).agg(['min', 'max', 'mean', 'std',
                                                'count'])
+            stats = stats.join(stats.apply(ci, axis=1))
             stats = {level: {k: {x[1]: round(y, 3) for x, y in d.items()}
                              for k, d in stats.xs(level)
                              .to_dict('index').items()}
@@ -816,9 +852,12 @@ def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
                         else params['fig']) + '.png')
         plot_file = args['file'] if 'file' in args else plot_file
 
-        if expts_dir == EXPTS_DIR:
+        if expts_dir == EXPTS_DIR and plot_file != '':
             print('... generating plot file "{}"'.format(plot_file))
             relplot(data, props, plot_file, info=stats)
+        else:
+            for key, value in stats['unused'].items():
+                print("{}: {}".format(key.replace('\n', ' '), value))
 
         return (data, props, stats)
 

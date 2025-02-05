@@ -83,11 +83,13 @@ def check_all_marginals(bn, bn_name):
 
             # Generate marginals using group by on global distribution
 
-            gd_marginals = gd.groupby(nodes).sum()
+            # gd_marginals = gd.groupby(nodes).sum()
+            gd_marginals = gd.groupby(nodes)[''].sum().to_frame()
+
             if len(nodes) > 1:
 
                 # Multivariate distributions created by groupby have
-                # MultiIndex row index. We need to change this so that row
+                # MultiIndex row index. We need to change this so that row 
                 # index is just the primary variable, and instead
                 # MultIndex columns used for the other variables
 

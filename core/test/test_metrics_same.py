@@ -297,7 +297,6 @@ def test_metrics_dists_same_ok_us6_():  # almost identical univariates
     dist1.index.name = 'A'
     dist2 = DataFrame({'': {'0': 0.29999999996, '1': 0.7}})
     dist2.index.name = 'A'
-    set_option('precision', 11)
     sf = 10
     same = dists_same(dist1, dist2, sf)
     print('\nUnivariate:\n{}\n{}SAME (to {} s.f.) as:\n{}'
