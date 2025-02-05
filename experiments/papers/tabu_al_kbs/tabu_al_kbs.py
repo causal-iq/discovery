@@ -47,6 +47,18 @@ IMP_SS = ';N.impact:True'  # param to include sample size impact
 
 LIM_F1 = 'TABU/BASE,TABU/EQV/L012,TABU/EQV/L025,TABU/EQV/L050,TABU/EQV/E100'
 
+# Series used for evaluating trigger criteria
+
+CRIT_EQV = 'TABU/BASE,TABU/EQV/L050'
+CRIT_STAB = ('TABU/BASE,TABU/STAB/L050_T20,TABU/STAB/L050,' +
+             'TABU/STAB/L050_T01,TABU/STAB/L050_T001,TABU/EQV/L050')
+CRIT_LODL = ('TABU/BASE,TABU/LODL/L050_T20,TABU/LODL/L050,' +
+             'TABU/LODL/L050_T01,TABU/LODL/L050_T001,TABU/EQV/L050')
+CRIT_LT5 = ('TABU/BASE,TABU/LT5/L050_T20,TABU/LT5/L050,' +
+            'TABU/LT5/L050_T01,TABU/LT5/L050_T001,TABU/EQV/L050')
+CRIT_SIGN = ('TABU/BASE,TABU/STAB/L050_T001,TABU/LT5/L050_T01,' +
+             'TABU/LODL/L050_T20,TABU/EQV/L050')
+
 # Series and chart properties for request limit charts
 
 LIM_S = ('TABU/BASE,' +
@@ -162,369 +174,369 @@ ALGO = ('subplot.kind:violin;' +
 
 def learn_tabu_al_base():  # TABU/BASE no knowledge runs
     run_learn({'action': 'skip', 'series': 'TABU/BASE',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/BASE',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Active learning at different request limits
 
 def learn_tabu_al_eqv_l012():  # TABU/EQV/L012, equiv add, limit 0.125
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L012',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L012',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqv_l025():  # TABU/EQV/L025, equiv add, limited 0.250
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L025',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L025',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqv_l050():  # TABU/EQV/L050, equiv add, limit 0.500
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqv_e100():  # TABU/EQV/E100, equiv add, unlimited
     run_learn({'action': 'skip', 'series': 'TABU/EQV/E100',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/E100',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_l012():  # TABU/EQVP/L012, equiv add (ori), limit 0.125
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L012',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L012',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_l025():  # TABU/EQVP/L025, equiv add (ori), limit 0.250
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L025',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L025',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_l050():  # TABU/EQVP/L050, equiv add (ori), limit 0.500
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_e100():  # TABU/EQVP/E100, equiv add, unlimited
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/E100',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/E100',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined required arcs at different request limits
 
 def learn_tabu_al_reqd_l012():  # TABU/REQD/L012, reqd arc, limit 0.125
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L012',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L012',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_reqd_l025():  # TABU/REQD/L025, reqd arc, limit 0.250
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L025',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L025',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_reqd_l050():  # TABU/REQD/L050, reqd arc, limit 0.500
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined prohibited arcs at different request limits
 
 def learn_tabu_al_stop_l012():  # TABU/STOP/L012, stop arc, limit 0.125
     run_learn({'action': 'skip', 'series': 'TABU/STOP/L012',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/STOP/L012',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_stop_l025():  # TABU/STOP/L025, stop arc, limit 0.250
     run_learn({'action': 'skip', 'series': 'TABU/STOP/L025',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/STOP/L025',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_stop_l050():  # TABU/STOP/L050, stop arc, limit 0.500
     run_learn({'action': 'skip', 'series': 'TABU/STOP/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/STOP/L050',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined mixed arcs at different request limits
 
 def learn_tabu_al_mix9_l012():  # TABU/MIX9/L012, mixed arc, limit 0.125
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L012',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L012',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_mix9_l025():  # TABU/MIX9/L025, mixed arc, limit 0.250
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L025',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L025',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_mix9_l050():  # TABU/MIX9/L050, mixed arc, limit 0.500
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined tiers at different request limits
 
 def learn_tabu_al_tiers_l012():  # TABU/TIERS/L012, tiers, limit 0.125
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L012',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L012',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_tiers_l025():  # TABU/TIERS/L025, tiers, limit 0.250
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L025',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L025',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_tiers_l050():  # TABU/TIERS/L050, tiers, limit 0.500
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Active learning at different expertise levels
 
 def learn_tabu_al_eqv_e50():  # TABU/EQV/L050_E50, AL, exp=0.5
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E50',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E50',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqv_e67():  # TABU/EQV/L050_E67, AL, exp=0.67
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E67',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E67',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqv_e80():  # TABU/EQV/L050_E80, AL, exp=0.8
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E80',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E80',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqv_e90():  # TABU/EQV/L050_E90, AL, exp=0.9
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E90',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQV/L050_E90',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_e50():  # TABU/EQVP/L050_E50, orient AL, exp=0.5
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E50',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E50',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_e67():  # TABU/EQVP/L050_E67, orient AL, exp=0.67
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E67',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E67',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_e80():  # TABU/EQVP/L050_E80, orient AL, exp=0.8
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E80',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E80',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_eqvp_e90():  # TABU/EQVP/L050_E90, orient AL, exp=0.9
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E90',
-               'networks': NETWORKS, 'N': FIX_NS}) is True
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/EQVP/L050_E90',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined tiers at different expertise levels
 
 def learn_tabu_al_tiers_e50():  # TABU/TIERS/L050_E50, tiers, exp=0.5
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E50',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E50',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_tiers_e67():  # TABU/TIERS/L050_E67, tiers, exp=0.67
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E67',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E67',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_tiers_e80():  # TABU/TIERS/L050_E80, tiers, exp=0.8
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E80',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E80',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_tiers_e90():  # TABU/TIERS/L050_E90, tiers, exp=0.9
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E90',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/TIERS/L050_E90',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined required arcs at different expertise levels
 
 def learn_tabu_al_reqd_e50():  # TABU/REQD/L050_E50, reqd, exp=0.5
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E50',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E50',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_reqd_e67():  # TABU/REQD/L050_E67, reqd, exp=0.67
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E67',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E67',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_reqd_e80():  # TABU/REQD/L050_E80, reqd, exp=0.8
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E80',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E80',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_reqd_e90():  # TABU/REQD/L050_E90, reqd, exp=0.9
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E90',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/REQD/L050_E90',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Predefined mixed arcs at different expertise levels
 
 def learn_tabu_al_mix9_e50():  # TABU/MIX9/L050_E50, mixed, exp=0.5
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E50',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E50',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_mix9_e67():  # TABU/MIX9/L050_E67, mixed, exp=0.67
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E67',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E67',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_mix9_e80():  # TABU/MIX9/L050_E80, mixed, exp=0.8
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E80',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E80',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 def learn_tabu_al_mix9_e90():  # TABU/MIX9/L050_E90, mixed, exp=0.9
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E90',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
     run_learn({'action': 'skip', 'series': 'TABU/MIX9/L050_E90',
-               'networks': NETWORKS, 'N': REL_NS}) is True
+               'networks': NETWORKS, 'N': REL_NS})
 
 
 # Different trigger criteria
 
 def learn_tabu_al_stab_001():  # TABU/STAB/L050_T001, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/STAB/L050_T001',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_stab_01():  # TABU/STAB/L050_T01, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/STAB/L050_T01',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_stab_05():  # TABU/STAB/L050, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/STAB/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_stab_20():  # TABU/STAB/L050_T20, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/STAB/L050_T20',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lodl_001():  # TABU/LODL/L050_T001, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LODL/L050_T001',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lodl_01():  # TABU/LODL/L050_T01, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LODL/L050_T01',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lodl_05():  # TABU/LODL/L050, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LODL/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lodl_20():  # TABU/LODL/L050_T20, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LODL/L050_T20',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lt5_001():  # TABU/LT5/L050_T001, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LT5/L050_T001',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lt5_01():  # TABU/LT5/L050_T01, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LT5/L050_T01',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lt5_05():  # TABU/LT5/L050, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LT5/L050',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 def learn_tabu_al_lt5_20():  # TABU/LT5/L050_T20, absolute Ns
     run_learn({'action': 'skip', 'series': 'TABU/LT5/L050_T20',
-               'networks': NETWORKS, 'N': FIX_NS}) is False
+               'networks': NETWORKS, 'N': FIX_NS})
 
 
 #  RESULTS ANALYSIS
@@ -532,28 +544,53 @@ def learn_tabu_al_lt5_20():  # TABU/LT5/L050_T20, absolute Ns
 
 # Analysis which compares the different trigger criteria
 
-def table_tabu_al_criteria_stab():  # Accuracy vs threshold - stable criterion
-    args = {'action': 'impact',
-            'series': 'STAB',
-            'networks': NETWORKS,
-            'N': '1K-100K;1,5;0-2'}
-    run_analysis(args)
+def table_tabu_al_crit_eqv():  # Accuracy - equivalent add
+    run_analysis({'action': 'impact', 'series': CRIT_EQV,
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': ''})
 
 
-def table_tabu_al_criteria_lodl():  # Accuracy vs threshold - low delta
-    args = {'action': 'impact',
-            'series': 'LODL',
-            'networks': NETWORKS,
-            'N': '1K-100K;1,5;0-2'}
-    run_analysis(args)
+def table_tabu_al_crit_stab():  # Accuracy vs threshold - stable criterion
+    run_analysis({'action': 'impact', 'series': CRIT_STAB,
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': ''})
 
 
-def table_tabu_al_criteria_lt5():  # Accuracy vs threshold - low counts
-    args = {'action': 'impact',
-            'series': 'LT5',
-            'networks': NETWORKS,
-            'N': '1K-100K;1,5;0-2'}
-    run_analysis(args)
+def table_tabu_al_crit_lodl():  # Accuracy vs threshold - low delta
+    run_analysis({'action': 'impact', 'series': CRIT_LODL,
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': ''})
+
+
+def table_tabu_al_crit_lt5():  # Accuracy vs threshold - low counts
+    run_analysis({'action': 'impact', 'series': CRIT_LT5,
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': ''})
+
+
+def table_tabu_al_crit_sign():  # Is criteria statistically significant.
+    run_analysis({'action': 'impact', 'series': CRIT_SIGN,
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': ''})
+
+
+def table_tabu_al_crit_err_eqv():  # Breakdown of change types - equiv add
+    run_analysis({'action': 'error', 'series': 'TABU/EQV/L050',
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': '',
+                  'params': 'criterion:none;metric:al'})
+
+
+def table_tabu_al_crit_err_stab():  # Breakdown of change types - stable crit.
+    run_analysis({'action': 'error', 'series': 'TABU/STAB/L050_T001',
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': '',
+                  'params': 'criterion:none;metric:al'})
+
+
+def table_tabu_al_crit_err_lodl():  # Breakdown of change types - low delta
+    run_analysis({'action': 'error', 'series': 'TABU/LODL/L050_T20',
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': '',
+                  'params': 'criterion:none;metric:al'})
+
+
+def table_tabu_al_crit_err_lt5():  # Breakdown of change types - low counts
+    run_analysis({'action': 'error', 'series': 'TABU/LT5/L050_T01',
+                  'networks': NETWORKS, 'N': FIX_NS, 'file': '',
+                  'params': 'criterion:none;metric:al'})
 
 
 # Line chart of F1 vs sample size for different request limits
@@ -625,11 +662,10 @@ def chart_tabu_al_alg_fix():  # algorithm comparisons, rel samples
                   'params': ALGO})
 
 
-def chart_tabu_al_algo():  # r0 AL/PDF knowledge expertise comparison
-    args = {'action': 'series',
-            'series': 'ALGO_KNW',
-            'networks': NETWORKS,
-            'N': '1K-100K;1,5',
-            'params': 'fig:act_algo',
-            'file': EXPTS_DIR + '/papers/tabu_al_kbs/act-algo.png'}
-    run_analysis(args)
+# Example trace where AL worsens accuracy
+
+def values_tabu_al_worsens():  # example where AL worsens accuracy
+    run_analysis({'action': 'trace', 'series': 'TABU/BASE',
+                  'networks': 'asia', 'N': '50k;;7', 'file': ''})
+    run_analysis({'action': 'trace', 'series': 'TABU/EQV/L012',
+                  'networks': 'asia', 'N': '50k;;7', 'file': ''})

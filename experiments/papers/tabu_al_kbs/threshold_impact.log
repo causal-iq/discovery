@@ -1,0 +1,34 @@
+ THRESHOLD = 20%
+ 
+ STAB
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.7948, del: 0.0279, ext_add: 0.0176, ext_rev: 0.0004, ok_add: 0.0014, ok_rev: 0.0001, rev: 0.1537, stop_add: 0.0040, stop_rev: 0.0001
+
+LODL
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5690, del: 0.0325, ext_add: 0.0647, ext_rev: 0.0002, ok_add: 0.1523, ok_del: 0.0001, ok_rev: 0.0076, rev: 0.1187, stop_add: 0.0536, stop_rev: 0.0015
+
+LT5
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.6147, del: 0.0277, ext_add: 0.0554, ext_rev: 0.0002, ok_add: 0.1129, ok_del: 0.0018, ok_rev: 0.0047, rev: 0.1355, stop_add: 0.0468, stop_del: 0.0000, stop_rev: 0.0004
+
+
+THRESHOLD = 0.1%
+
+STAB
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5567, del: 0.0278, ext_add: 0.0522, ext_rev: 0.0004, ok_add: 0.1692, ok_rev: 0.0018, rev: 0.1214, stop_add: 0.0702, stop_rev: 0.0002
+
+LODL
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.7098, del: 0.0491, ext_add: 0.0762, ext_rev: 0.0165, ok_add: 0.0095, ok_del: 0.0081, ok_rev: 0.0536, rev: 0.0421, stop_add: 0.0053, stop_del: 0.0002, stop_rev: 0.0296
+
+LT5
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5555, del: 0.0314, ext_add: 0.0533, ext_rev: 0.0004, ok_add: 0.1717, ok_del: 0.0002, ok_rev: 0.0041, rev: 0.1183, stop_add: 0.0643, stop_rev: 0.0008

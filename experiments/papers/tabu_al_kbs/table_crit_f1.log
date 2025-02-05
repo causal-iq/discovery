@@ -1,0 +1,700 @@
+PS C:\dev\causal-iq\discovery> pytest --disable-warnings -c papers.ini -v -k table_tabu_al_crit_eqv -s 
+======================================================================================================================= test session starts ========================================================================================================================
+platform win32 -- Python 3.8.2, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- c:\dev\python382\python.exe
+cachedir: .pytest_cache
+rootdir: C:\dev\causal-iq\discovery, configfile: papers.ini
+plugins: forked-1.3.0, xdist-2.3.0
+collected 194 items / 193 deselected / 1 selected
+
+experiments/papers/tabu_al_kbs/tabu_al_kbs.py::table_tabu_al_crit_eqv (1000, 100000) [1, 5] 3 5
+
+
+Sample sizes are [1000, 5000, 10000, 50000, 100000]
+TABU/BASE has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': False, 'limit': None, 'ignore': None, 'expertise': None, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/EQV/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'equiv_add', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+Common properties are ['package', 'algorithm', 'ordering', 'score', 'test', 'k', 'iss', 'alpha', 'limit', 'ignore', 'expertise', 'reqd', 'threshold', 'earlyok', 'partial', 'stop', 'nodes'], and different ones are ['knowledge']
+
+Processing series TABU/BASE with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': False, 'kparams': None, 'randomise': ([<Randomise.ORDER: 'order'>], 10)} ...
+... 720 traces read for asia
+... 720 traces read for sports
+... 720 traces read for sachs
+... 720 traces read for child
+... 720 traces read for insurance
+... 720 traces read for property
+... 720 traces read for diarrhoea
+... 720 traces read for water
+... 720 traces read for mildew
+... 720 traces read for alarm
+... 720 traces read for barley
+... 720 traces read for hailfinder
+... 720 traces read for hepar2
+... 720 traces read for win95pts
+... 668 traces read for formed
+... 574 traces read for pathfinder
+Processing series TABU/EQV/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.EQUIV_ADD: 'equiv_add'>, 'kparams': {'limit': 0.5, 'expertise': 1.0, 'ignore': 0, 'partial': False}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 330 traces read for asia
+... 330 traces read for sports
+... 330 traces read for sachs
+... 330 traces read for child
+... 330 traces read for insurance
+... 330 traces read for property
+... 330 traces read for diarrhoea
+... 330 traces read for water
+... 330 traces read for mildew
+... 330 traces read for alarm
+... 330 traces read for barley
+... 330 traces read for hailfinder
+... 330 traces read for hepar2
+... 330 traces read for win95pts
+... 330 traces read for formed
+... 330 traces read for pathfinder
+
+Different properties are {'knowledge'}
+
+
+Different is {'TABU/BASE': {'knowledge': False}, 'TABU/EQV/L050': {'knowledge': 'equiv_add'}}, common {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'limit': 0.5, 'ignore': 0.0, 'expertise': 1.0, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'equiv_add'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, None), 'earlyok': (None, None), 'partial': (None, False), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'equiv_add'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, None), 14: (None, None), 15: (None, False), 16: (None, None), 17: (None, None)}) over [10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'equiv_add', 0.5, 0, 1.0, None, None, None, False, None, None) over 10 samples
+    subplot x_val  y_val                expt
+0    unused        0.169       asia_100000_0
+1    unused        0.125       asia_100000_1
+2    unused        0.125       asia_100000_2
+3    unused        0.125       asia_100000_3
+4    unused        0.770       asia_100000_4
+..      ...   ...    ...                 ...
+795  unused        0.084  pathfinder_50000_5
+796  unused        0.073  pathfinder_50000_6
+797  unused        0.060  pathfinder_50000_7
+798  unused        0.049  pathfinder_50000_8
+799  unused        0.073  pathfinder_50000_9
+
+[800 rows x 4 columns]
+
+Pairwise test results are:
+None
+: {'min': -0.059, 'max': 1.0, 'mean': 0.207, 'std': 0.146, 'count': 800, 'ci': 0.01}
+PASSED
+
+
+
+
+PS C:\dev\causal-iq\discovery> pytest --disable-warnings -c papers.ini -v -k table_tabu_al_crit_stab -s
+======================================================================================================================= test session starts ========================================================================================================================
+platform win32 -- Python 3.8.2, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- c:\dev\python382\python.exe
+cachedir: .pytest_cache
+rootdir: C:\dev\causal-iq\discovery, configfile: papers.ini
+plugins: forked-1.3.0, xdist-2.3.0
+collected 194 items / 193 deselected / 1 selected
+
+experiments/papers/tabu_al_kbs/tabu_al_kbs.py::table_tabu_al_crit_stab (1000, 100000) [1, 5] 3 5
+
+
+Sample sizes are [1000, 5000, 10000, 50000, 100000]
+TABU/BASE has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': False, 'limit': None, 'ignore': None, 'expertise': None, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/STAB/L050_T20 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'bic_unstable', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.2, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/STAB/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'bic_unstable', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.05, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/STAB/L050_T01 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'bic_unstable', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.01, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/STAB/L050_T001 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'bic_unstable', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.001, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/EQV/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'equiv_add', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+Common properties are ['package', 'algorithm', 'ordering', 'score', 'test', 'k', 'iss', 'alpha', 'limit', 'ignore', 'expertise', 'reqd', 'earlyok', 'partial', 'stop', 'nodes'], and different ones are ['knowledge', 'threshold']
+
+Processing series TABU/BASE with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': False, 'kparams': None, 'randomise': ([<Randomise.ORDER: 'order'>], 10)} ...
+... 720 traces read for asia
+... 720 traces read for sports
+... 720 traces read for sachs
+... 720 traces read for child
+... 720 traces read for insurance
+... 720 traces read for property
+... 720 traces read for diarrhoea
+... 720 traces read for water
+... 720 traces read for mildew
+... 720 traces read for alarm
+... 720 traces read for barley
+... 720 traces read for hailfinder
+... 720 traces read for hepar2
+... 720 traces read for win95pts
+... 668 traces read for formed
+... 574 traces read for pathfinder
+Processing series TABU/STAB/L050_T20 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.BIC_UNSTABLE: 'bic_unstable'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.2}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 50 traces read for asia
+... 50 traces read for sports
+... 50 traces read for sachs
+... 50 traces read for child
+... 50 traces read for insurance
+... 50 traces read for property
+... 50 traces read for diarrhoea
+... 50 traces read for water
+... 50 traces read for mildew
+... 50 traces read for alarm
+... 50 traces read for barley
+... 50 traces read for hailfinder
+... 50 traces read for hepar2
+... 50 traces read for win95pts
+... 50 traces read for formed
+... 50 traces read for pathfinder
+Processing series TABU/STAB/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.BIC_UNSTABLE: 'bic_unstable'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.05}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 50 traces read for asia
+... 50 traces read for sports
+... 50 traces read for sachs
+... 50 traces read for child
+... 50 traces read for insurance
+... 50 traces read for property
+... 50 traces read for diarrhoea
+... 50 traces read for water
+... 50 traces read for mildew
+... 50 traces read for alarm
+... 50 traces read for barley
+... 50 traces read for hailfinder
+... 50 traces read for hepar2
+... 50 traces read for win95pts
+... 50 traces read for formed
+... 50 traces read for pathfinder
+Processing series TABU/STAB/L050_T01 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.BIC_UNSTABLE: 'bic_unstable'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.01}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 50 traces read for asia
+... 50 traces read for sports
+... 50 traces read for sachs
+... 50 traces read for child
+... 50 traces read for insurance
+... 50 traces read for property
+... 50 traces read for diarrhoea
+... 50 traces read for water
+... 50 traces read for mildew
+... 50 traces read for alarm
+... 50 traces read for barley
+... 50 traces read for hailfinder
+... 50 traces read for hepar2
+... 50 traces read for win95pts
+... 50 traces read for formed
+... 50 traces read for pathfinder
+Processing series TABU/STAB/L050_T001 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.BIC_UNSTABLE: 'bic_unstable'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.001}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 50 traces read for asia
+... 50 traces read for sports
+... 50 traces read for sachs
+... 50 traces read for child
+... 50 traces read for insurance
+... 50 traces read for property
+... 50 traces read for diarrhoea
+... 50 traces read for water
+... 50 traces read for mildew
+... 50 traces read for alarm
+... 50 traces read for barley
+... 50 traces read for hailfinder
+... 50 traces read for hepar2
+... 50 traces read for win95pts
+... 50 traces read for formed
+... 50 traces read for pathfinder
+Processing series TABU/EQV/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.EQUIV_ADD: 'equiv_add'>, 'kparams': {'limit': 0.5, 'expertise': 1.0, 'ignore': 0, 'partial': False}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 330 traces read for asia
+... 330 traces read for sports
+... 330 traces read for sachs
+... 330 traces read for child
+... 330 traces read for insurance
+... 330 traces read for property
+... 330 traces read for diarrhoea
+... 330 traces read for water
+... 330 traces read for mildew
+... 330 traces read for alarm
+... 330 traces read for barley
+... 330 traces read for hailfinder
+... 330 traces read for hepar2
+... 330 traces read for win95pts
+... 330 traces read for formed
+... 330 traces read for pathfinder
+
+Different properties are {'knowledge', 'threshold'}
+
+
+Different is {'TABU/BASE': {'knowledge': False, 'threshold': None}, 'TABU/STAB/L050_T20': {'knowledge': 'bic_unstable', 'threshold': 0.2}, 'TABU/STAB/L050': {'knowledge': 'bic_unstable', 'threshold': 0.05}, 'TABU/STAB/L050_T01': {'knowledge': 'bic_unstable', 'threshold': 0.01}, 'TABU/STAB/L050_T001': {'knowledge': 'bic_unstable', 'threshold': 0.001}, 'TABU/EQV/L050': {'knowledge': 'equiv_add', 'threshold': None}}, common {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'limit': 0.5, 'ignore': 0.0, 'expertise': 1.0, 'reqd': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'bic_unstable'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.2), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'bic_unstable'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.2), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'bic_unstable', 0.5, 0, 1.0, None, 0.2, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'bic_unstable'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.05), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'bic_unstable'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.05), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'bic_unstable', 0.5, 0, 1.0, None, 0.05, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'bic_unstable'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.01), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'bic_unstable'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.01), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'bic_unstable', 0.5, 0, 1.0, None, 0.01, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'bic_unstable'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.001), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'bic_unstable'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.001), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'bic_unstable', 0.5, 0, 1.0, None, 0.001, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'equiv_add'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, None), 'earlyok': (None, None), 'partial': (None, False), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'equiv_add'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, None), 14: (None, None), 15: (None, False), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'equiv_add', 0.5, 0, 1.0, None, None, None, False, None, None) over 10 samples
+     subplot                                       x_val  y_val                expt
+0     unused  knowledge = bic_unstable,\nthreshold = 0.2  0.000       asia_100000_0
+1     unused  knowledge = bic_unstable,\nthreshold = 0.2  0.000       asia_100000_1
+2     unused  knowledge = bic_unstable,\nthreshold = 0.2  0.000       asia_100000_2
+3     unused  knowledge = bic_unstable,\nthreshold = 0.2  0.000       asia_100000_3
+4     unused  knowledge = bic_unstable,\nthreshold = 0.2  0.000       asia_100000_4
+...      ...                                         ...    ...                 ...
+3995  unused                       knowledge = equiv_add  0.084  pathfinder_50000_5
+3996  unused                       knowledge = equiv_add  0.073  pathfinder_50000_6
+3997  unused                       knowledge = equiv_add  0.060  pathfinder_50000_7
+3998  unused                       knowledge = equiv_add  0.049  pathfinder_50000_8
+3999  unused                       knowledge = equiv_add  0.073  pathfinder_50000_9
+
+[4000 rows x 4 columns]
+
+Pairwise test results are:
+  Contrast                                             A                                            B  Paired  Parametric          T    dof alternative          p-unc        BF10    hedges
+0    x_val  knowledge = bic_unstable,\nthreshold = 0.001  knowledge = bic_unstable,\nthreshold = 0.01    True        True  19.421235  799.0   two-sided   4.063179e-69   3.051e+65  0.577190
+1    x_val  knowledge = bic_unstable,\nthreshold = 0.001  knowledge = bic_unstable,\nthreshold = 0.05    True        True  29.137123  799.0   two-sided  9.773282e-128  7.385e+123  1.117126
+2    x_val  knowledge = bic_unstable,\nthreshold = 0.001   knowledge = bic_unstable,\nthreshold = 0.2    True        True  31.636031  799.0   two-sided  4.777283e-143  1.355e+139  1.501146
+3    x_val  knowledge = bic_unstable,\nthreshold = 0.001                        knowledge = equiv_add    True        True  -8.865062  799.0   two-sided   4.916960e-18   6.615e+14 -0.252845
+4    x_val   knowledge = bic_unstable,\nthreshold = 0.01  knowledge = bic_unstable,\nthreshold = 0.05    True        True  17.473475  799.0   two-sided   3.792601e-58   3.755e+54  0.527092
+5    x_val   knowledge = bic_unstable,\nthreshold = 0.01   knowledge = bic_unstable,\nthreshold = 0.2    True        True  20.579798  799.0   two-sided   7.713181e-76   1.488e+72  0.914569
+6    x_val   knowledge = bic_unstable,\nthreshold = 0.01                        knowledge = equiv_add    True        True -22.660663  799.0   two-sided   3.463245e-88   2.915e+84 -0.852701
+7    x_val   knowledge = bic_unstable,\nthreshold = 0.05   knowledge = bic_unstable,\nthreshold = 0.2    True        True  10.924098  799.0   two-sided   5.475200e-26    4.67e+22  0.431512
+8    x_val   knowledge = bic_unstable,\nthreshold = 0.05                        knowledge = equiv_add    True        True -35.430799  799.0   two-sided  5.150599e-166  1.084e+162 -1.430957
+9    x_val    knowledge = bic_unstable,\nthreshold = 0.2                        knowledge = equiv_add    True        True -38.851688  799.0   two-sided  2.904890e-186  1.708e+182 -1.851080
+knowledge = bic_unstable, threshold = 0.001: {'min': -0.349, 'max': 0.778, 'mean': 0.17, 'std': 0.147, 'count': 800, 'ci': 0.01}
+knowledge = bic_unstable, threshold = 0.01: {'min': -0.319, 'max': 0.682, 'mean': 0.092, 'std': 0.122, 'count': 800, 'ci': 0.008}
+knowledge = bic_unstable, threshold = 0.05: {'min': -0.224, 'max': 0.682, 'mean': 0.036, 'std': 0.083, 'count': 800, 'ci': 0.006}
+knowledge = bic_unstable, threshold = 0.2: {'min': -0.154, 'max': 0.757, 'mean': 0.008, 'std': 0.039, 'count': 800, 'ci': 0.003}
+knowledge = equiv_add: {'min': -0.059, 'max': 1.0, 'mean': 0.207, 'std': 0.146, 'count': 800, 'ci': 0.01}
+PASSED
+
+==================================================================================================== 1 passed, 193 deselected, 12 warnings in 785.34s (0:13:05) ==================================================================================================== 
+
+
+PS C:\dev\causal-iq\discovery> pytest --disable-warnings -c papers.ini -v -k table_tabu_al_crit_lodl -s
+======================================================================================================================= test session starts ========================================================================================================================
+platform win32 -- Python 3.8.2, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- c:\dev\python382\python.exe
+cachedir: .pytest_cache
+rootdir: C:\dev\causal-iq\discovery, configfile: papers.ini
+plugins: forked-1.3.0, xdist-2.3.0
+collected 194 items / 193 deselected / 1 selected
+
+experiments/papers/tabu_al_kbs/tabu_al_kbs.py::table_tabu_al_crit_lodl (1000, 100000) [1, 5] 3 5
+
+
+Sample sizes are [1000, 5000, 10000, 50000, 100000]
+TABU/BASE has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': False, 'limit': None, 'ignore': None, 'expertise': None, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LODL/L050_T20 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'lo_delta', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.2, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LODL/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'lo_delta', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.05, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LODL/L050_T01 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'lo_delta', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.01, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LODL/L050_T001 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'lo_delta', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.001, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/EQV/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'equiv_add', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+Common properties are ['package', 'algorithm', 'ordering', 'score', 'test', 'k', 'iss', 'alpha', 'limit', 'ignore', 'expertise', 'reqd', 'earlyok', 'partial', 'stop', 'nodes'], and different ones are ['knowledge', 'threshold']
+
+Processing series TABU/BASE with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': False, 'kparams': None, 'randomise': ([<Randomise.ORDER: 'order'>], 10)} ...
+... 720 traces read for asia
+... 720 traces read for sports
+... 720 traces read for sachs
+... 720 traces read for child
+... 720 traces read for insurance
+... 720 traces read for property
+... 720 traces read for diarrhoea
+... 720 traces read for water
+... 720 traces read for mildew
+... 720 traces read for alarm
+... 720 traces read for barley
+... 720 traces read for hailfinder
+... 720 traces read for hepar2
+... 720 traces read for win95pts
+... 668 traces read for formed
+... 574 traces read for pathfinder
+Processing series TABU/LODL/L050_T20 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.LO_DELTA: 'lo_delta'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.2}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 105 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/LODL/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.LO_DELTA: 'lo_delta'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.05}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/LODL/L050_T01 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.LO_DELTA: 'lo_delta'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.01}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/LODL/L050_T001 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.LO_DELTA: 'lo_delta'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'threshold': 0.001}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/EQV/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.EQUIV_ADD: 'equiv_add'>, 'kparams': {'limit': 0.5, 'expertise': 1.0, 'ignore': 0, 'partial': False}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 330 traces read for asia
+... 330 traces read for sports
+... 330 traces read for sachs
+... 330 traces read for child
+... 330 traces read for insurance
+... 330 traces read for property
+... 330 traces read for diarrhoea
+... 330 traces read for water
+... 330 traces read for mildew
+... 330 traces read for alarm
+... 330 traces read for barley
+... 330 traces read for hailfinder
+... 330 traces read for hepar2
+... 330 traces read for win95pts
+... 330 traces read for formed
+... 330 traces read for pathfinder
+
+Different properties are {'knowledge', 'threshold'}
+
+
+Different is {'TABU/BASE': {'knowledge': False, 'threshold': None}, 'TABU/LODL/L050_T20': {'knowledge': 'lo_delta', 'threshold': 0.2}, 'TABU/LODL/L050': {'knowledge': 'lo_delta', 'threshold': 0.05}, 'TABU/LODL/L050_T01': {'knowledge': 'lo_delta', 'threshold': 0.01}, 'TABU/LODL/L050_T001': {'knowledge': 'lo_delta', 'threshold': 0.001}, 'TABU/EQV/L050': {'knowledge': 'equiv_add', 'threshold': None}}, common {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'limit': 0.5, 'ignore': 0.0, 'expertise': 1.0, 'reqd': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'lo_delta'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.2), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'lo_delta'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.2), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'lo_delta', 0.5, 0, 1.0, None, 0.2, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'lo_delta'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.05), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'lo_delta'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.05), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'lo_delta', 0.5, 0, 1.0, None, 0.05, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'lo_delta'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.01), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'lo_delta'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.01), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'lo_delta', 0.5, 0, 1.0, None, 0.01, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'lo_delta'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.001), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'lo_delta'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.001), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'lo_delta', 0.5, 0, 1.0, None, 0.001, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'equiv_add'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, None), 'earlyok': (None, None), 'partial': (None, False), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'equiv_add'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, None), 14: (None, None), 15: (None, False), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'equiv_add', 0.5, 0, 1.0, None, None, None, False, None, None) over 10 samples
+     subplot                                   x_val  y_val                expt
+0     unused  knowledge = lo_delta,\nthreshold = 0.2  0.169       asia_100000_0
+1     unused  knowledge = lo_delta,\nthreshold = 0.2  0.000       asia_100000_1
+2     unused  knowledge = lo_delta,\nthreshold = 0.2  0.250       asia_100000_2
+3     unused  knowledge = lo_delta,\nthreshold = 0.2  0.125       asia_100000_3
+4     unused  knowledge = lo_delta,\nthreshold = 0.2  0.770       asia_100000_4
+...      ...                                     ...    ...                 ...
+3995  unused                   knowledge = equiv_add  0.084  pathfinder_50000_5
+3996  unused                   knowledge = equiv_add  0.073  pathfinder_50000_6
+3997  unused                   knowledge = equiv_add  0.060  pathfinder_50000_7
+3998  unused                   knowledge = equiv_add  0.049  pathfinder_50000_8
+3999  unused                   knowledge = equiv_add  0.073  pathfinder_50000_9
+
+[4000 rows x 4 columns]
+
+Pairwise test results are:
+  Contrast                                         A                                         B  Paired  Parametric          T    dof alternative          p-unc        BF10    hedges
+0    x_val                     knowledge = equiv_add  knowledge = lo_delta,\nthreshold = 0.001    True        True  32.464906  799.0   two-sided  4.232955e-148  1.478e+144  1.296486
+1    x_val                     knowledge = equiv_add   knowledge = lo_delta,\nthreshold = 0.01    True        True  29.994750  799.0   two-sided  5.313881e-133  1.307e+129  1.146990
+2    x_val                     knowledge = equiv_add   knowledge = lo_delta,\nthreshold = 0.05    True        True  26.595071  799.0   two-sided  4.037699e-112  2.018e+108  0.999872
+3    x_val                     knowledge = equiv_add    knowledge = lo_delta,\nthreshold = 0.2    True        True  23.205492  799.0   two-sided   1.823984e-91   5.362e+87  0.807955
+4    x_val  knowledge = lo_delta,\nthreshold = 0.001   knowledge = lo_delta,\nthreshold = 0.01    True        True  -7.295384  799.0   two-sided   7.185513e-13   5.606e+09 -0.177501
+5    x_val  knowledge = lo_delta,\nthreshold = 0.001   knowledge = lo_delta,\nthreshold = 0.05    True        True  -9.869142  799.0   two-sided   9.356614e-22   3.077e+18 -0.329715
+6    x_val  knowledge = lo_delta,\nthreshold = 0.001    knowledge = lo_delta,\nthreshold = 0.2    True        True -13.505972  799.0   two-sided   1.369404e-37   1.444e+34 -0.515556
+7    x_val   knowledge = lo_delta,\nthreshold = 0.01   knowledge = lo_delta,\nthreshold = 0.05    True        True  -5.061461  799.0   two-sided   5.166805e-07   1.137e+04 -0.156039
+8    x_val   knowledge = lo_delta,\nthreshold = 0.01    knowledge = lo_delta,\nthreshold = 0.2    True        True  -9.543847  799.0   two-sided   1.623490e-20   1.843e+17 -0.348124
+9    x_val   knowledge = lo_delta,\nthreshold = 0.05    knowledge = lo_delta,\nthreshold = 0.2    True        True  -6.068834  799.0   two-sided   1.988786e-09   2.458e+06 -0.194051
+knowledge = equiv_add: {'min': -0.059, 'max': 1.0, 'mean': 0.207, 'std': 0.146, 'count': 800, 'ci': 0.01}
+knowledge = lo_delta, threshold = 0.001: {'min': -0.288, 'max': 0.682, 'mean': 0.051, 'std': 0.086, 'count': 800, 'ci': 0.006}
+knowledge = lo_delta, threshold = 0.01: {'min': -0.292, 'max': 0.77, 'mean': 0.067, 'std': 0.091, 'count': 800, 'ci': 0.006}
+knowledge = lo_delta, threshold = 0.05: {'min': -0.347, 'max': 0.682, 'mean': 0.082, 'std': 0.099, 'count': 800, 'ci': 0.007}
+knowledge = lo_delta, threshold = 0.2: {'min': -0.25, 'max': 0.778, 'mean': 0.102, 'std': 0.11, 'count': 800, 'ci': 0.008}
+PASSED
+
+==================================================================================================== 1 passed, 193 deselected, 12 warnings in 897.10s (0:14:57) ==================================================================================================== 
+
+
+PS C:\dev\causal-iq\discovery> pytest --disable-warnings -c papers.ini -v -k table_tabu_al_crit_lt5 -s       
+======================================================================================================================= test session starts ========================================================================================================================
+platform win32 -- Python 3.8.2, pytest-6.2.2, py-1.10.0, pluggy-0.13.1 -- c:\dev\python382\python.exe
+cachedir: .pytest_cache
+rootdir: C:\dev\causal-iq\discovery, configfile: papers.ini
+plugins: forked-1.3.0, xdist-2.3.0
+collected 194 items / 193 deselected / 1 selected
+
+experiments/papers/tabu_al_kbs/tabu_al_kbs.py::table_tabu_al_crit_lt5 (1000, 100000) [1, 5] 3 5
+
+
+Sample sizes are [1000, 5000, 10000, 50000, 100000]
+TABU/BASE has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': False, 'limit': None, 'ignore': None, 'expertise': None, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LT5/L050_T20 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'hi_lt5', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.2, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LT5/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'hi_lt5', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.05, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LT5/L050_T01 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'hi_lt5', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.01, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/LT5/L050_T001 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'hi_lt5', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': 0.001, 'earlyok': None, 'partial': None, 'stop': None, 'nodes': None}
+TABU/EQV/L050 has comparator properties: {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'knowledge': 'equiv_add', 'limit': 0.5, 'ignore': 0, 'expertise': 1.0, 'reqd': None, 'threshold': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+Common properties are ['package', 'algorithm', 'ordering', 'score', 'test', 'k', 'iss', 'alpha', 'limit', 'ignore', 'expertise', 'reqd', 'earlyok', 'partial', 'stop', 'nodes'], and different ones are ['knowledge', 'threshold']
+
+Processing series TABU/BASE with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': False, 'kparams': None, 'randomise': ([<Randomise.ORDER: 'order'>], 10)} ...
+... 720 traces read for asia
+... 720 traces read for sports
+... 720 traces read for sachs
+... 720 traces read for child
+... 720 traces read for insurance
+... 720 traces read for property
+... 720 traces read for diarrhoea
+... 720 traces read for water
+... 720 traces read for mildew
+... 720 traces read for alarm
+... 720 traces read for barley
+... 720 traces read for hailfinder
+... 720 traces read for hepar2
+... 720 traces read for win95pts
+... 668 traces read for formed
+... 574 traces read for pathfinder
+Processing series TABU/LT5/L050_T20 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.HI_LT5: 'hi_lt5'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'threshold': 0.2, 'expertise': 1.0}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/LT5/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.HI_LT5: 'hi_lt5'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'threshold': 0.05, 'expertise': 1.0}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/LT5/L050_T01 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.HI_LT5: 'hi_lt5'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'threshold': 0.01, 'expertise': 1.0}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/LT5/L050_T001 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.HI_LT5: 'hi_lt5'>, 'kparams': {'limit': 0.5, 'ignore': 0, 'threshold': 0.001, 'expertise': 1.0}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 113 traces read for asia
+... 113 traces read for sports
+... 113 traces read for sachs
+... 113 traces read for child
+... 113 traces read for insurance
+... 113 traces read for property
+... 113 traces read for diarrhoea
+... 113 traces read for water
+... 113 traces read for mildew
+... 113 traces read for alarm
+... 113 traces read for barley
+... 113 traces read for hailfinder
+... 113 traces read for hepar2
+... 113 traces read for win95pts
+... 113 traces read for formed
+... 113 traces read for pathfinder
+Processing series TABU/EQV/L050 with properties {'package': <Package.BNBENCH: {'arg': 'bnbench', 'name': 'BNBENCH'}>, 'algorithm': <Algorithm.HC: {'method': 'hc', 'name': 'HC', 'label': 'HC', 'colour': '#c44e52'}>, 'datagen': 'v1', 'ordering': <Ordering.STANDARD: {'name': 'alphabetic', 'colour': '#000000'}>, 'params': {'tabu': 10, 'bnlearn': False}, 'knowledge': <RuleSet.EQUIV_ADD: 'equiv_add'>, 'kparams': {'limit': 0.5, 'expertise': 1.0, 'ignore': 0, 'partial': False}, 'randomise': ([<Randomise.ORDER: 'order'>, <Randomise.KNOWLEDGE: 'knowledge'>], 10)} ...
+... 330 traces read for asia
+... 330 traces read for sports
+... 330 traces read for sachs
+... 330 traces read for child
+... 330 traces read for insurance
+... 330 traces read for property
+... 330 traces read for diarrhoea
+... 330 traces read for water
+... 330 traces read for mildew
+... 330 traces read for alarm
+... 330 traces read for barley
+... 330 traces read for hailfinder
+... 330 traces read for hepar2
+... 330 traces read for win95pts
+... 330 traces read for formed
+... 330 traces read for pathfinder
+
+Different properties are {'threshold', 'knowledge'}
+
+
+Different is {'TABU/BASE': {'knowledge': False, 'threshold': None}, 'TABU/LT5/L050_T20': {'knowledge': 'hi_lt5', 'threshold': 0.2}, 'TABU/LT5/L050': {'knowledge': 'hi_lt5', 'threshold': 0.05}, 'TABU/LT5/L050_T01': {'knowledge': 'hi_lt5', 'threshold': 0.01}, 'TABU/LT5/L050_T001': {'knowledge': 'hi_lt5', 'threshold': 0.001}, 'TABU/EQV/L050': {'knowledge': 'equiv_add', 'threshold': None}}, common {'package': 'BNBENCH', 'algorithm': 'HC', 'ordering': 'alphabetic', 'score': None, 'test': None, 'k': None, 'iss': None, 'alpha': None, 'limit': 0.5, 'ignore': 0.0, 'expertise': 1.0, 'reqd': None, 'earlyok': None, 'partial': False, 'stop': None, 'nodes': None}
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'hi_lt5'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.2), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'hi_lt5'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.2), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'hi_lt5', 0.5, 0, 1.0, None, 0.2, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'hi_lt5'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.05), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'hi_lt5'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.05), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'hi_lt5', 0.5, 0, 1.0, None, 0.05, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'hi_lt5'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.01), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'hi_lt5'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.01), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'hi_lt5', 0.5, 0, 1.0, None, 0.01, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'hi_lt5'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, 0.001), 'earlyok': (None, None), 'partial': (None, None), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'hi_lt5'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, 0.001), 14: (None, None), 15: (None, None), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'hi_lt5', 0.5, 0, 1.0, None, 0.001, None, None, None, None) over 10 samples
+
+
+In series_impact, Ns are: {100000, 1000, 5000, 10000, 50000}
+
+
+
+Comparing values {'knowledge': (False, 'equiv_add'), 'limit': (None, 0.5), 'ignore': (None, 0), 'expertise': (None, 1.0), 'reqd': (None, None), 'threshold': (None, None), 'earlyok': (None, None), 'partial': (None, False), 'stop': (None, None), 'nodes': (None, None)} ({8: (False, 'equiv_add'), 9: (None, 0.5), 10: (None, 0), 11: (None, 1.0), 12: (None, None), 13: (None, None), 14: (None, None), 15: (None, False), 16: (None, None), 17: (None, None)}) over [10, 10, 10, 10, 10, 10] samples
+  ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, False, None, None, None, None, None, None, None, None, None) with ('BNBENCH', 'HC', 'alphabetic', None, None, None, None, None, 'equiv_add', 0.5, 0, 1.0, None, None, None, False, None, None) over 10 samples
+     subplot                                 x_val  y_val                expt
+0     unused  knowledge = hi_lt5,\nthreshold = 0.2  0.000       asia_100000_0
+1     unused  knowledge = hi_lt5,\nthreshold = 0.2  0.000       asia_100000_1
+2     unused  knowledge = hi_lt5,\nthreshold = 0.2  0.000       asia_100000_2
+3     unused  knowledge = hi_lt5,\nthreshold = 0.2  0.000       asia_100000_3
+4     unused  knowledge = hi_lt5,\nthreshold = 0.2  0.645       asia_100000_4
+...      ...                                   ...    ...                 ...
+3995  unused                 knowledge = equiv_add  0.084  pathfinder_50000_5
+3996  unused                 knowledge = equiv_add  0.073  pathfinder_50000_6
+3997  unused                 knowledge = equiv_add  0.060  pathfinder_50000_7
+3998  unused                 knowledge = equiv_add  0.049  pathfinder_50000_8
+3999  unused                 knowledge = equiv_add  0.073  pathfinder_50000_9
+
+[4000 rows x 4 columns]
+
+Pairwise test results are:
+  Contrast                                       A                                       B  Paired  Parametric          T    dof alternative          p-unc       BF10    hedges
+0    x_val                   knowledge = equiv_add  knowledge = hi_lt5,\nthreshold = 0.001    True        True  11.734885  799.0   two-sided   1.885389e-29  1.245e+26  0.335572
+1    x_val                   knowledge = equiv_add   knowledge = hi_lt5,\nthreshold = 0.01    True        True  11.706921  799.0   two-sided   2.498791e-29  9.423e+25  0.335357
+2    x_val                   knowledge = equiv_add   knowledge = hi_lt5,\nthreshold = 0.05    True        True  13.249599  799.0   two-sided   2.291689e-36  8.836e+32  0.372645
+3    x_val                   knowledge = equiv_add    knowledge = hi_lt5,\nthreshold = 0.2    True        True  24.681608  799.0   two-sided  2.042002e-100   4.41e+96  0.859240
+4    x_val  knowledge = hi_lt5,\nthreshold = 0.001   knowledge = hi_lt5,\nthreshold = 0.01    True        True  -0.052993  799.0   two-sided   9.577511e-01       0.04 -0.000150
+5    x_val  knowledge = hi_lt5,\nthreshold = 0.001   knowledge = hi_lt5,\nthreshold = 0.05    True        True   1.985950  799.0   two-sided   4.738019e-02      0.283  0.026773
+6    x_val  knowledge = hi_lt5,\nthreshold = 0.001    knowledge = hi_lt5,\nthreshold = 0.2    True        True  14.527880  799.0   two-sided   1.316250e-42  1.371e+39  0.472274
+7    x_val   knowledge = hi_lt5,\nthreshold = 0.01   knowledge = hi_lt5,\nthreshold = 0.05    True        True   2.041291  799.0   two-sided   4.154994e-02      0.316  0.026922
+8    x_val   knowledge = hi_lt5,\nthreshold = 0.01    knowledge = hi_lt5,\nthreshold = 0.2    True        True  14.521842  799.0   two-sided   1.411262e-42   1.28e+39  0.472331
+9    x_val   knowledge = hi_lt5,\nthreshold = 0.05    knowledge = hi_lt5,\nthreshold = 0.2    True        True  15.762943  799.0   two-sided   6.054096e-49  2.688e+45  0.459434
+knowledge = equiv_add: {'min': -0.059, 'max': 1.0, 'mean': 0.207, 'std': 0.146, 'count': 800, 'ci': 0.01}
+knowledge = hi_lt5, threshold = 0.001: {'min': -0.434, 'max': 0.742, 'mean': 0.157, 'std': 0.15, 'count': 800, 'ci': 0.01}
+knowledge = hi_lt5, threshold = 0.01: {'min': -0.434, 'max': 0.742, 'mean': 0.157, 'std': 0.15, 'count': 800, 'ci': 0.01}
+knowledge = hi_lt5, threshold = 0.05: {'min': -0.306, 'max': 0.733, 'mean': 0.153, 'std': 0.141, 'count': 800, 'ci': 0.01}
+knowledge = hi_lt5, threshold = 0.2: {'min': -0.287, 'max': 0.682, 'mean': 0.094, 'std': 0.113, 'count': 800, 'ci': 0.008}
+PASSED
+
+==================================================================================================== 1 passed, 193 deselected, 12 warnings in 890.27s (0:14:50) ====================================================================================================

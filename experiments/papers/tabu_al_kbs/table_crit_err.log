@@ -1,0 +1,44 @@
+criterion, metric
+criterion = filter requests according to criterion
+metric = way arc change is categorised
+The results below have 10 randomisations at each sample size & network combination.
+
+TABU/EQV/L050
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.6144, del: 0.0509, eqv_add: 0.1159, ext_add: 0.0192, ext_rev: 0.0002, ok_add: 0.1069,
+                             rev: 0.0925
+
+TABU/LODL/L050
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.6012, del: 0.0337, ext_add: 0.0952, ext_rev: 0.0026, ok_add: 0.0954, ok_del: 0.0019, ok_rev: 0.0157,
+                             rev: 0.1087, stop_add: 0.0389, stop_del: 0.0003, stop_rev: 0.0063
+TABU/LODL/L050_T20
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5690, del: 0.0325, ext_add: 0.0647, ext_rev: 0.0002, ok_add: 0.1523, ok_del: 0.0001, ok_rev: 0.0076,
+                             rev: 0.1187, stop_add: 0.0536, stop_rev: 0.0015
+
+TABU/LT5/L050
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5628, del: 0.0319, ext_add: 0.0514, ext_rev: 0.0002, ok_add: 0.1669, ok_del: 0.0004, ok_rev: 0.0017,
+                             rev: 0.1237, stop_add: 0.0602, stop_rev: 0.0008
+TABU/LT5/L050_T01
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5558, del: 0.0314, ext_add: 0.0532, ext_rev: 0.0004, ok_add: 0.1715, ok_del: 0.0002, ok_rev: 0.0038,
+                             rev: 0.1187, stop_add: 0.0642, stop_rev: 0.0009
+
+TABU/STAB/L050
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.7247, del: 0.0293, ext_add: 0.0367, ext_rev: 0.0015, ok_add: 0.0376, ok_del: 0.0004, ok_rev: 0.0052,
+                             rev: 0.1379, stop_add: 0.0231, stop_del: 0.0002, stop_rev: 0.0034
+
+TABU/STAB/L050_T001
+ Criterion (fract)          Metric Distribution in criteria
+-------------------------  ---------------------------------------
+            none (1.0000)    add: 0.5494, del: 0.0266, ext_add: 0.0441, ext_rev: 0.0005, ok_add: 0.1840, ok_del: 0.0003, ok_rev: 0.0025,
+                             rev: 0.1217, stop_add: 0.0703, stop_rev: 0.0006
