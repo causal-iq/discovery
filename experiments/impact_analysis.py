@@ -8,6 +8,7 @@ from enum import Enum
 from numpy import std, sqrt
 from scipy.stats import t
 from pingouin import pairwise_tests
+from warnings import simplefilter, catch_warnings
 
 from fileio.common import EXPTS_DIR
 from learn.trace import Trace
@@ -799,9 +800,11 @@ def impact_analysis(series, networks, metrics, Ns, Ss, params, args,
         if 'expt' in data.columns:
             set_option('display.max_rows', None)
             try:
-                results = pairwise_tests(dv="y_val", within="x_val",
-                                         subject="expt", data=data,
-                                         parametric=True)
+                with catch_warnings():
+                    simplefilter("ignore", UserWarning)
+                    results = pairwise_tests(dv="y_val", within="x_val",
+                                             subject="expt", data=data,
+                                             parametric=True)
             except ValueError:
                 results = None
             print("\nPairwise test results are:\n{}".format(results))

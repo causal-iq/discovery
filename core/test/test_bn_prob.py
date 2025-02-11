@@ -125,10 +125,10 @@ def test_bn_prob_marginal_distribution_heckerman3(bn):
 
     assert len(p.columns) == 2  # 2 columns for N1 values
     assert len(p.index) == 2  # 2 rows for N2 values
-    assert values_same(float(p.loc['1', '1']), 3/12, sf=10)  # N1=1,N2=1
-    assert values_same(float(p.loc['1', '2']), 3/12, sf=10)  # N1=2,N2=1
-    assert values_same(float(p.loc['2', '1']), 2/12, sf=10)  # N1=1,N2=2
-    assert values_same(float(p.loc['2', '2']), 4/12, sf=10)  # N1=2,N2=2
+    assert values_same(float(p.loc['1', '1'].iloc[0]), 3/12, sf=10)  # 1, 1
+    assert values_same(float(p.loc['1', '2'].iloc[0]), 3/12, sf=10)  # 2, 1
+    assert values_same(float(p.loc['2', '1'].iloc[0]), 2/12, sf=10)  # 1, 2
+    assert values_same(float(p.loc['2', '2'].iloc[0]), 4/12, sf=10)  # 2, 2
 
 
 def test_bn_prob_marginal_distribution_heckerman4(bn):
@@ -139,10 +139,10 @@ def test_bn_prob_marginal_distribution_heckerman4(bn):
 
     assert len(p.columns) == 2  # 2 columns for N2 values: 1, 2
     assert len(p.index) == 2  # 2 rows for N1 values
-    assert values_same(float(p.loc['1', '1']), 3/12, sf=10)  # N1=1,N2=1
-    assert values_same(float(p.loc['1', '2']), 2/12, sf=10)  # N1=1,N2=2
-    assert values_same(float(p.loc['2', '1']), 3/12, sf=10)  # N1=2,N2=1
-    assert values_same(float(p.loc['2', '2']), 4/12, sf=10)  # N1=2,N2=2
+    assert values_same(float(p.loc['1', '1'].iloc[0]), 3/12, sf=10)  # 1, 1
+    assert values_same(float(p.loc['1', '2'].iloc[0]), 2/12, sf=10)  # 1, 2
+    assert values_same(float(p.loc['2', '1'].iloc[0]), 3/12, sf=10)  # 2, 1
+    assert values_same(float(p.loc['2', '2'].iloc[0]), 4/12, sf=10)  # 2, 2
 
 
 def test_bn_prob_global_distribution_heckerman_demo(bn):

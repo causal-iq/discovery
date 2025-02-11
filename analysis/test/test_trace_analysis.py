@@ -578,10 +578,10 @@ def test_trace_analysis_mildew_10_ok():  # Mildew, 10 rows
     assert analysis.summary == \
         {'N': 10, 'sample': None, 'iter': 13, 'time': 11.0, 'score': -60.87598,
          'type': 'DAG', 'n': 35, '|A|': 46, '|E|': 13, 'shd': 56,
-         'shd-s': 1.22, 'shd-e': 57, 'shd-b': 1.21, 'a-ok': 1, 'a-rev': 1,
-         'a-eqv': 0, 'a-non': 1, 'a-ext': 11, 'a-mis': 44, 'p': 0.077,
-         'r': 0.022, 'f1': 0.034, 'f1-b': 0.051, 'bsf': 0.013, 'f1-e': 0.0,
-         'e-ori': 2}
+         'shd-s': 1.22, 'shd-e': 57, 'shd-es': 1.24, 'shd-b': 1.21, 'a-ok': 1,
+         'a-rev': 1, 'a-eqv': 0, 'a-non': 1, 'a-ext': 11, 'a-mis': 44,
+         'p': 0.077, 'r': 0.022, 'f1': 0.034, 'f1-b': 0.051, 'bsf': 0.013,
+         'bsf-e': 0.002, 'f1-e': 0.0, 'e-ori': 2}
 
     # Check log likelihood
 
