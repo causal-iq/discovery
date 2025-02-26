@@ -26,18 +26,25 @@ PAPER_DIR = 'experiments/papers/ijar_noisy/'
 RESULTS_FILE = 'results_noisyPaper.xls'
 
 
-def get_noise_benchmark_f1_ranks():
+def get_noise_benchmark_f1(rank_reqd=True):
     """
         Read the noise benchmark raw results from an Excel spreadsheet,
         extract F1 values, and rank algorithms for each experiment.
 
+        :param bool rank_reqd: whether to return F1 ranks or values
+
         :returns tuple: DataFrame(quiet ranks), DataFrame(noisy_ranks)
     """
 
-    def _to_ranks(f1_data):
+    def _expt(f1_data, rank_reqd=True):
+        def alg_f1(f1s):
+            return (rank_values(f1s) if rank_reqd is True else
+                    {a: 0.0 if isinstance(v, str) else v
+                     for a, v in f1s.items()})
+
         ranks = {}
         for dataset, f1s in f1_data.items():
-            for algo, f1 in rank_values(f1s).items():
+            for algo, f1 in alg_f1(f1s).items():
                 if algo == 'NOTEARS':
                     continue
                 if algo not in ranks:
@@ -75,8 +82,8 @@ def get_noise_benchmark_f1_ranks():
     # Convert F1 values to F1 ranks for each experiment, and return as
     # DataFrames with columns as algorithms, rows as experiments
 
-    quiet = DataFrame.from_dict(_to_ranks(quiet), orient='columns')
-    noisy = DataFrame.from_dict(_to_ranks(noisy), orient='columns')
+    quiet = DataFrame.from_dict(_expt(quiet, rank_reqd), orient='columns')
+    noisy = DataFrame.from_dict(_expt(noisy, rank_reqd), orient='columns')
 
     # Order the columns in each dataset by the algorithm's overall rank in
     # the quiet data
@@ -89,40 +96,54 @@ def get_noise_benchmark_f1_ranks():
     return (quiet, noisy)
 
 
-def values_ijar_noisy_read_results():
+def paired_significance(group1, group2):
+    """
+        Perform paired value significance tests
 
-    quiet, noisy = get_noise_benchmark_f1_ranks()
-    print("\n\nAlgorithm ranks for quiet data:\n{}".format(quiet))
-    print("\nAlgorithm ranks for noisy data:\n{}".format(noisy))
+        :param DataFrame group1: first group to compare, columns are comparison
+                                 attribute, rows are experiment results
+        :param DataFrame group2: second group
 
-    algos = list(noisy.columns)
-    noisy = noisy.to_numpy()
-    quiet = quiet.to_numpy()
+        :returns tuple: (compare - list of things being compared,
+                         p_values - array of p_values)
+    """
 
-    # Perform Friedman chi**2 to find if ANY algorithms differ significantly
+    compare = list(group1.columns)
+    group1 = group1.to_numpy().copy()
+    group2 = group2.to_numpy().copy()
 
-    stat, p = friedmanchisquare(*quiet.T)
-    print("Friedman Test for quiet data: statistic={:.6f}, p-value={:.6e}"
+    stat, p = friedmanchisquare(*group1.T)
+    print("Friedman Test for group 1 data: statistic={:.6f}, p-value={:.6e}"
           .format(stat, p))
-    stat, p = friedmanchisquare(*noisy.T)
-    print("Friedman Test for noisy data: statistic={:.6f}, p-value={:.6e}"
+    stat, p = friedmanchisquare(*group2.T)
+    print("Friedman Test for group 2 data: statistic={:.6f}, p-value={:.6e}"
           .format(stat, p))
 
     # Perform pairwise paired value tests with Conover correction
 
-    quiet_p = posthoc_conover_friedman(quiet).to_numpy()
-    noisy_p = posthoc_conover_friedman(noisy).to_numpy()
-    print(type(quiet_p))
+    group1_p = posthoc_conover_friedman(group1).to_numpy()
+    group2_p = posthoc_conover_friedman(group2).to_numpy()
 
-    dim = len(algos)
+    # Place group 1 p_values below diag and group 2 above
+
+    dim = len(compare)
     p_values = full((dim, dim), nan)
     below_diag = tril_indices(dim, k=-1)
-    p_values[below_diag] = quiet_p[below_diag]
+    p_values[below_diag] = group1_p[below_diag]
     above_diag = triu_indices(dim, k=1)
-    p_values[above_diag] = noisy_p[above_diag]
+    p_values[above_diag] = group2_p[above_diag]
 
-    # critical_difference_diagram(avg_ranks, p_values)
+    return compare, p_values
 
+
+def plot_heatmap(labels, values, plot_file):
+    """
+        Write a heatmap plot to file
+
+        :param list labels: list of labels for axes
+        :param ndarray values: 2D array of values to plot
+        :param str plot_file: name of plot file
+    """
     bins = [0, 0.001, 0.01, 0.05, 1]
     colors = ['#00441b', '#1b7837', '#a6dba0', '#fdae61']
     cmap = ListedColormap(colors)
@@ -131,13 +152,29 @@ def values_ijar_noisy_read_results():
     norm = BoundaryNorm(bins, len(colors))
 
     figure(figsize=(14, 10))
-    heatmap(p_values, cmap=cmap, norm=norm, annot=True, fmt=".2e",
+    heatmap(values, cmap=cmap, norm=norm, annot=True, fmt=".2e",
             cbar_kws={'label': 'p-value'}, annot_kws={'size': 7},
-            xticklabels=algos, yticklabels=algos)
+            xticklabels=labels, yticklabels=labels)
 
     # Add titles and labels
     title('Pairwise P-Value Heatmap')
     xlabel('Algorithms')
     ylabel('Algorithms')
 
-    savefig(PAPER_DIR + 'noise_p_values.png', dpi=600)
+    savefig(plot_file, dpi=600)
+
+
+def values_ijar_noisy_rank_signif():
+    quiet, noisy = get_noise_benchmark_f1(rank_reqd=True)
+    print("\n\nAlgorithm ranks for quiet data:\n{}".format(quiet))
+    print("\nAlgorithm ranks for noisy data:\n{}".format(noisy))
+    algos, p_values = paired_significance(quiet, noisy)
+    plot_heatmap(algos, p_values, PAPER_DIR + 'noise_rank_signif.png')
+
+
+def values_ijar_noisy_f1_signif():
+    quiet, noisy = get_noise_benchmark_f1(rank_reqd=False)
+    print("\n\nAlgorithm ranks for quiet data:\n{}".format(quiet))
+    print("\nAlgorithm ranks for noisy data:\n{}".format(noisy))
+    algos, p_values = paired_significance(quiet, noisy)
+    plot_heatmap(algos, p_values, PAPER_DIR + 'noise_f1_signif.png')
