@@ -105,6 +105,11 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
                               if not isnan(s['score'])]
                     value = stdev(values) if len(values) > 2 else NaN
 
+                elif reqd_metric == 'loglik-std':  # st. dev of loglik values
+                    values = [s['loglik'] for s in samples
+                              if not isnan(s['loglik'])]
+                    value = stdev(values) if len(values) > 2 else NaN
+
                 elif reqd_metric == 'expts':  # number of sub-samples
                     value = len(samples)
 
@@ -124,7 +129,8 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
 
                 else:  # just take metric as-is from TraceAnalysis
                     values = [s[reqd_metric] for s in samples
-                              if not isnan(s[reqd_metric])]
+                              if s[reqd_metric] is not None
+                              and not isnan(s[reqd_metric])]
                     value = ((values[0] if reqd_metric == 'time'
                               else mean(values)) if len(values) else NaN)
 
@@ -288,7 +294,7 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
         for metric in metrics:
             stat_means = _generate_table2(metric, raw_metrics, ignore, impute)
             means.update({metric: stat_means})
-        means = DataFrame(means)
+        means = DataFrame(means).reindex(series)
         print('\n\nMeans across all sample sizes and networks:\n\n{}'
               .format(means))
 

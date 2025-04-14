@@ -9,7 +9,6 @@ from core.graph import DAG, PDAG
 from core.bn import BN
 from core.indep import indep
 from fileio.common import EXPTS_DIR
-from fileio.pandas import Pandas
 from learn.trace import Trace, Activity
 
 
@@ -89,7 +88,8 @@ class TraceAnalysis():
         sample = int(key.split('_')[-1]) if '_' in key else None
         self.summary = {'N': N, 'sample': sample, 'iter': len(t['time']) - 2}
         pretime = self.context['pretime'] if 'pretime' in self.context else 0.0
-        # print('\nPretime is {:.3f}s'.format(pretime))
+        loglik = (round(self.context['loglik'] / N, 5)
+                  if 'loglik' in self.context else None)
 
         #   Loop over entries in trace, further categorising each change,
         #   and accumulating counts of each category of change for summary
@@ -127,6 +127,7 @@ class TraceAnalysis():
                                                        + pretime, 1)})
                     self.summary.update({'score': round(t['delta/score'][i]
                                                         / N, 5)})
+                self.summary['loglik'] = loglik
             t['delta/score'][i] = round(t['delta/score'][i] / N, 6)
 
         # add in change status and delta margin, and if available,
@@ -163,26 +164,6 @@ class TraceAnalysis():
                          if pdag is not None else None)
 
         # Compute Log-Likelihood if data provided
-
-        # if ('params' in self.context and isinstance(data, DataFrame) and
-        #     graph_type == 'DAG' and
-        #     not len({'score', 'k', 'base'} -
-        #             set(self.context['params'].keys())) and
-        #         self.context['params']['score'] == 'bic'):
-        #     fp = free_params(graph, data)
-        #     penalty = (self.context['params']['k'] * 0.5 * fp *
-        #                ln(len(data), self.context['params']['base']))
-        #     loglik = round(self.trace['delta/score'][-1] +
-        #                    (penalty / len(data)), 5)
-        #     print('\n*** pen: {:5f}, LL: {:.5f}, BIC: {:.5f} [{}]'
-        #           .format(penalty / len(data), loglik,
-        #                   self.trace['delta/score'][-1], len(data)))
-
-        if isinstance(data, DataFrame) and graph_type == 'DAG':
-            scores = graph.score(Pandas(data), ['loglik'])
-            loglik = round(scores['loglik'].sum() / len(data), 6)
-            print('*** {}: LL: {:.5f}, score: {:.5f}'
-                  .format(len(data), loglik, self.trace['delta/score'][-1]))
 
         stats = {'type': graph_type,
                  'n': len(ref.nodes),

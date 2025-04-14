@@ -17,9 +17,10 @@ from fileio.oracle import Oracle
 
 ENTROPY_SCORES = ['loglik', 'bic', 'aic']  # categorical entropy scores
 BAYESIAN_SCORES = ['bde', 'k2', 'bdj', 'bds']  # categorical Bayesian
-GAUSSIAN_SCORES = ['bic-g', 'bge']  # Gaussian scores
+GAUSSIAN_SCORES = ['bic-g', 'bge', 'loglik-g']  # Gaussian scores
 
 SCORES = {'loglik': {'base'},  # Supported scores and their allowed parameters
+          'loglik-g': {'base'},
           'aic': {'base', 'k'},
           'bic': {'base', 'k'},
           'bic-g': {'base', 'k'},
@@ -203,8 +204,12 @@ def gaussian_node_score(node, parents, types, params, data, counts_reqd):
                              otherwise (scores, counts)
     """
     score = {}
-    if 'bic-g' in types:
-        score['bic-g'] = bic_gaussian_score(node, parents, params, data)
+    if 'bic-g' in types or 'loglik-g' in types:
+        _scores = entropy_gaussian_score(node, parents, params, data)
+        if 'bic-g' in types:
+            score['bic-g'] = _scores['bic-g']
+        if 'loglik-g' in types:
+            score['loglik-g'] = _scores['loglik-g']
     if 'bge' in types:
         score['bge'] = bayesian_gaussian_score(node, parents, params, data)
     return (score if counts_reqd is False else
@@ -304,9 +309,9 @@ def bayesian_gaussian_score(node, parents, params, data):
     return bge.item()
 
 
-def bic_gaussian_score(node, parents, params, data):
+def entropy_gaussian_score(node, parents, params, data):
     """
-        Return BIC score for a Gaussian node
+        Return entropy-based scores for a Gaussian node
 
         :param str node: node scores are required for
         :param dict parents: parents of non-orphan nodes {node: [parents]}
@@ -316,7 +321,7 @@ def bic_gaussian_score(node, parents, params, data):
                                  so returned data has structure consistent with
                                  categorical nodes.
 
-        :returns float: BIC score
+        :returns dict: {'bic-g': float, 'loglik-g': float}
     """
     start = Timing.now()
     scale = len(parents[node]) + 1 if node in parents else 1
@@ -377,7 +382,7 @@ def bic_gaussian_score(node, parents, params, data):
     bic_g = loglik - penalty
     # print('Penalty is {:.6f} making BIC {:.6f}'.format(penalty, bic_g))
 
-    return bic_g
+    return {'bic-g': bic_g, 'loglik-g': loglik}
 
 
 def categorical_node_score(node, parents, types, params, data,

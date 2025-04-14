@@ -16,6 +16,7 @@ from core.metrics import values_same
 from core.graph import SDG, DAG
 from learn.common import TreeStats
 from fileio.common import EXPTS_DIR, is_valid_path
+from fileio.numpy import NumPy
 
 CONTEXT_FIELDS = {'id': str, 'algorithm': str, 'params': dict, 'in': str,
                   'N': int, 'dataset': bool, 'external': str,
@@ -230,6 +231,104 @@ class Trace():
         for d in Detail:
             self.trace[d.value[0]].append(details[d] if d in details else None)
         return self
+
+    @classmethod
+    def update_scores(self, series, networks, score, root_dir=EXPTS_DIR):
+        """
+            Update score in all traces of a series
+
+            :param str series: series to update traces for
+            :param list networks: list of networks to update
+            :param str score: score to update e.g. 'bic', 'loglik'
+            :param str root_dir: root directory holding trace files
+
+            :raise ValueError: if bad arg values
+        """
+        if (not isinstance(series, str) or not isinstance(networks, list) or
+                not isinstance(score, str) or not isinstance(root_dir, str)):
+            raise TypeError('Trace.ipdate_scores() bad arg types')
+
+        params = {'base': 'e', 'unistate_ok': True}
+
+        scores = {}
+        for network in networks:
+
+            # read traces for this network
+
+            print('\nReading {} traces for {} ...'.format(series, network))
+            traces = Trace.read(series + '/' + network)
+            if traces is None:
+                print(' ... no traces found for {}'.format(network))
+                continue
+
+            # Determine sample sizes used for this network and read in enough
+            # data for largest sample size.
+
+            Ns = {int(id.split('_')[0][1:]) for id in traces}
+            dstype = 'continuous' if network.endswith('_c') else 'categorical'
+            gauss = '' if dstype == 'categorical' else '-g'
+            data = NumPy.read(EXPTS_DIR + '/datasets/' + network + '.data.gz',
+                              dstype=dstype, N=max(Ns))
+
+            # Obtain scores for initial graphs unless doing log likelihood
+
+            if score != 'loglik':
+                initial = DAG(list(data.get_order()), [])
+                initial_score = {}
+                for N in Ns:
+                    data.set_N(N)
+                    initial_score[N] = (initial.score(data, score + gauss,
+                                                      params)[score +
+                                                              gauss]).sum()
+
+            # Loop through all traces determining score of learnt graph
+
+            for id, trace in traces.items():
+
+                # unless loglik score arg should match objective score used
+
+                if (score != 'loglik'
+                        and score + gauss != trace.context['params']['score']):
+                    raise ValueError('update_trace_scores bad arg values')
+
+                # set subset of data matching N for this trace
+
+                N = int(id.split('_')[0][1:])
+                if N != data.N:
+                    data.set_N(N)
+                learnt = trace.result
+
+                # ensure learnt CPDAG turned to DAG then score it
+
+                try:
+                    learnt = DAG.extendPDAG(learnt)
+                    learnt_score = (learnt.score(data, score + gauss,
+                                                 params)[score + gauss]).sum()
+                except ValueError:
+                    print('\n*** Cannot extend PDAG for {}\n'.format(id))
+                    learnt_score = float("nan")
+
+                # loglik score stored in trace context, but for other scores
+                # initial and learnt score stored in trace entries
+
+                if score == 'loglik':
+                    print('{} {}: {} score --> {:.3e}'
+                          .format(network, id, score, learnt_score))
+                    trace.context['loglik'] = learnt_score
+                    scores[(network, id)] = (None, learnt_score)
+
+                else:
+                    print('{} {}: {} score {:.3e} --> {:.3e}'
+                          .format(network, id, score, initial_score[N],
+                                  learnt_score))
+                    trace.trace['delta/score'][0] = initial_score[N]
+                    trace.trace['delta/score'][-1] = learnt_score
+                    scores[(network, id)] = (initial_score[N], learnt_score)
+
+                if root_dir == EXPTS_DIR:
+                    trace.save()
+
+        return scores
 
     def _upgrade(self):
         """
