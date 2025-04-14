@@ -8,63 +8,16 @@
 # and produces selected results for Ken Kitson PhD Thesis.
 #
 
-from numpy import isnan, sum
-from scipy.stats import normaltest, wilcoxon, binomtest
+from numpy import isnan
+from scipy.stats import normaltest
 from pandas import DataFrame, read_excel
 from statsmodels.stats.multitest import multipletests
+
+from analysis.statistics import robust_wilcoxon
 
 PAPER_DIR = 'experiments/papers/kis_know/'
 RESULTS_FILE = 'kis_knowledge.xls'
 ALGORITHMS = {'SaiyanH', 'HC', 'TABU', 'MAHC', 'GES'}
-
-
-def robust_wilcoxon(x, y, force_signtest=False):
-    """
-        Robust two-sample Wilcoxon Signed-Rank test that uses the appropriate
-        strategy depending upon the number of zero differences
-
-        Non-parametric paired test. Note that results must be ordered so that
-        pairs of results have same position in the two lists.
-
-        :param list x: results for one factor-level
-        :param list y: results for other factor-level
-        :param bool force_signtest: use the Sign test regardless of # zeroes
-    """
-    diffs = x - y
-    num_zeros = sum(diffs == 0)
-    total_pairs = len(diffs)
-    percent_zeros = (num_zeros / total_pairs) * 100
-
-    # print(f"Total pairs: {total_pairs}")
-    # print(f"Zero differences: {num_zeros} ({percent_zeros:.2f}%)")
-
-    if percent_zeros < 10 and not force_signtest:
-
-        # Remove zero differences and use exact method
-
-        x_nonzero = x[diffs != 0]
-        y_nonzero = y[diffs != 0]
-        stat, p = wilcoxon(x_nonzero, y_nonzero, method='exact')
-        method_used = "Wilcoxon (Exact, No Zeros)"
-
-    elif percent_zeros < 30 and not force_signtest:
-
-        # Use approximate method - suitable for between 10 and 30% zeroes
-
-        stat, p = wilcoxon(x, y, method='approx')
-        method_used = "Wilcoxon (Approx)"
-
-    else:
-        # Use a paired sign test
-        n_pos = sum(diffs > 0)
-        n_total = sum(diffs != 0)  # Ignore zero differences
-        p = binomtest(n_pos, n_total, p=0.5, alternative='two-sided').pvalue
-        stat = None  # Sign test doesn't return a test statistic
-        method_used = "Sign Test ({:.1f}% Zeros)".format(percent_zeros)
-
-    # print(f"Test Used: {method_used}")
-    # print(f"P-value: {p}\n")
-    return stat, p, method_used
 
 
 def read_kis_data(metric):

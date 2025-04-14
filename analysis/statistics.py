@@ -4,7 +4,8 @@
 from numpy import exp, number
 from pandas import DataFrame
 from scipy.stats import shapiro, normaltest, kstest, anderson, levene, \
-    bartlett, fligner
+    bartlett, fligner, wilcoxon, binomtest
+from statsmodels.stats.multitest import multipletests
 
 
 def rank_values(scores):
@@ -137,3 +138,99 @@ def equal_variances(samples):
     return DataFrame({'levene': [levene(*data)[1]],
                       'bartlett': [bartlett(*data)[1]],
                       'fligner': [fligner(*data)[1]]})
+
+
+def robust_wilcoxon(x, y, force_signtest=False):
+    """
+        Robust two-sample Wilcoxon Signed-Rank test that uses the appropriate
+        strategy depending upon the number of zero differences
+
+        Non-parametric paired test. Note that results must be ordered so that
+        pairs of results have same position in the two lists.
+
+        :param list x: results for one factor-level
+        :param list y: results for other factor-level
+        :param bool force_signtest: use the Sign test regardless of # zeroes
+    """
+    diffs = x - y
+    num_zeros = sum(diffs == 0)
+    total_pairs = len(diffs)
+    percent_zeros = (num_zeros / total_pairs) * 100
+
+    # print(f"Total pairs: {total_pairs}")
+    # print(f"Zero differences: {num_zeros} ({percent_zeros:.2f}%)")
+
+    if percent_zeros < 10 and not force_signtest:
+
+        # Remove zero differences and use exact method
+
+        x_nonzero = x[diffs != 0]
+        y_nonzero = y[diffs != 0]
+        stat, p = wilcoxon(x_nonzero, y_nonzero, method='exact')
+        method_used = "Wilcoxon (Exact, No Zeros)"
+
+    elif percent_zeros < 30 and not force_signtest:
+
+        # Use approximate method - suitable for between 10 and 30% zeroes
+
+        stat, p = wilcoxon(x, y, method='approx')
+        method_used = "Wilcoxon (Approx)"
+
+    else:
+        # Use a paired sign test
+        n_pos = sum(diffs > 0)
+        n_total = sum(diffs != 0)  # Ignore zero differences
+        p = binomtest(n_pos, n_total, p=0.5, alternative='two-sided').pvalue
+        stat = None  # Sign test doesn't return a test statistic
+        method_used = "Sign Test ({:.1f}% Zeros)".format(percent_zeros)
+
+    # print(f"Test Used: {method_used}")
+    # print(f"P-value: {p}\n")
+    return stat, p, method_used
+
+
+def correct_p_values(p_values: dict, correction: str = 'bonferroni',
+                     significance_level: float = 0.05) -> dict:
+    """
+        Corrects p-values using the specified correction method and filters
+        significant methods.
+
+        :param dict p_values: Dictionary of methods and their raw p-values.
+        :param str correction: Correction method ('bonferroni', 'fdr_bh', etc.)
+                               or None to skip correction. Default is
+                               'bonferroni'.
+        :param float significance_level: Significance level to filter corrected
+                                         p-values. Default is 0.05.
+        :returns dict: Dictionary of methods with corrected p-values that meet
+                       the significance level.
+    """
+    if (not isinstance(p_values, dict)
+        or not all(isinstance(v, float) for v in p_values.values())
+            or (correction is not None and not isinstance(correction, str))):
+        raise TypeError("correct_p_values bad arg types")
+
+    if (not len(p_values)
+        or not (0 < significance_level < 1)
+        or correction not in {None, 'bonferroni', 'fdr_bh', 'holm',
+                              'sidak'}):
+        raise ValueError("correct_p_values bad arg values")
+
+    methods = list(p_values.keys())
+    raw_p_values = list(p_values.values())
+
+    # Skip correction if correction is None
+    if correction is None:
+        corrected_p_values = raw_p_values
+    else:
+        # Apply correction
+        corrected = multipletests(raw_p_values, method=correction)
+        corrected_p_values = corrected[1]
+
+    # Filter significant methods
+    significant_methods = {
+        method: corrected_p
+        for method, corrected_p in zip(methods, corrected_p_values)
+        if corrected_p < significance_level
+    }
+
+    return significant_methods
