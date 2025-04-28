@@ -14,6 +14,7 @@ from fileio.common import EXPTS_DIR
 from fileio.pandas import Pandas
 from learn.hc import hc
 from learn.trace import Trace
+from experiments.latex import to_table
 
 
 CATEGORICAL = ('asia,sports,sachs,covid,child,' +
@@ -200,7 +201,7 @@ def _pgm_fges_correct(series, metrics):
 # Add BIC or loglik scores to existing FGES and bnlearn constraint-based
 # algorithms
 
-def values_ijar_stab_score_graphs():
+def values_ijar2_stab_score_graphs():
     """
         Adds score to FGES graph traces
     """
@@ -279,7 +280,7 @@ def values_stab_hc_asia_10K():
 # Chart comparing f1-e with he different stability approaches with categorical
 # data and BIC score
 
-def chart_ijar_stab_cat_f1():
+def chart_ijar2_stab_cat_f1():
     """
         Chart showing F1 against sample size for each stability approach and
         for each categorical variable network.
@@ -329,7 +330,7 @@ def chart_ijar_stab_cat_f1():
 # Chart comparing f1-e with the different stability approaches with continuous
 # data and BIC score
 
-def chart_ijar_stab_con_f1():
+def chart_ijar2_stab_con_f1():
     """
         Chart showing F1 against sample size for each stability approach and
         for each continuous variable network.
@@ -379,7 +380,7 @@ def chart_ijar_stab_con_f1():
 # Table showing results from different stability approaches for categorical
 # and continuous data using BIC and BDeu scores
 
-def table_ijar_stab_ord_cat_bic():
+def table_ijar2_stab_ord_cat_bic():
     """
         Table summarising HC/Tabu stability approaches - categorical
     """
@@ -403,10 +404,17 @@ def table_ijar_stab_ord_cat_bic():
             'metrics': IJAR_STAB_METRICS,
             'maxtime': '180',
             'file': None}
-    run_analysis(args)
+    res = run_analysis(args)
+
+    # transpose and filter and sort rows/columns to get reqd table layout
+    res = res.T[SERIES.split(',')[:-2]]
+    res = res.loc[['p-e', 'r-e', 'f1-e', 'f1-e-std', 'bsf-e', 'score',
+                   'score-std', 'loglik', 'loglik-std']]
+    res = res.reset_index().rename(columns={'index': 'Metric'})
+    print(to_table(df=res, options={'decimals': 4}))
 
 
-def table_ijar_stab_ord_con_bic():
+def table_ijar2_stab_ord_con_bic():
     """
         Table summarising HC/Tabu stability approaches - continuous
     """
@@ -429,7 +437,7 @@ def table_ijar_stab_ord_con_bic():
     run_analysis(args)
 
 
-def table_ijar_stab_residuals():
+def table_ijar2_stab_residuals():
     """
         F1 S.D. for each network for each sample size
     """
@@ -446,7 +454,7 @@ def table_ijar_stab_residuals():
 
 # Generate charts which compare algorithms
 
-def chart_ijar_stab_algos_cat_bic():
+def chart_ijar2_stab_algos_cat_bic():
     """
         Algorithm comparson for categorical data learnt using BIC score using
         modified Hailfinder and Pathfinder networks.
@@ -486,7 +494,7 @@ def chart_ijar_stab_algos_cat_bic():
 
 # Algorithm comparison for continuous networks
 
-def chart_ijar_stab_algos_con_bic():
+def chart_ijar2_stab_algos_con_bic():
     """
         Comparsion of different algorithms with continuous data and using
         BIC score.
@@ -517,7 +525,7 @@ def chart_ijar_stab_algos_con_bic():
             '/papers/ijar_stability/algos-con-bic.png')
 
 
-def values_ijar_stab_entropy_ties():
+def values_ijar2_stab_entropy_ties():
 
     def _entropy(column):
         _, counts = unique(column, return_counts=True)

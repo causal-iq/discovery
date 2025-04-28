@@ -7,9 +7,7 @@ from pandas import DataFrame
 from analysis.trace import TraceAnalysis
 from learn.trace import Trace
 from fileio.common import TESTDATA_DIR, EXPTS_DIR
-from core.common import ln
-from core.metrics import dicts_same, values_same
-from core.score import free_params
+from core.metrics import dicts_same
 from core.bn import BN
 from core.cpt import CPT
 from fileio.pandas import Pandas
@@ -368,12 +366,9 @@ def test_trace_analysis_asia_4_ok():  # Asia, N=100, MI and OMI values
          'f1-e': 0.286, 'f1-b': 0.643, 'bsf': 0.562, 'e-ori': 4, 'bsf-e': 0.5,
          'shd-es': 0.75}
 
-    # Check log likelihood
+    # Check log likelihood (no defined for this trace)
 
-    bic = analysis.trace['delta/score'][-1]
-    penalty = 0.5 * free_params(analysis.result, data) * ln(len(data), 'e')
-    assert values_same(loglik, bic + penalty / len(data), sf=7)
-    print('\nLog. likelihood is {:.6f}'.format(loglik))
+    assert loglik is None
 
     # check learnt graph edges
 
@@ -422,12 +417,9 @@ def test_trace_analysis_asia_5_ok():  # Asia, N=1K, MI and OMI values
          'f1': 0.235, 'f1-e': 0.0, 'f1-b': 0.529, 'bsf': 0.462, 'e-ori': 7,
          'bsf-e': 0.462, 'shd-es': 1.25}
 
-    # Check log likelihood
+    # Check log likelihood (no defined for this trace)
 
-    bic = analysis.trace['delta/score'][-1]
-    penalty = 0.5 * free_params(analysis.result, data) * ln(len(data), 'e')
-    assert values_same(loglik, bic + penalty / len(data), sf=7)
-    print('\nLog. likelihood is {:.6f}'.format(loglik))
+    assert loglik is None
 
     # check learnt graph edges
 
@@ -583,12 +575,9 @@ def test_trace_analysis_mildew_10_ok():  # Mildew, 10 rows
          'p': 0.077, 'r': 0.022, 'f1': 0.034, 'f1-b': 0.051, 'bsf': 0.013,
          'bsf-e': 0.002, 'f1-e': 0.0, 'e-ori': 2}
 
-    # Check log likelihood
+    # Check log likelihood (no defined for this trace)
 
-    bic = analysis.trace['delta/score'][-1]
-    penalty = 0.5 * free_params(analysis.result, data) * ln(len(data), 'e')
-    assert values_same(loglik, bic + penalty / len(data), sf=7)
-    print('\nLog. likelihood is {:.6f}'.format(loglik))
+    assert loglik is None
 
     assert analysis.edges['result'] == \
         {'arc_matched': {('meldug_3', 'meldug_4')},

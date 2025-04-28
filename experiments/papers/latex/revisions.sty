@@ -1,0 +1,65 @@
+%% ============================================================================
+%% revisions.sty — Lightweight revision markup tools for LaTeX
+%% ----------------------------------------------------------------------------
+%% This package defines macros to highlight revisions (additions, deletions,
+%% comments, etc.) and allows toggling revision visibility.
+%%
+%% USAGE:
+%%   In your main .tex file, add the following before \usepackage{revisions}:
+%%
+%%     \def\revisionsoverride{true}   % or 'false' to disable markup
+%%     \usepackage{revisions}
+%%
+%%   Then use these macros in your text:
+%%     \hl{highlighted text}
+%%     \st{deleted text or reference} 
+%%     \todo{a comment}
+%%     \hlref{highlighted reference}
+%%
+%%    Note 1: This lightweight approach does not allow \ref and \cite commands
+%%            to be included in highligted or deleted text. They must be
+%%            separately wrapped: e.g. 
+%%              \hl{... algorithm }\hlref{\citep{2025key}}\hl{ is ...}
+%%
+%%    Note 2: using \hlref or \st around \cite does not wrap and causes errors
+%%            when using natbib in author-year format (numbers is fine).
+%%            Workaround is to not attempt to highlight them and use manually
+%%            entered plain text for deleted citations.
+%%
+%% This style is arXiv-compatible and Overleaf-friendly.
+%% ============================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{revisions}[2025/04/24 Revision Markup Controls]
+
+% Define the toggle only if not already defined
+\providecommand{\revisionsfalse}{} % do nothing if already defined
+\providecommand{\revisionstrue}{}  % do nothing if already defined
+\newif\ifrevisions  % actually defines \revisionsif, \revisionstrue, \revisionsfalse
+
+% Default to true unless overridden
+\revisionstrue
+
+\makeatletter
+\@ifundefined{revisionsoverride}{
+  % No override: set using current state
+}{
+  \csname revisions\@nameuse{revisionsoverride}\endcsname
+}
+\makeatother
+
+\ifrevisions
+  \RequirePackage{soul}
+  \RequirePackage[normalem]{ulem}
+  \RequirePackage{todonotes}
+  \renewcommand{\st}[1]{\textcolor{red}{\sout{#1}}}
+
+  \RequirePackage{tcolorbox}
+  \tcbuselibrary{listings,breakable}
+  \newtcbox{\hlref}{on line, colback=yellow, colframe=yellow!10!yellow, boxrule=0.3mm, arc=0.6mm,
+                    outer arc=0.6mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt, breakable}
+\else
+  \newcommand{\st}[1]{}
+  \newcommand{\hl}[1]{#1}
+  \newcommand{\todo}[1]{}
+  \newcommand{\hlref}[1]{#1}
+\fi
