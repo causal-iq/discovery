@@ -167,7 +167,7 @@ def _pgm_fges_correct(series, metrics):
 
     means = summary_analysis(series=list(series),
                              networks=networks.split(','), Ns=Ns, Ss=Ss,
-                             metrics=metrics, params={'ignore': SING_VAL})
+                             metrics=metrics, params={'ignore': SING_VAL})[0]
     print(means)
     data = DataFrame(_pivot(series, means, 'no', False))
     print(data)
@@ -187,7 +187,7 @@ def _pgm_fges_correct(series, metrics):
     means = summary_analysis(series=list(others),
                              networks=['hailfinder2', 'pathfinder'],
                              Ns=failure_Ns, Ss=Ss,
-                             metrics=metrics, params={'ignore': SING_VAL})
+                             metrics=metrics, params={'ignore': SING_VAL})[0]
     others = DataFrame(_pivot(others, means, 'no'))
     for metric in set(metrics) & {'f1-e', 'p-e', 'r-e', 'bsf-e', 'score'}:
         data = _fges_correct(metric, data, others, failure_rate)
@@ -596,7 +596,7 @@ def table_ijar_stab_residuals():
     for N in Ns:
         print('\n\n*** RESULTS FOR N={} ***\n'.format(N))
         summary_analysis(series=['TABU/STABLE3/SCORE_PLUS'], networks=networks,
-                         Ns=[N], Ss=Ss, metrics=metrics, params={})
+                         Ns=[N], Ss=Ss, metrics=metrics, params={})[0]
 
 
 # Generate charts which compare algorithms
@@ -617,7 +617,7 @@ def chart_ijar_stab_algos_cat_bic():
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=networks.split(','), Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
-                             params={'ignore': SING_VAL})
+                             params={'ignore': SING_VAL})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
 
     props = ALGO_BAR_PROPS.copy()
@@ -689,7 +689,7 @@ def chart_ijar_stab_algos_cat_impute_bic():
                              Ss=RANDOM, metrics=metrics, maxtime=180,
                              params={'ignore': SING_VAL,
                                      'impute': ('f1-e', 'p-e', 'r-e',
-                                                'bsf-e', 'score')})
+                                                'bsf-e', 'score')})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
 
     props = ALGO_BAR_PROPS.copy()
@@ -729,7 +729,7 @@ def chart_ijar_stab_algos_cat_ignore_bic():
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=networks.split(','), Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
-                             params={'ignore': ignore})
+                             params={'ignore': ignore})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
 
     props = ALGO_BAR_PROPS.copy()
@@ -764,7 +764,7 @@ def chart_ijar_stab_algos_con_bic():
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=CONTINUOUS.split(','), Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
-                             params={'ignore': ['arth150_c@100000']})
+                             params={'ignore': ['arth150_c@100000']})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
     props = ALGO_BAR_PROPS.copy()
     props.update({'xaxis.ticks_fontsize': 14,
@@ -798,7 +798,7 @@ def chart_ijar_stab_algos_con_ignore_bic():
                              params={'ignore': ['arth150_c@100000',
                                                 'arth150_c@10000',
                                                 'magic-irri_c@100000',
-                                                'magic-niab_c@100000']})
+                                                'magic-niab_c@100000']})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
     props = ALGO_BAR_PROPS.copy()
     props.update({'xaxis.ticks_fontsize': 14,
@@ -831,7 +831,7 @@ def chart_ijar_stab_algos_con_impute_bic():
                              Ss=RANDOM, metrics=metrics, maxtime=180,
                              params={'ignore': ['arth150_c@100000'],
                                      'impute': ('f1-e', 'p-e', 'r-e',
-                                                'bsf-e', 'score')})
+                                                'bsf-e', 'score')})[0]
 
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
     props = ALGO_BAR_PROPS.copy()

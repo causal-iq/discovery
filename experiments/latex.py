@@ -73,7 +73,6 @@ def to_table(df: DataFrame, options: dict = {}) -> str:
     # Validate and convert the dictionary into a TableOptions object
     options["df_columns"] = df.columns.tolist()
     options = TableOptions.validate(**options)
-    print(options.column_widths)
 
     # Round numeric values in the DataFrame
     df = df.copy()  # Avoid modifying the original DataFrame
@@ -92,7 +91,10 @@ def to_table(df: DataFrame, options: dict = {}) -> str:
 
     # Add rows
     for _, row in df.iterrows():
-        latex_str += " & ".join(map(str, row)) + " \\\\\n"
+        cells = [f"{value:.{options.decimals}f}"
+                 if isinstance(value, (int, float))
+                 else str(value) for value in row]
+        latex_str += " & ".join(cells) + " \\\\\n"
 
     latex_str += "\\bottomrule\n"
     latex_str += "\\end{tabular}\n"

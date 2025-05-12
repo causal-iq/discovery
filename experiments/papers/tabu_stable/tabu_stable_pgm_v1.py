@@ -180,7 +180,7 @@ def table_tabu_stab_residuals():
     for N in Ns:
         print('\n\n*** RESULTS FOR N={} ***\n'.format(N))
         summary_analysis(series=['TABU/STABLE3/SCORE_PLUS'], networks=networks,
-                         Ns=[N], Ss=Ss, metrics=metrics, params={})
+                         Ns=[N], Ss=Ss, metrics=metrics, params={})[0]
 
 
 def chart_tabu_stab_algos():
@@ -272,7 +272,7 @@ def chart_tabu_stab_algos():
                                    'lfinder2').replace('pts', 'pts2')
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=networks.split(','), Ns=Ns, Ss=Ss,
-                             metrics=metrics, params={'ignore': SING_VAL})
+                             metrics=metrics, params={'ignore': SING_VAL})[0]
     data = DataFrame(_pivot(means, 'no', False))  # don't correct FGES F1 here
 
     # Replace FGES failure cases for hailfinder and pathfinder at 10K and
@@ -283,7 +283,7 @@ def chart_tabu_stab_algos():
     others = summary_analysis(series=list(others),
                               networks=['hailfinder2', 'pathfinder'],
                               Ns=[10000, 100000], Ss=Ss,
-                              metrics=metrics, params={'ignore': SING_VAL})
+                              metrics=metrics, params={'ignore': SING_VAL})[0]
     others = DataFrame(_pivot(others, 'no'))
     for metric in set(metrics) - {'f1-e-std', 'expts'}:
         data = _fges_correct(metric, data, others)

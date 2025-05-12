@@ -32,37 +32,39 @@ def systest_summary_analysis_bad_arg_1_ok():  # invalid argument values
 
 
 def systest_summary_analysis_base2_1_ok():  # single series & metric
-    means = run_analysis({'action': 'summary', 'series': 'TABU/BASE2',
-                          'N': '10;;0-2', 'params': 'summ',
-                          'networks': 'asia', 'metrics': 'f1-e'}, ROOT_DIR)
+    means, _ = run_analysis({'action': 'summary', 'series': 'TABU/BASE2',
+                             'N': '10;;0-2', 'params': 'summ',
+                             'networks': 'asia', 'metrics': 'f1-e'}, ROOT_DIR)
     assert means.to_dict('index') == {'TABU/BASE2': {'f1-e': 0.154}}
 
 
 def systest_summary_analysis_base2_2_ok():  # single series, multi metrics
-    means = run_analysis({'action': 'summary', 'series': 'TABU/BASE2',
-                          'N': '1K', 'params': 'summ',
-                          'networks': 'asia',
-                          'metrics': 'f1-e,f1-e-std,expts,score'}, ROOT_DIR)
+    means, _ = run_analysis({'action': 'summary', 'series': 'TABU/BASE2',
+                             'N': '1K', 'params': 'summ',
+                             'networks': 'asia',
+                             'metrics': 'f1-e,f1-e-std,expts,score'}, ROOT_DIR)
     assert means.to_dict('index') == \
         {'TABU/BASE2': {'f1-e': 0.747, 'f1-e-std': 0.3222, 'expts': 3.0,
                         'score': -2.274}}
 
 
 def systest_summary_analysis_base2_3_ok():  # multi series, single metrics
-    means = run_analysis({'action': 'summary', 'series': 'TABU/BASE2,TABU/STD',
-                          'N': '100;;0-1', 'params': 'summ',
-                          'networks': 'asia', 'metrics': 'time'}, ROOT_DIR)
+    means, _ = run_analysis({'action': 'summary',
+                             'series': 'TABU/BASE2,TABU/STD',
+                             'N': '100;;0-1', 'params': 'summ',
+                             'networks': 'asia', 'metrics': 'time'}, ROOT_DIR)
     assert means.to_dict('index') == \
         {'TABU/BASE2': {'time': 1.3},
          'TABU/STD': {'time': 6.9}}
 
 
 def systest_summary_analysis_base2_4_ok():  # multi series, multi metrics
-    means = run_analysis({'action': 'summary', 'series': 'TABU/BASE2,TABU/STD',
+    means = run_analysis({'action': 'summary',
+                          'series': 'TABU/BASE2,TABU/STD',
                           'N': '1k;;0-2', 'params': 'summ',
                           'networks': 'asia,sachs',
                           'metrics': 'f1-e,f1-e-std,time'},
-                         ROOT_DIR).to_dict('index')
+                         ROOT_DIR)[0].to_dict('index')
     assert isnan(means['TABU/STD'].pop('f1-e-std'))  # can't compare nans
     assert means == \
         {'TABU/BASE2': {'f1-e': 0.7204, 'f1-e-std': 0.2306, 'time': 3.1},

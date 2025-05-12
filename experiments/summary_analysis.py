@@ -2,7 +2,7 @@
 # Performs analysis for the tree runs
 
 from itertools import chain
-from pandas import DataFrame, set_option
+from pandas import DataFrame, set_option, concat
 from math import isnan
 from statistics import mean, stdev
 
@@ -63,7 +63,8 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
         :param set ignore: {(network, N), ...} of cases to ignore
         :param set impute: set of metrics to impute values for
 
-        :returns dict: {series: mean value} of metric for each series
+        :returns tuple: ({series: mean value} of metric for each series,
+                         DataFrame: metric value for each network)
     """
 
     # Construct empty metrics table - ensure it has all combinations of
@@ -161,10 +162,13 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
     table['MEAN'] = table.mean(axis='columns')
     print('\n{} metric\n{}\n'.format(reqd_metric, table))
     means = table['MEAN'].to_dict()
-    table.drop(columns=['MEAN'], inplace=True)
+    table = table.drop(columns=['MEAN']).reset_index()
+    table = table.melt(id_vars=table.columns[0], var_name='network',
+                       value_name='value')
+    table['metric'] = reqd_metric
 
-    return {s: round(v, 1 if reqd_metric in {'time', 'pretime'} else 4)
-            for s, v in means.items()}
+    return ({s: round(v, 1 if reqd_metric in {'time', 'pretime'} else 4)
+             for s, v in means.items()}, table)
 
 
 def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
@@ -184,7 +188,8 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
                                  'ignore': ('network1@N', ...)
         :param str root_dir: root directory holding trace files
 
-        :returns DataFrame: means of each metric for each series
+        :returns tuple: (DataFrame: means of each metric for each series,
+                         DataFrame: details of metrics per series/network)
     """
     set_option('display.max_rows', None)
     set_option('display.max_columns', None)
@@ -291,10 +296,14 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
                                   .sort_values(by=['network', 'N', 'series'])))
 
         means = {}
+        details = []
         for metric in metrics:
-            stat_means = _generate_table2(metric, raw_metrics, ignore, impute)
+            stat_means, detail = _generate_table2(metric, raw_metrics, ignore,
+                                                  impute)
+            details.append(detail)
             means.update({metric: stat_means})
         means = DataFrame(means).reindex(series)
+        details = concat(details, ignore_index=True)
         print('\n\nMeans across all sample sizes and networks:\n\n{}'
               .format(means))
 
@@ -302,4 +311,4 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
         means = None
         print('\n\nNo traces found.')
 
-    return means
+    return (means, details)

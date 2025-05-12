@@ -1,7 +1,7 @@
 
 # Generate the tables and charts for R2 of Tabu-Stable paper for IJAR 2025
 
-from pandas import DataFrame
+from pandas import DataFrame, Categorical
 from numpy import unique, isclose, arange
 from numpy.random import choice, seed
 from scipy.stats import entropy
@@ -24,6 +24,22 @@ CATEGORICAL = ('asia,sports,sachs,covid,child,' +
 
 CONTINUOUS = ('sachs_c,covid_c,building_c,magic-niab_c,magic-irri_c,' +
               'ecoli70_c,arth150_c')
+
+CATEGORICAL_NETWORKS = ('asia', 'sports', 'sachs', 'covid', 'child',
+                        'insurance', 'property', 'diarrhoea', 'water',
+                        'mildew', 'alarm', 'barley', 'hailfinder',
+                        'hepar2', 'win95pts', 'formed', 'pathfinder')
+CONTINUOUS_NETWORKS = ('sachs_c', 'covid_c', 'building_c', 'magic-niab_c',
+                       'magic-irri_c', 'ecoli70_c', 'arth150_c')
+
+ORDERS_SERIES = ('TABU/BASE3',
+                 'TABU/STABLE3/DEC_SCORE',
+                 'TABU/STABLE3/INC_SCORE',
+                 'TABU/STABLE3/SCORE_PLUS',
+                 'HC/BASE3',
+                 'HC/STABLE3/SCORE_PLUS',
+                 'HC/SCORE/EMPTY',
+                 'HC/SCORE/REF')
 
 SERIES2ALGO = {'TABU/STABLE3/SCORE_PLUS': 'Tabu-Stable',
                'HC/STABLE3/SCORE_PLUS': 'HC-Stable',
@@ -56,6 +72,8 @@ SING_VAL = ['insurance@100', 'water@100', 'barley@100', 'hailfinder@100',
 
 IJAR_STAB_METRICS = ('expts,f1-e,f1-e-std,f1,bsf-e,score,score-std,' +
                      'time,p-e,r-e,loglik,loglik-std')
+ORDERS_METRICS = ('expts', 'f1-e', 'f1-e-std', 'f1', 'bsf-e', 'score',
+                  'score-std', 'time', 'p-e', 'r-e', 'loglik', 'loglik-std')
 
 ALGO_BAR_PROPS = {  # Properties of the algorithm comparison bar plots
     'subplot.kind': 'bar',
@@ -86,31 +104,6 @@ ALGO_BAR_PROPS = {  # Properties of the algorithm comparison bar plots
 
 
 # helper functions for analysis
-
-def _fges_correct(metric, data, others, failure_rate):
-    """
-        Replace zero for FGES failed experiments with the average over all
-        other algorithms to prevent bias against FGES.
-
-        :param str metric: metric to correct e.g. f1-e
-        :param DataFrame data: metrics over all algorithms
-        :param DataFrame others: metrics over all algorithms except FGES
-        :param float failure_rate: fraction of FGES experiments that failed
-    """
-    o_mean = others[others['subplot'] == metric]['y_val'].mean()
-
-    # get position of FGES value and hences its value
-
-    fges_idx = data.index[(data['subplot'] == metric)
-                          & (data['x_val'] == 'FGES')].tolist()[0]
-    fges_val = data.at[fges_idx, 'y_val']
-
-    data.at[fges_idx, 'y_val'] = (o_mean * failure_rate +
-                                  fges_val * (1 - failure_rate))
-    print('FGES {} corrected from {:.4f} --> {:.4f}'
-          .format(metric, fges_val, data.at[fges_idx, 'y_val']))
-
-    return data
 
 
 def _pivot(series, means, y_var, correct=True):
@@ -144,57 +137,6 @@ def _pivot(series, means, y_var, correct=True):
             for m, vs in means.items() for a, v in vs.items()
             if m in ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'loglik', 'loglik-std',
                      'time', 'bsf-e']]
-    return data
-
-
-def _pgm_fges_correct(series, metrics):
-    """
-        Corrects FGES accuracy metric values using the approach employed in
-        the PGM paper. In this approach, an overall mean metric value is
-        computed WITHOUT weighting each network's average according to the
-        number of sample sizes utilised. This overall average is then
-        corrected using the mean metric for Hailfinder2 and Pathfinder for
-        10K and 100K (i.e. FGES failure cases) over all algorithms except FGES.
-    """
-    Ns = [100, 1000, 10000, 100000]
-    Ss = (0, 24)
-    SING_VAL = ['insurance@100', 'water@100', 'barley@100', 'hailfinder@100',
-                'hailfinder2@100', 'win95pts@100', 'win95pts2@100',
-                'formed@100', 'pathfinder@100']
-
-    # Get summary EXcluding networks with identical variables for all
-    # algorithms
-
-    networks = CATEGORICAL.replace('lfinder',
-                                   'lfinder2').replace('pts', 'pts2')
-
-    means = summary_analysis(series=list(series),
-                             networks=networks.split(','), Ns=Ns, Ss=Ss,
-                             metrics=metrics, params={'ignore': SING_VAL})
-    print(means)
-    data = DataFrame(_pivot(series, means, 'no', False))
-    print(data)
-
-    # Replace FGES failure cases for hailfinder and pathfinder with
-    # averages over all other algorithms for those cases. 10K and 100K
-    # for hailfinder2 and pathfinder failed with BIC score. i.e. 4/68
-    # cases in all. For BDeu it was 1K, 10K and 100K, for hailfinder2
-    # and pathfinder, i.e. 6/68 cases.
-
-    others = series.copy()
-    others.pop('TETRAD/FGES_BASE3', None)
-    others.pop('TETRAD/FGES_BDEU', None)
-    failure_rate = 6 / 68 if 'TETRAD/FGES_BDEU' in series else 4 / 68
-    failure_Ns = ([1000, 10000, 100000] if 'TETRAD/FGES_BDEU' in series
-                  else [10000, 100000])
-    means = summary_analysis(series=list(others),
-                             networks=['hailfinder2', 'pathfinder'],
-                             Ns=failure_Ns, Ss=Ss,
-                             metrics=metrics, params={'ignore': SING_VAL})
-    others = DataFrame(_pivot(others, means, 'no'))
-    for metric in set(metrics) & {'f1-e', 'p-e', 'r-e', 'bsf-e', 'score'}:
-        data = _fges_correct(metric, data, others, failure_rate)
-
     return data
 
 
@@ -374,7 +316,38 @@ def chart_ijar2_stab_con_f1():
                        'figure.subplots_hspace:0.24;' +
                        'figure.subplots_wspace:0.20')}
     run_analysis(args)
-    run_analysis(args)
+
+
+def value_by_series_and_network(details: DataFrame, reqd_value: str,
+                                networks: tuple):
+    """
+        Generate DataFrame of specified value broken down by series and
+        network.
+
+        :param DataFrane details: metrics and scores for all networks and
+                                  series
+        :param str reqd_value: value required
+        :param tuple networks: networks in order required
+
+        :returns DataFrame: row, columns are networks, series
+    """
+
+    # remove series and metrics not required
+    reqd_series = [s for s in ORDERS_SERIES if not s.endswith('_SCORE')]
+    table = details[(details['metric'] == reqd_value) &
+                    (details['series'].isin(reqd_series))]
+
+    # remove metric column and then pivot so columns are series
+    table = table.drop(columns=['metric'])
+    table = table.pivot(index='network', columns='series', values='value')
+    table = table[reqd_series].reset_index()
+
+    # ensure rows in required network order
+    table['network'] = Categorical(table['network'], categories=networks,
+                                   ordered=True)
+    table = table.sort_values('network')
+
+    return table
 
 
 # Table showing results from different stability approaches for categorical
@@ -384,57 +357,62 @@ def table_ijar2_stab_ord_cat_bic():
     """
         Table summarising HC/Tabu stability approaches - categorical
     """
-    # CATEGORICAL = ('asia,sports,sachs,covid,child,insurance,property,' +
-    #                'diarrhoea,water')  # smaller networks
-    # CATEGORICAL = ('mildew,alarm,barley,hailfinder,hepar2,win95pts,' +
-    #                'formed,pathfinder,gaming')  # larger networks
-    SERIES = ('TABU/BASE3,' +
-              'TABU/STABLE3/DEC_SCORE,' +
-              'TABU/STABLE3/INC_SCORE,' +
-              'TABU/STABLE3/SCORE_PLUS,' +
-              'HC/BASE3,' +
-              'HC/STABLE3/SCORE_PLUS,' +
-              'HC/SCORE/REF,' +
-              'HC/SCORE/EMPTY'
-              )
-    args = {'action': 'summary',
-            'series': SERIES,
-            'networks': CATEGORICAL,
-            'N': '100-100k;1;0-24',
-            'metrics': IJAR_STAB_METRICS,
-            'maxtime': '180',
-            'file': None}
-    res = run_analysis(args)
+    means, details = summary_analysis(series=ORDERS_SERIES,
+                                      networks=CATEGORICAL_NETWORKS,
+                                      Ns=SAMPLE_SIZES,
+                                      Ss=RANDOM,
+                                      metrics=ORDERS_METRICS,
+                                      params={},
+                                      maxtime=180)
 
-    # transpose and filter and sort rows/columns to get reqd table layout
-    res = res.T[SERIES.split(',')[:-2]]
-    res = res.loc[['p-e', 'r-e', 'f1-e', 'f1-e-std', 'bsf-e', 'score',
-                   'score-std', 'loglik', 'loglik-std']]
-    res = res.reset_index().rename(columns={'index': 'Metric'})
-    print(to_table(df=res, options={'decimals': 4}))
+    # Generate Table with mean results for each metric and series
+    means = means.T[list(ORDERS_SERIES)[:-2]]
+    means = means.loc[['p-e', 'r-e', 'f1-e', 'f1-e-std', 'bsf-e', 'score',
+                       'score-std', 'loglik', 'loglik-std']]
+    means = means.reset_index().rename(columns={'index': 'Metric'})
+    print(to_table(df=means,
+                   options={'decimals': 4, 'label': 'tab:?',
+                            'caption': 'Categ. scores/metrics by series'}))
+
+    # Generate tables of BIC & loglik scores by series and network
+    networks = CATEGORICAL_NETWORKS
+    print(to_table(value_by_series_and_network(details, 'score', networks),
+                   {'label': '?', 'decimals': 4,
+                    'caption': 'BIC by categorical network and series'}))
+    print(to_table(value_by_series_and_network(details, 'loglik', networks),
+                   {'label': '?', 'decimals': 4,
+                    'caption': 'Loglik by categorical network and series'}))
 
 
 def table_ijar2_stab_ord_con_bic():
     """
         Table summarising HC/Tabu stability approaches - continuous
     """
-    SERIES = ('TABU/BASE3,' +
-              'TABU/STABLE3/DEC_SCORE,' +
-              'TABU/STABLE3/INC_SCORE,' +
-              'TABU/STABLE3/SCORE_PLUS,' +
-              'HC/BASE3,' +
-              'HC/STABLE3/SCORE_PLUS,' +
-              'HC/SCORE/REF,' +
-              'HC/SCORE/EMPTY'
-              )
-    args = {'action': 'summary',
-            'series': SERIES,
-            'networks': CONTINUOUS,
-            'N': '100-100k;1;0-24',
-            'metrics': IJAR_STAB_METRICS,
-            'maxtime': '180',
-            'file': None}
-    run_analysis(args)
+    means, details = summary_analysis(series=ORDERS_SERIES,
+                                      networks=CONTINUOUS_NETWORKS,
+                                      Ns=SAMPLE_SIZES,
+                                      Ss=RANDOM,
+                                      metrics=ORDERS_METRICS,
+                                      params={},
+                                      maxtime=180)
+
+    # Generate Table with mean results for each metric and series
+    means = means.T[list(ORDERS_SERIES)[:-2]]
+    means = means.loc[['p-e', 'r-e', 'f1-e', 'f1-e-std', 'bsf-e', 'score',
+                       'score-std', 'loglik', 'loglik-std']]
+    means = means.reset_index().rename(columns={'index': 'Metric'})
+    print(to_table(df=means,
+                   options={'decimals': 4, 'label': 'tab:?',
+                            'caption': 'Cont. scores/metrics by series'}))
+
+    # Generate tables of BIC & loglik scores by series and network
+    networks = CONTINUOUS_NETWORKS
+    print(to_table(value_by_series_and_network(details, 'score', networks),
+                   {'label': '?', 'decimals': 4,
+                    'caption': 'BIC by continuous network and series'}))
+    print(to_table(value_by_series_and_network(details, 'loglik', networks),
+                   {'label': '?', 'decimals': 4,
+                    'caption': 'Loglik by continuous network and series'}))
 
 
 def table_ijar2_stab_residuals():
@@ -449,7 +427,7 @@ def table_ijar2_stab_residuals():
     for N in Ns:
         print('\n\n*** RESULTS FOR N={} ***\n'.format(N))
         summary_analysis(series=['TABU/STABLE3/SCORE_PLUS'], networks=networks,
-                         Ns=[N], Ss=Ss, metrics=metrics, params={})
+                         Ns=[N], Ss=Ss, metrics=metrics, params={})[0]
 
 
 # Generate charts which compare algorithms
@@ -470,7 +448,7 @@ def chart_ijar2_stab_algos_cat_bic():
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=networks.split(','), Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
-                             params={'ignore': SING_VAL})
+                             params={'ignore': SING_VAL})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
 
     props = ALGO_BAR_PROPS.copy()
@@ -505,7 +483,7 @@ def chart_ijar2_stab_algos_con_bic():
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=CONTINUOUS.split(','), Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
-                             params={'ignore': ['arth150_c@100000']})
+                             params={'ignore': ['arth150_c@100000']})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
     props = ALGO_BAR_PROPS.copy()
     props.update({'xaxis.ticks_fontsize': 14,
