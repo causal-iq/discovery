@@ -632,12 +632,12 @@ def test_stable_order_asia_4_ok(d_params):  # Asia, std order
     print('\n\nStable order for Asia: {}'.format(data.get_order()))
 
 
-def test_stable_order_asia_5_ok(d_params):  # Asia, std order
+def test_stable_order_asia_5_ok(d_params):  # Asia, sc4+ order
     bn = BN.read(TESTDATA_DIR + '/discrete/small/asia.dsc')
     data = Pandas(df=bn.generate_cases(100))
 
     HCWorker.init_score_cache()
-    d_params.update({'stable': Stability.ORDER})
+    d_params.update({'stable': Stability.SC4_PLUS})
     data, _ = set_stable_order(data, d_params)
 
     assert data.get_order() == \
@@ -709,12 +709,12 @@ def test_stable_order_sports_4_ok(d_params):  # Sports, std order
           .format(d_params['stable'].value, data.get_order()))
 
 
-def test_stable_order_sports_5_ok(d_params):  # Sports, std order
+def test_stable_order_sports_5_ok(d_params):  # Sports, sc4+ order
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = Pandas(df=bn.generate_cases(100))
 
     HCWorker.init_score_cache()
-    d_params.update({'stable': Stability.ORDER})
+    d_params.update({'stable': Stability.SC4_PLUS})
     data, _ = set_stable_order(data, d_params)
 
     assert data.get_order() == \
@@ -789,12 +789,12 @@ def test_stable_order_sachs_4_ok(d_params):  # Sachs, std order
           .format(d_params['stable'].value, data.get_order()))
 
 
-def test_stable_order_sachs_5_ok(d_params):  # Sachs, std order
+def test_stable_order_sachs_5_ok(d_params):  # Sachs, sc4+ order
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sachs.dsc')
     data = Pandas(df=bn.generate_cases(100))
 
     HCWorker.init_score_cache()
-    d_params.update({'stable': Stability.ORDER})
+    d_params.update({'stable': Stability.SC4_PLUS})
     data, _ = set_stable_order(data, d_params)
 
     assert data.get_order() == \
@@ -839,12 +839,12 @@ def test_stable_order_child_4_ok(d_params):  # Child, std order
           .format(d_params['stable'].value, data.get_order()))
 
 
-def test_stable_order_child_5_ok(d_params):  # Child, std order
+def test_stable_order_child_5_ok(d_params):  # Child, sc4+ order
     bn = BN.read(TESTDATA_DIR + '/discrete/medium/child.dsc')
     data = Pandas(df=bn.generate_cases(100))
 
     HCWorker.init_score_cache()
-    d_params.update({'stable': Stability.ORDER})
+    d_params.update({'stable': Stability.SC4_PLUS})
     data, _ = set_stable_order(data, d_params)
 
     assert data.get_order() == \
@@ -919,22 +919,21 @@ def test_stable_order_insurance_4_ok(d_params):  # Insurance, std order
 
 
 @pytest.mark.slow
-def test_stable_order_insurance_5_ok(d_params):  # Insurance, std order
+def test_stable_order_insurance_5_ok(d_params):  # Insurance, sc4 order
     bn = BN.read(TESTDATA_DIR + '/discrete/medium/insurance.dsc')
     data = Pandas(df=bn.generate_cases(1000))
 
     HCWorker.init_score_cache()
-    d_params.update({'stable': Stability.ORDER})
+    d_params.update({'stable': Stability.SC4_PLUS})
     data, _ = set_stable_order(data, d_params)
-    print(data.get_order())
 
     assert data.get_order() == \
-        ('Theft', 'RuggedAuto', 'MakeModel', 'CarValue', 'Antilock',
-         'ThisCarCost', 'Mileage', 'VehicleYear', 'ThisCarDam', 'Airbag',
-         'Accident', 'SocioEcon', 'ILiCost', 'MedCost', 'OtherCarCost',
-         'OtherCar', 'DrivingSkill', 'HomeBase', 'Cushioning', 'PropCost',
-         'RiskAversion', 'SeniorTrain', 'AntiTheft', 'DrivHist', 'DrivQuality',
-         'Age', 'GoodStudent')
+        ('Age', 'RuggedAuto', 'Theft', 'MakeModel', 'GoodStudent',
+         'SeniorTrain', 'DrivingSkill', 'RiskAversion', 'CarValue', 'DrivHist',
+         'DrivQuality', 'Mileage', 'Antilock', 'Accident', 'VehicleYear',
+         'SocioEcon', 'ILiCost', 'MedCost', 'OtherCarCost', 'Airbag',
+         'ThisCarDam', 'HomeBase', 'Cushioning', 'ThisCarCost', 'OtherCar',
+         'AntiTheft', 'PropCost')
 
     print('\n\nStable order for Insurance: {}'.format(data.get_order()))
 
@@ -983,7 +982,6 @@ def test_stable_order_property_2_ok(d_params):  # Property, rev std order
          'rentalGrowth', 'rentalGrossProfit', 'interestTaxRelief', 'interest',
          'actualRentalIncome', 'propertyPurchaseValue', 'propertyValueT1',
          'rentalIncomeT1', 'interestRate', 'rentalIncome', 'netProfit')
-
 
     print('\n\nStable order for Property: {}'.format(data.get_order()))
 

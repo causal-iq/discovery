@@ -16,21 +16,12 @@ from learn.hc import hc
 from learn.trace import Trace
 from experiments.latex import to_table
 
-
-CATEGORICAL = ('asia,sports,sachs,covid,child,' +
-               'insurance,property,diarrhoea,water,' +
-               'mildew,alarm,barley,hailfinder,' +
-               'hepar2,win95pts,formed,pathfinder')
-
-CONTINUOUS = ('sachs_c,covid_c,building_c,magic-niab_c,magic-irri_c,' +
-              'ecoli70_c,arth150_c')
-
-CATEGORICAL_NETWORKS = ('asia', 'sports', 'sachs', 'covid', 'child',
-                        'insurance', 'property', 'diarrhoea', 'water',
-                        'mildew', 'alarm', 'barley', 'hailfinder',
-                        'hepar2', 'win95pts', 'formed', 'pathfinder')
-CONTINUOUS_NETWORKS = ('sachs_c', 'covid_c', 'building_c', 'magic-niab_c',
-                       'magic-irri_c', 'ecoli70_c', 'arth150_c')
+CATEGORICAL = ('asia', 'sports', 'sachs', 'covid', 'child',
+               'insurance', 'property', 'diarrhoea', 'water',
+               'mildew', 'alarm', 'barley', 'hailfinder',
+               'hepar2', 'win95pts', 'formed', 'pathfinder')
+CONTINUOUS = ('sachs_c', 'covid_c', 'building_c', 'magic-niab_c',
+              'magic-irri_c', 'ecoli70_c', 'arth150_c')
 
 ORDERS_SERIES = ('TABU/BASE3',
                  'TABU/STABLE3/DEC_SCORE',
@@ -83,13 +74,13 @@ ALGO_BAR_PROPS = {  # Properties of the algorithm comparison bar plots
     'xaxis.label': 'Algorithm',
     'yaxis.label': {'f1-e': 'F1', 'f1-e-std': 'F1 S.D.',
                     'p-e': 'Precision', 'r-e': 'Recall',
-                    'loglik': 'Normalised Log Likelihood',
-                    'loglik-std': 'Normalised Log Likelihood SD',
+                    'score': 'Normalised BIC',
+                    'score-std': 'Normalised BIC SD',
                     'bsf-e': 'BSF', 'time': 'Time'},
     'subplot.title': {'f1-e': '(a) F1', 'f1-e-std': '(b) F1 SD',
                       'p-e': '(c) Precision', 'r-e': '(d) Recall',
-                      'loglik': '(e) Normalised Log Likelihood',
-                      'loglik-std': '(f) Normalised Log Likelihood SD',
+                      'score': '(e) Normalised BIC',
+                      'score-std': '(f) Normalised BIC SD',
                       'bsf-e': '(g) BSF', 'time': '(h) Time (seconds)'},
     'subplot.aspect': 1.6,
     'legend.title': ('Exclude\nidentical &\nsingle-valued\nvariables'),
@@ -135,7 +126,7 @@ def _pivot(series, means, y_var, correct=True):
         means['r-e'] = {a: v * scaling[a] for a, v in means['r-e'].items()}
     data = [{'subplot': m, 'x_val': a, 'y_val': v, 'y_var': y_var}
             for m, vs in means.items() for a, v in vs.items()
-            if m in ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'loglik', 'loglik-std',
+            if m in ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
                      'time', 'bsf-e']]
     return data
 
@@ -151,7 +142,7 @@ def values_ijar2_stab_score_graphs():
     # SERIES = '/BNLEARN/PC_BASE3'
     # SERIES = '/BNLEARN/GS_BASE3'
     # SERIES = '/BNLEARN/IIAMB_BASE3'
-    # networks = CONTINUOUS.split(',')
+    # networks = CONTINUOUS
 
     series = ['/HC/BASE3', 'HC/SCORE/EMPTY', 'HC/SCORE/REF',
               'HC/STABLE3/SCORE_PLUS', 'TABU/BASE3', 'TABU/STABLE3/DEC_SCORE',
@@ -166,13 +157,13 @@ def values_ijar2_stab_score_graphs():
 
     # compute loglik all the categorical networks for Tabu & HC
 
-    networks = (CATEGORICAL + ',hailfinder2,win95pts2').split(',')
+    networks = CATEGORICAL + ['hailfinder2', 'win95pts2']
     for s in series:
         Trace.update_scores(s, networks, 'loglik')
 
     # compute loglik all the continuous networks for Tabu & HC
 
-    networks = CONTINUOUS.split(',')
+    networks = CONTINUOUS
     for s in series:
         Trace.update_scores(s, networks, 'loglik')
 
@@ -236,7 +227,7 @@ def chart_ijar2_stab_cat_f1():
                        ),
             'file': EXPTS_DIR + '/papers/ijar_stability/ijar_stab_cat_f1.png',
             'metrics': 'f1-e',
-            'networks': CATEGORICAL,
+            'networks': ','.join(CATEGORICAL),
             'N': '100-100k',
             'params': ('fig:ijar_stab_cat_f1;' +
                        'figure.title;' +
@@ -247,7 +238,7 @@ def chart_ijar2_stab_cat_f1():
                        'subplot.title_fontsize:26;' +
                        'subplot.title:{' +
                        ','.join([n + ',' + n
-                                 for n in CATEGORICAL.split(',')]) + '};' +
+                                 for n in CATEGORICAL]) + '};' +
                        'legend.labels:{' +
                        'TABU/BASE3,Standard unstable Tabu \n' +
                        'using variable order\n,' +
@@ -286,7 +277,7 @@ def chart_ijar2_stab_con_f1():
                        ),
             'file': EXPTS_DIR + '/papers/ijar_stability/ijar_stab_con_f1.png',
             'metrics': 'f1-e',
-            'networks': CONTINUOUS,
+            'networks': ','.join(CONTINUOUS),
             'N': '100-100k',
             'params': ('fig:tabu_stab_con_f1;' +
                        'figure.title;' +
@@ -297,7 +288,7 @@ def chart_ijar2_stab_con_f1():
                        'subplot.title_fontsize:26;' +
                        'subplot.title:{' +
                        ','.join([n + ',' + n
-                                 for n in CONTINUOUS.split(',')]) + '};' +
+                                 for n in CONTINUOUS]) + '};' +
                        'legend.labels:{' +
                        'TABU/BASE3,Tabu using\nvariable order\n,' +
                        'TABU/STABLE3/DEC_SCORE,Tabu using' +
@@ -358,7 +349,7 @@ def table_ijar2_stab_ord_cat_bic():
         Table summarising HC/Tabu stability approaches - categorical
     """
     means, details = summary_analysis(series=ORDERS_SERIES,
-                                      networks=CATEGORICAL_NETWORKS,
+                                      networks=CATEGORICAL,
                                       Ns=SAMPLE_SIZES,
                                       Ss=RANDOM,
                                       metrics=ORDERS_METRICS,
@@ -375,7 +366,7 @@ def table_ijar2_stab_ord_cat_bic():
                             'caption': 'Categ. scores/metrics by series'}))
 
     # Generate tables of BIC & loglik scores by series and network
-    networks = CATEGORICAL_NETWORKS
+    networks = CATEGORICAL
     print(to_table(value_by_series_and_network(details, 'score', networks),
                    {'label': '?', 'decimals': 4,
                     'caption': 'BIC by categorical network and series'}))
@@ -389,7 +380,7 @@ def table_ijar2_stab_ord_con_bic():
         Table summarising HC/Tabu stability approaches - continuous
     """
     means, details = summary_analysis(series=ORDERS_SERIES,
-                                      networks=CONTINUOUS_NETWORKS,
+                                      networks=CONTINUOUS,
                                       Ns=SAMPLE_SIZES,
                                       Ss=RANDOM,
                                       metrics=ORDERS_METRICS,
@@ -406,7 +397,7 @@ def table_ijar2_stab_ord_con_bic():
                             'caption': 'Cont. scores/metrics by series'}))
 
     # Generate tables of BIC & loglik scores by series and network
-    networks = CONTINUOUS_NETWORKS
+    networks = CONTINUOUS
     print(to_table(value_by_series_and_network(details, 'score', networks),
                    {'label': '?', 'decimals': 4,
                     'caption': 'BIC by continuous network and series'}))
@@ -422,7 +413,7 @@ def table_ijar2_stab_residuals():
     Ns = [100, 1000, 10000, 100000]
     Ss = (0, 24)
     metrics = ['f1-e', 'f1-e-std', 'expts']
-    networks = CATEGORICAL.split(',') + ['hailfinder2', 'win95pts2']
+    networks = CATEGORICAL + ['hailfinder2', 'win95pts2']
 
     for N in Ns:
         print('\n\n*** RESULTS FOR N={} ***\n'.format(N))
@@ -439,14 +430,18 @@ def chart_ijar2_stab_algos_cat_bic():
         Experiments with single-valued datasets ignored, and missing
         metric values NOT imputed.
     """
-    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'loglik', 'loglik-std',
-               'bsf-e', 'time', 'score', 'score-std', 'nonex', 'expts',
+    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
+               'bsf-e', 'time', 'loglik', 'loglik-std', 'nonex', 'expts',
                'dens', 'dens-std', 'n', '|E|', '|A|']
-    networks = CATEGORICAL.replace('lfinder',
-                                   'lfinder2').replace('pts', 'pts2')
+
+    # categorical, & replace hailfinder & win95pts with modified versions
+    networks = CATEGORICAL
+    networks[networks.index('hailfinder')] = 'hailfinder2'
+    networks[networks.index('win95pts')] = 'win95pts2'
+    networks = ['asia', 'sports']
 
     means = summary_analysis(series=list(SERIES2ALGO),
-                             networks=networks.split(','), Ns=SAMPLE_SIZES,
+                             networks=networks, Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
                              params={'ignore': SING_VAL})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
@@ -459,11 +454,13 @@ def chart_ijar2_stab_algos_cat_bic():
                   'figure.subplots_hspace': 0.8,
                   'figure.subplots_left': 0.06,
                   'figure.subplots_bottom': 0.08,
+                  'yaxis.invert': {'score'},
                   'yaxis.range': {'f1-e': (0.2, 0.6),
                                   'p-e': (0.3, 0.6),
                                   'r-e': (0.1, 0.6),
                                   'bsf-e': (0.2, 0.7),
-                                  'loglik': (-30.0, -22.0)}})
+                                  'score':  (-31.0, -24.0)
+                                  }})
     print(data)
     relplot(data=data, props=props,
             plot_file=(EXPTS_DIR +
@@ -477,11 +474,12 @@ def chart_ijar2_stab_algos_con_bic():
         Comparsion of different algorithms with continuous data and using
         BIC score.
     """
-    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'loglik', 'loglik-std',
-               'bsf-e', 'time', 'score', 'score-std', 'nonex', 'expts',
+    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
+               'bsf-e', 'time', 'loglik', 'loglik-std', 'nonex', 'expts',
                'dens', 'dens-std', 'n', '|E|', '|A|']
     means = summary_analysis(series=list(SERIES2ALGO),
-                             networks=CONTINUOUS.split(','), Ns=SAMPLE_SIZES,
+                             networks=CONTINUOUS,
+                             Ns=SAMPLE_SIZES,
                              Ss=RANDOM, metrics=metrics, maxtime=180,
                              params={'ignore': ['arth150_c@100000']})[0]
     data = DataFrame(_pivot(SERIES2ALGO, means, 'no', False))
@@ -493,11 +491,12 @@ def chart_ijar2_stab_algos_con_bic():
                   'figure.subplots_hspace': 0.8,
                   'figure.subplots_left': 0.06,
                   'figure.subplots_bottom': 0.08,
+                  'yaxis.invert': {'score'},
                   'yaxis.range': {'f1-e': (0.4, 0.7),
                                   'p-e': (0.4, 0.8),
                                   'r-e': (0.3, 0.7),
                                   'bsf-e': (0.5, 0.8),
-                                  'loglik': (-56.0, -50.0)}})
+                                  'score': (-59.0, -52.0)}})
     print(data)
     relplot(data=data, props=props, plot_file=EXPTS_DIR +
             '/papers/ijar_stability/algos-con-bic.png')

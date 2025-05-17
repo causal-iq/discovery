@@ -37,7 +37,8 @@ class Stability(Enum):  # types of stability enforcement supported
     DEC_SCORE = 'dec_score'  # nodes in decreasing score order
     SCORE = 'score'  # try both inc/dec_score use best one
     SCORE_PLUS = 'score+'  # try both inc/dec_score, use result order
-    ORDER = 'order'  # iteratively improve learnt order
+    LLSC_PLUS = 'llsc+'  # LL for order, then score for +ve/-ve
+    SC4_PLUS = 'sc4+'  # 4 orders tried
 
 
 def _validate_tabu_params(params):
@@ -200,17 +201,47 @@ def _validate_hc_arguments(data, params, knowledge, context):
     return params
 
 
+def reorder_list(strings, num_parts):
+    """
+        Divide a list into `num_parts` equal parts and perform two reorderings:
+        1. Reverse the strings in each part and concatenate the parts in their
+           original order.
+        2. Keep the strings in their original order within each part but
+           reverse the order of the parts.
+
+        :param list strings: The list to reorder.
+        :param int num_parts: The number of parts to divide the list into.
+        :return: A tuple containing two reordered lists.
+    """
+    if num_parts <= 0 or num_parts > len(strings):
+        raise ValueError("num_parts must be between 1 and length of the list.")
+
+    # Calculate the size of each part
+    part_size = len(strings) // num_parts
+    remainder = len(strings) % num_parts
+
+    # Divide the list into parts
+    parts = []
+    start = 0
+    for i in range(num_parts):
+        # Add extra element to some parts if list length not divisible evenly
+        end = start + part_size + (1 if i < remainder else 0)
+        parts.append(strings[start:end])
+        start = end
+
+    # 1st reordering: Reverse strings in each part, parts in original order
+    reversed_within_parts = [item for part in parts for item in reversed(part)]
+
+    # 2nd reordering: just reverse the order of the parts
+    reversed_parts_order = [item for part in reversed(parts) for item in part]
+
+    return [tuple(reversed_within_parts), tuple(reversed_parts_order)]
+
+
 def set_stable_order(data, params):
     """
         Sets a data dependent node order for stable searches depending upon
-        the values of params['stable'] as follows:
-         * Stability.DEC_SCORE: decreasing score
-         * Stability.INC_SCORE: increasing score
-         * Stability.SCORE: INC_SCORE or DEC_SCORE whichever results in the
-                            highest scoring graph
-         * Stability.SCORE_PLUS: as SCORE, but uses topological order of learnt
-                                 DAG
-         * Stability.ORDER: as SCORE_PLUS, but recursively improves score
+        the values of params['stable'] of type Stability.
 
         :param Data data: data used to learn structure
         :param dict params: learning parameters
@@ -222,20 +253,24 @@ def set_stable_order(data, params):
         return tuple([n for g in SDG.partial_order(parents)
                       for n in current if n in g])
 
-    def _best(hcw1, hcw2):  # return highest scoring HCWorker
-        return (hcw1 if values_same(hcw1.score, hcw2.score, sf=10)
-                or hcw1.score > hcw2.score else hcw2)
-
     # Obtain node order with decreasing score
-
     start = time()
-    _order = _score_order(data, params)
-    print('Score order completed after {:.3f}s'.format(time() - start))
+    _params = deepcopy(params)
 
-    if params['stable'] != Stability.DEC_SCORE:
+    if _params['stable'] == Stability.LLSC_PLUS:
+        print('\nUsing loglik score for stable order')
+        _params['score'] = 'loglik'
+    _order = _score_order(data, _params)
+    print('Score order completed after {:.3f}s'.format(time() - start))
+    if _params['stable'] == Stability.LLSC_PLUS:
+        print('Reverting to score for HC lookahead')
+        HCWorker.init_score_cache()
+        _params['score'] = params['score']
+
+    if _params['stable'] != Stability.DEC_SCORE:
         _rev_order = tuple([n for n in _order][::-1])
 
-        if params['stable'] == Stability.INC_SCORE:
+        if _params['stable'] == Stability.INC_SCORE:
 
             # Just reverse order to get increasing scores
 
@@ -244,49 +279,35 @@ def set_stable_order(data, params):
 
         else:
 
-            # For SCORE & SCORE_PLUS we will run HC to completion for
-            # decreasing and increasing score order and see which gives
-            # the highest score.
-
-            _params = deepcopy(params)
-            _params.pop('tabu', None)
-            data.set_order(_order)
-            dec = HCWorker(data, _params, False, None, False).run()
-            print('Decreasing order gives score {:.3f} after {:.3f}'
-                  .format(dec.score, time() - start))
-
-            data.set_order(_rev_order)
-            inc = HCWorker(data, _params, False, None, False).run()
-            print('Increasing order gives score {:.3f} after {:.3f}'
-                  .format(inc.score, time() - start))
+            # run HC using some stable orders and use the order which gives
+            # the highest scoring learnt graph
+            orders = [_order, _rev_order]
+            if _params['stable'] == Stability.SC4_PLUS:
+                orders += reorder_list(orders[0], 2)
+                orders += reorder_list(orders[1], 2)
+                print(orders)
+            best = None
+            # _params.pop('tabu', None)
+            for order in orders:
+                data.set_order(order)
+                hcw = HCWorker(data, _params, False, None, False).run()
+                if best is None or (hcw.score > best[1] and not
+                                    values_same(hcw.score, best[1], sf=10)):
+                    best = (order, hcw.score, hcw.parents)
+                print('Order {}, {} ... {}, {} gives score {:.3f} after {:.3f}'
+                      .format(order[0], order[1], order[-2], order[-1],
+                              hcw.score, time() - start))
 
             # choose order which gives highest score (decreasing if same)
 
-            best = _best(dec, inc)
-            _order = _order if best == dec else _rev_order
+            _order = best[0]
 
-            if _params['stable'] == Stability.SCORE_PLUS:  # use learnt order
-                _order = _node_order(best.parents, _order)
-
-            elif _params['stable'] == Stability.ORDER:  # improve order
-                _order = _node_order(best.parents, _order)
-                while best is not None:
-                    data.set_order(_order)
-                    print('\nTrying to improve score using order: {}'
-                          .format(_order))
-                    hcw = HCWorker(data, _params, False, None, False).run()
-                    _t = time() - start
-                    best = _best(best, hcw)
-                    if best == hcw:
-                        print('Score improved to {:.3f} after {:.3f}s'
-                              .format(best.score / best.data.N, _t))
-                        _order = _node_order(best.parents, _order)
-                    else:
-                        print('Score did not improve {:.3f} after {:.3f}s'
-                              .format(hcw.score, _t))
-                        best = None
+            if _params['stable'] != Stability.SCORE:  # use learnt ord.
+                _order = _node_order(best[2], _order)
 
     data.set_order(_order)
+    if _params['score'] == 'loglik':
+        HCWorker.init_score_cache()
     elapsed = time() - start
     print('Stable {} order: {} in {:.3f}s'
           .format(params['stable'].value, _order, elapsed))
@@ -599,6 +620,7 @@ def hc(data, params=None, knowledge=False, context=None,
         data, pretime = set_stable_order(data, params)
         if context is not None:
             context.update({'pretime': pretime})
+    print(f'Params after set_stable_order {params}')
 
     # Perform multiple hc runs if tree parameter specified
 

@@ -108,7 +108,8 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
 
                 elif reqd_metric == 'loglik-std':  # st. dev of loglik values
                     values = [s['loglik'] for s in samples
-                              if not isnan(s['loglik'])]
+                              if s['loglik'] is not None 
+                              and not isnan(s['loglik'])]
                     value = stdev(values) if len(values) > 2 else NaN
 
                 elif reqd_metric == 'expts':  # number of sub-samples
