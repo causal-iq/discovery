@@ -84,15 +84,31 @@ def _set_axes_props(axes, properties, subplot=None):
 
     # Set some properties not supported by axes.set function
 
+    # set custom x-axis tick labels
     if 'xaxis.tick_labels' in properties:
         axes.set_xticklabels(properties['xaxis.tick_labels'])
+
+    # rotation of x-axis tick labels
     if 'xaxis.ticks_rotation' in properties:
         axes.set_xticklabels(axes.get_xticklabels(),
                              rotation=properties['xaxis.ticks_rotation'])
+
+    # horizontal alignment of xaxis tick labels
     if 'xaxis.ticks_halign' in properties:
         axes.set_xticklabels(axes.get_xticklabels(),
                              horizontalalignment=properties['xaxis.ticks_'
                                                             + 'halign'])
+
+    # invert y-axis - used that negative bars grow upwards
+    if ('yaxis.invert' in properties
+            and subplot in properties['yaxis.invert']
+            and 'yaxis.range' in properties
+            and subplot in properties['yaxis.range']):
+        print("Inverting")
+        for bar in axes.patches:
+            bar.set_y(properties['yaxis.range'][subplot][0])
+            bar.set_height(bar.get_height() -
+                           properties['yaxis.range'][subplot][0])
 
 
 def _report_boxplot_values(axes, info=None):
