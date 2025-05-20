@@ -501,7 +501,7 @@ def chart_ijar2_stab_algos_con_bic():
                                   'r-e': (0.3, 0.7),
                                   'bsf-e': (0.5, 0.8),
                                   'score': (-59.0, -52.0),
-                                  'loglik': (-59.0, -51.0)}})
+                                  'loglik': (-56.0, -51.0)}})
 
     print(data)
     relplot(data=data, props=props, plot_file=EXPTS_DIR +

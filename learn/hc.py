@@ -35,9 +35,10 @@ HC_PARAMS = {'score',  # score to use e.g. 'bic', 'bde'
 class Stability(Enum):  # types of stability enforcement supported
     INC_SCORE = 'inc_score'  # nodes in increasing score order
     DEC_SCORE = 'dec_score'  # nodes in decreasing score order
+    DEC_1 = 'dec_1'  # nodes in decreasing score order - 1 key only
+    DEC_2 = 'dec_2'  # nodes in decreasing score order - 2 keys only   
     SCORE = 'score'  # try both inc/dec_score use best one
     SCORE_PLUS = 'score+'  # try both inc/dec_score, use result order
-    LLSC_PLUS = 'llsc+'  # LL for order, then score for +ve/-ve
     SC4_PLUS = 'sc4+'  # 4 orders tried
 
 
@@ -253,41 +254,35 @@ def set_stable_order(data, params):
         return tuple([n for g in SDG.partial_order(parents)
                       for n in current if n in g])
 
-    # Obtain node order with decreasing score
+    # Obtain node order with decreasing score - DEC_1 and DEC_2 use fewer
+    # elements in the sort key to test the effect of the key elements
     start = time()
     _params = deepcopy(params)
-
-    if _params['stable'] == Stability.LLSC_PLUS:
-        print('\nUsing loglik score for stable order')
-        _params['score'] = 'loglik'
-    _order = _score_order(data, _params)
+    num_keys = (1 if _params['stable'] == Stability.DEC_1 else
+                (2 if _params['stable'] == Stability.DEC_2 else 3))
+    _order = _score_order(data, _params, num_keys)
     print('Score order completed after {:.3f}s'.format(time() - start))
-    if _params['stable'] == Stability.LLSC_PLUS:
-        print('Reverting to score for HC lookahead')
-        HCWorker.init_score_cache()
-        _params['score'] = params['score']
 
-    if _params['stable'] != Stability.DEC_SCORE:
+    # if using a decreasing order no need to do anything
+    if _params['stable'] not in {Stability.DEC_SCORE, Stability.DEC_1,
+                                 Stability.DEC_2}:
         _rev_order = tuple([n for n in _order][::-1])
 
+        # just use reverse order to get increasing score order
         if _params['stable'] == Stability.INC_SCORE:
-
-            # Just reverse order to get increasing scores
-
             print('reversing {}'.format(_order))
             _order = _rev_order
 
+        # Going to run HC or Tabu with the different orders and use the order
+        # that results in the graph with the best score
         else:
-
-            # run HC using some stable orders and use the order which gives
-            # the highest scoring learnt graph
             orders = [_order, _rev_order]
             if _params['stable'] == Stability.SC4_PLUS:
                 orders += reorder_list(orders[0], 2)
                 orders += reorder_list(orders[1], 2)
-                print(orders)
+
+            # run the algorithm with the different (stable) orders
             best = None
-            # _params.pop('tabu', None)
             for order in orders:
                 data.set_order(order)
                 hcw = HCWorker(data, _params, False, None, False).run()
@@ -298,11 +293,10 @@ def set_stable_order(data, params):
                       .format(order[0], order[1], order[-2], order[-1],
                               hcw.score, time() - start))
 
-            # choose order which gives highest score (decreasing if same)
-
+            # choose order which gave highest score (decreasing if same)
             _order = best[0]
 
-            if _params['stable'] != Stability.SCORE:  # use learnt ord.
+            if _params['stable'] != Stability.SCORE:
                 _order = _node_order(best[2], _order)
 
     data.set_order(_order)
@@ -314,7 +308,7 @@ def set_stable_order(data, params):
     return (data, elapsed)
 
 
-def _score_order(data, params):
+def _score_order(data, params, num_keys=3):
     """
         Returns stable node order based on decreasing score or values using:
             (1) unconditional score
@@ -348,7 +342,8 @@ def _score_order(data, params):
         else:
             for i, entry in enumerate(order):
                 same_score = values_same(score, entry[0], sf=10)
-                same_c_score = values_same(c_score, entry[1], sf=10)
+                same_c_score = (num_keys < 2
+                                or values_same(c_score, entry[1], sf=10))
 
                 # If scores are both the same then make a
                 # comparsion on the variables' sequences of values
@@ -358,8 +353,9 @@ def _score_order(data, params):
                         and isinstance(data, (Pandas, NumPy))):
                     print('*** Scores same for {} and {}'
                           .format(node, entry[2][0]))
-                    vals_same = (data.as_df()[node].to_numpy() ==
-                                 data.as_df()[entry[2][0]].to_numpy()).all()
+                    vals_same = (num_keys < 3 or
+                                 (data.as_df()[node].to_numpy() ==
+                                  data.as_df()[entry[2][0]].to_numpy()).all())
                     if not vals_same:
                         v_n = '{}'.format({v: nvs[node][v]
                                            for v in sorted(nvs[node])})
@@ -371,7 +367,7 @@ def _score_order(data, params):
                 # Insert node in correct place in order
 
                 if same_score and same_c_score and vals_same:
-                    print('*** Variable {} is identical to {}'
+                    print('*** Variable {} and {} same position'
                           .format(node, order[i][2][0]))
                     order[i][2].append(node)
                     break
