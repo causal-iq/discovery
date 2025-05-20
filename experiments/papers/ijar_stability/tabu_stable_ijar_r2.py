@@ -74,15 +74,19 @@ ALGO_BAR_PROPS = {  # Properties of the algorithm comparison bar plots
     'xaxis.label': 'Algorithm',
     'yaxis.label': {'f1-e': 'F1', 'f1-e-std': 'F1 S.D.',
                     'p-e': 'Precision', 'r-e': 'Recall',
+                    'bsf-e': 'BSF', 'time': 'Time',
                     'score': 'Normalised BIC',
                     'score-std': 'Normalised BIC SD',
-                    'bsf-e': 'BSF', 'time': 'Time'},
+                    'loglik': 'Normalised Log. Lik.',
+                    'loglik-std': 'Normalised Log. Lik. SD'},
     'subplot.title': {'f1-e': '(a) F1', 'f1-e-std': '(b) F1 SD',
                       'p-e': '(c) Precision', 'r-e': '(d) Recall',
-                      'score': '(e) Normalised BIC',
-                      'score-std': '(f) Normalised BIC SD',
-                      'bsf-e': '(g) BSF', 'time': '(h) Time (seconds)'},
-    'subplot.aspect': 1.6,
+                      'bsf-e': '(e) BSF', 'time': '(f) Time (seconds)',
+                      'score': '(g) Normalised BIC',
+                      'score-std': '(h) Normalised BIC SD',
+                      'loglik': '(i) Normalised Log. Likelihood',
+                      'loglik-std': '(j) Normalised Log. Likelihood SD'},
+    'subplot.aspect': 2.0,
     'legend.title': ('Exclude\nidentical &\nsingle-valued\nvariables'),
     'figure.subplots_wspace': 0.3,
     'figure.subplots_hspace': 0.55,
@@ -127,7 +131,7 @@ def _pivot(series, means, y_var, correct=True):
     data = [{'subplot': m, 'x_val': a, 'y_val': v, 'y_var': y_var}
             for m, vs in means.items() for a, v in vs.items()
             if m in ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
-                     'time', 'bsf-e']]
+                     'time', 'bsf-e', 'loglik', 'loglik-std']]
     return data
 
 
@@ -157,13 +161,13 @@ def values_ijar2_stab_score_graphs():
 
     # compute loglik all the categorical networks for Tabu & HC
 
-    networks = CATEGORICAL + ['hailfinder2', 'win95pts2']
+    networks = list(CATEGORICAL) + ['hailfinder2', 'win95pts2']
     for s in series:
         Trace.update_scores(s, networks, 'loglik')
 
     # compute loglik all the continuous networks for Tabu & HC
 
-    networks = CONTINUOUS
+    networks = list(CONTINUOUS)
     for s in series:
         Trace.update_scores(s, networks, 'loglik')
 
@@ -430,15 +434,14 @@ def chart_ijar2_stab_algos_cat_bic():
         Experiments with single-valued datasets ignored, and missing
         metric values NOT imputed.
     """
-    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
-               'bsf-e', 'time', 'loglik', 'loglik-std', 'nonex', 'expts',
+    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'bsf-e', 'time',
+               'score', 'score-std', 'loglik', 'loglik-std', 'nonex', 'expts',
                'dens', 'dens-std', 'n', '|E|', '|A|']
 
     # categorical, & replace hailfinder & win95pts with modified versions
-    networks = CATEGORICAL
+    networks = list(CATEGORICAL)
     networks[networks.index('hailfinder')] = 'hailfinder2'
     networks[networks.index('win95pts')] = 'win95pts2'
-    networks = ['asia', 'sports']
 
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=networks, Ns=SAMPLE_SIZES,
@@ -454,12 +457,13 @@ def chart_ijar2_stab_algos_cat_bic():
                   'figure.subplots_hspace': 0.8,
                   'figure.subplots_left': 0.06,
                   'figure.subplots_bottom': 0.08,
-                  'yaxis.invert': {'score'},
+                  'yaxis.invert': {'score', 'loglik'},
                   'yaxis.range': {'f1-e': (0.2, 0.6),
                                   'p-e': (0.3, 0.6),
                                   'r-e': (0.1, 0.6),
                                   'bsf-e': (0.2, 0.7),
-                                  'score':  (-31.0, -24.0)
+                                  'score':  (-31.0, -24.0),
+                                  'loglik':  (-31.0, -22.0)
                                   }})
     print(data)
     relplot(data=data, props=props,
@@ -474,8 +478,8 @@ def chart_ijar2_stab_algos_con_bic():
         Comparsion of different algorithms with continuous data and using
         BIC score.
     """
-    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'score', 'score-std',
-               'bsf-e', 'time', 'loglik', 'loglik-std', 'nonex', 'expts',
+    metrics = ['f1-e', 'f1-e-std', 'p-e', 'r-e', 'bsf-e', 'time',
+               'score', 'score-std', 'loglik', 'loglik-std', 'nonex', 'expts',
                'dens', 'dens-std', 'n', '|E|', '|A|']
     means = summary_analysis(series=list(SERIES2ALGO),
                              networks=CONTINUOUS,
@@ -491,12 +495,14 @@ def chart_ijar2_stab_algos_con_bic():
                   'figure.subplots_hspace': 0.8,
                   'figure.subplots_left': 0.06,
                   'figure.subplots_bottom': 0.08,
-                  'yaxis.invert': {'score'},
+                  'yaxis.invert': {'score', 'loglik'},
                   'yaxis.range': {'f1-e': (0.4, 0.7),
                                   'p-e': (0.4, 0.8),
                                   'r-e': (0.3, 0.7),
                                   'bsf-e': (0.5, 0.8),
-                                  'score': (-59.0, -52.0)}})
+                                  'score': (-59.0, -52.0),
+                                  'loglik': (-59.0, -51.0)}})
+
     print(data)
     relplot(data=data, props=props, plot_file=EXPTS_DIR +
             '/papers/ijar_stability/algos-con-bic.png')

@@ -68,11 +68,15 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
     context.update({'id': '{}/{}/{}'.format(series, network, key),
                     'randomise': randomise})
 
-    # set the sample size, and optionally randomise row order
+    # set the sample size, and optionally randomise row order and/or
+    # row sample. If latter then must initialise the cache.
 
-    seed = (sample_num if Randomise.ROWS in randomise
+    seed = (sample_num if (Randomise.ROWS in randomise
+                           or Randomise.SAMPLE in randomise)
             and props['datagen'] != 'none' else None)
-    data.set_N(N, seed)
+    random_selection = Randomise.SAMPLE in randomise
+    init_cache = True if random_selection is True else init_cache
+    data.set_N(N=N, seed=seed, random_selection=random_selection)
 
     # construct and score sample for true DAG - only for for sample 0
 
@@ -251,9 +255,15 @@ def run_learn(args, root_dir=EXPTS_DIR):
                     and props['params']['test'] == 'mi'
                         and dstype == 'continuous'):
                     props['params']['test'] = 'mi-g'
+
+                # get 10x more rows than max N if rendomising samples
+                N_read = (10 if isinstance(props['randomise'], tuple) and
+                          Randomise.SAMPLE in props['randomise'][0] else 1)
+
+                # read the data in from file
                 data = NumPy.read(root_dir + '/datasets/' + network +
                                   '.data.gz', dstype=dstype,
-                                  N=round(Ns[-1] * N_scale))
+                                  N=round(Ns[-1] * N_scale * N_read))
             else:
                 print('\nLearning from distribution (oracle)')
                 data = Oracle(bn=ref_bn)

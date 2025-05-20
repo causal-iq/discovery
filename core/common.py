@@ -16,7 +16,7 @@ from psutil import virtual_memory
 
 from fileio.common import EXPTS_DIR
 
-SOFTWARE_VERSION = 199
+SOFTWARE_VERSION = 200
 
 BAYESYS_VERSIONS = ['v1.3', 'v1.5+']
 
@@ -43,6 +43,7 @@ class Randomise(Enum):  # supported experiment randomisations
     NAMES = 'names'  # randomise variable names
     KNOWLEDGE = 'knowledge'  # randomise knowledge
     ROWS = 'rows'  # randomise row order in dataset
+    SAMPLE = 'sample'  # randomise the sample of rows in dataset
 
 
 _rng = default_rng(1)  # numpy random number generator

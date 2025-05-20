@@ -615,15 +615,12 @@ def hc(data, params=None, knowledge=False, context=None,
         HCWorker.init_score_cache()
 
     # Set stable node order if required
-
     if 'stable' in params and isinstance(data, (Pandas, NumPy)):
         data, pretime = set_stable_order(data, params)
         if context is not None:
             context.update({'pretime': pretime})
-    print(f'Params after set_stable_order {params}')
 
     # Perform multiple hc runs if tree parameter specified
-
     if 'tree' in params:
         hcw = hc_tree(data, params, context, init_cache=False)
     else:

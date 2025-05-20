@@ -1,0 +1,58 @@
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllllll}
+\toprule
+Metric & TABU/BASE3 & TABU/STABLE3/DEC_SCORE & TABU/STABLE3/INC_SCORE & TABU/STABLE3/SCORE_PLUS & HC/BASE3 & HC/STABLE3/SCORE_PLUS \\
+\midrule
+p-e & 0.5382 & 0.5194 & 0.4530 & 0.5421 & 0.5033 & 0.5098 \\
+r-e & 0.5994 & 0.5955 & 0.5137 & 0.5882 & 0.5740 & 0.5699 \\
+f1-e & 0.5621 & 0.5498 & 0.4760 & 0.5591 & 0.5303 & 0.5324 \\
+f1-e-std & 0.0998 & 0.0000 & 0.0000 & 0.0000 & 0.1002 & 0.0000 \\
+bsf-e & 0.7533 & 0.7598 & 0.7220 & 0.7658 & 0.7295 & 0.7419 \\
+score & -52.3305 & -52.3299 & -52.3338 & -52.3205 & -52.3368 & -52.3268 \\
+score-std & 0.0151 & 0.0000 & 0.0000 & 0.0000 & 0.0160 & 0.0000 \\
+loglik & -51.0391 & -51.0316 & -51.0473 & -51.0424 & -51.0515 & -51.0603 \\
+loglik-std & 0.0271 & 0.0000 & 0.0000 & 0.0000 & 0.0293 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\caption{Cont. scores/metrics by series}
+\label{tab:?}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllllll}
+\toprule
+network & TABU/BASE3 & TABU/STABLE3/SCORE_PLUS & HC/BASE3 & HC/STABLE3/SCORE_PLUS & HC/SCORE/EMPTY & HC/SCORE/REF \\
+\midrule
+sachs_c & -67.9587 & -67.9577 & -67.9609 & -67.9591 & -73.1885 & -67.9874 \\
+covid_c & -90.0674 & -90.0530 & -90.0705 & -90.0701 & -101.3074 & -90.1249 \\
+building_c & -2.3933 & -2.3826 & -2.4021 & -2.3838 & -40.2316 & -2.3891 \\
+magic-niab_c & -48.9989 & -48.9891 & -49.0019 & -48.9916 & -50.4217 & -49.2406 \\
+magic-irri_c & -76.7411 & -76.7399 & -76.7451 & -76.7361 & -83.6172 & -77.2543 \\
+ecoli70_c & -42.2674 & -42.2642 & -42.2815 & -42.2775 & -74.9003 & -42.3818 \\
+arth150_c & -37.8868 & -37.8572 & -37.8956 & -37.8694 & -61.5820 & -38.6545 \\
+\bottomrule
+\end{tabular}
+\caption{BIC by continuous network and series}
+\label{?}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllllll}
+\toprule
+network & TABU/BASE3 & TABU/STABLE3/SCORE_PLUS & HC/BASE3 & HC/STABLE3/SCORE_PLUS & HC/SCORE/EMPTY & HC/SCORE/REF \\
+\midrule
+sachs_c & -67.7387 & -67.7383 & -67.7424 & -67.7454 & -73.0400 & -67.7242 \\
+covid_c & -89.6219 & -89.6306 & -89.6235 & -89.6449 & -101.0779 & -89.6457 \\
+building_c & -1.8044 & -1.8148 & -1.8079 & -1.8217 & -39.9076 & -1.8492 \\
+magic-niab_c & -47.9050 & -47.9298 & -47.9117 & -47.9370 & -49.8277 & -48.2011 \\
+magic-irri_c & -74.9446 & -74.9346 & -74.9588 & -74.9324 & -82.7533 & -75.7020 \\
+ecoli70_c & -40.9555 & -40.9535 & -40.9685 & -40.9814 & -74.2793 & -41.2883 \\
+arth150_c & -34.3036 & -34.2954 & -34.3474 & -34.3593 & -60.1376 & -36.1977 \\
+\bottomrule
+\end{tabular}
+\caption{Loglik by continuous network and series}
+\label{?}
+\end{table}
