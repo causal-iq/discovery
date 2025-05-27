@@ -1,5 +1,5 @@
 
-# Performs analysis for the tree runs
+# Performs analysis of a group of learning experiment series
 
 from itertools import chain
 from pandas import DataFrame, set_option, concat
@@ -103,12 +103,12 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
 
                 elif reqd_metric == 'score-std':  # st. dev of score values
                     values = [s['score'] for s in samples
-                              if not isnan(s['score'])]
+                              if 'score' in s and not isnan(s['score'])]
                     value = stdev(values) if len(values) > 2 else NaN
 
                 elif reqd_metric == 'loglik-std':  # st. dev of loglik values
                     values = [s['loglik'] for s in samples
-                              if s['loglik'] is not None 
+                              if 'loglik' in s and s['loglik'] is not None
                               and not isnan(s['loglik'])]
                     value = stdev(values) if len(values) > 2 else NaN
 
@@ -131,7 +131,8 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
 
                 else:  # just take metric as-is from TraceAnalysis
                     values = [s[reqd_metric] for s in samples
-                              if s[reqd_metric] is not None
+                              if reqd_metric in s and
+                              s[reqd_metric] is not None
                               and not isnan(s[reqd_metric])]
                     value = ((values[0] if reqd_metric == 'time'
                               else mean(values)) if len(values) else NaN)
@@ -286,6 +287,7 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
                     summaries.append(summary)
 
                     if (maxtime is None
+                            or 'time' not in analysis.summary
                             or (analysis.summary['time'] <= maxtime * 60
                                 and analysis.summary['time'] >= 0)):
                         raw_metrics[network][_series][N] \

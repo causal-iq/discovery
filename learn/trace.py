@@ -288,6 +288,7 @@ class Trace():
                 # unless loglik score arg should match objective score used
 
                 if (score != 'loglik'
+                        and 'score' in trace.context['params']
                         and score + gauss != trace.context['params']['score']):
                     raise ValueError('update_trace_scores bad arg values')
 
