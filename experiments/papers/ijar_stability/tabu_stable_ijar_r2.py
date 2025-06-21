@@ -192,15 +192,15 @@ def values_ijar2_stab_score_graphs():
     series = ['HC/SAMPLE/STABLE']
     # compute loglik all the categorical networks for Tabu & HC
 
-    # networks = list(CATEGORICAL) + ['hailfinder2', 'win95pts2']
-    # for s in series:
-    #     Trace.update_scores(s, networks, 'loglik')
+    networks = list(CATEGORICAL) + ['hailfinder2', 'win95pts2']
+    for s in series:
+        Trace.update_scores(s, networks, 'loglik')
 
     # compute loglik all the continuous networks for Tabu & HC
 
-    networks = list(CONTINUOUS)
-    for s in series:
-        Trace.update_scores(s, networks, 'loglik')
+    # networks = list(CONTINUOUS)
+    # for s in series:
+    #    Trace.update_scores(s, networks, 'loglik')
 
 
 # Draws sequence of arcs added when learning Asia from 10K rows.
@@ -597,7 +597,7 @@ def chart_ijar2_stab_algos_con_bic():
                                   'r-e': (0.3, 0.7),
                                   'bsf-e': (0.5, 0.8),
                                   'score': (-59.0, -52.0),
-                                  'loglik': (-56.0, -51.0)}})
+                                  'loglik': (-56.0, -50.0)}})
 
     print(data)
     relplot(data=data, props=props, plot_file=EXPTS_DIR +
@@ -717,9 +717,10 @@ def chart_ijar2_stab_algos_cat_sampling():
                   'yaxis.ticks_fontsize': 14,
                   'subplot.title_fontsize': 16,
                   'subplot.axes_fontsize': 14,
-                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_hspace': 1.1,
                   'figure.subplots_left': 0.06,
-                  'figure.subplots_bottom': 0.08,
+                  'figure.subplots_bottom': 0.15,
+                  'subplot.aspect': 1.8,
                   'subplot.title': {'f1-e': '(a) F1',
                                     'f1-e-std': '(b) F1 SD',
                                     'score': '(c) Normalised BIC',
@@ -763,9 +764,10 @@ def chart_ijar2_stab_algos_con_sampling():
                   'yaxis.ticks_fontsize': 14,
                   'subplot.title_fontsize': 16,
                   'subplot.axes_fontsize': 14,
-                  'figure.subplots_hspace': 0.8,
+                  'figure.subplots_hspace': 1.1,
                   'figure.subplots_left': 0.06,
-                  'figure.subplots_bottom': 0.08,
+                  'figure.subplots_bottom': 0.15,
+                  'subplot.aspect': 1.8,
                   'subplot.title': {'f1-e': '(a) F1',
                                     'f1-e-std': '(b) F1 SD',
                                     'score': '(c) Normalised BIC',
@@ -774,7 +776,7 @@ def chart_ijar2_stab_algos_con_sampling():
                                     'loglik-std': ('(f) Normalised ' +
                                                    'log-likelihood SD')},
                   'yaxis.invert': {'score', 'loglik'},
-                  'yaxis.range': {'f1-e': (0.2, 0.6),
+                  'yaxis.range': {'f1-e': (0.2, 0.65),
                                   'score':  (-60.0, -52.0),
                                   'loglik':  (-58.0, -51.0)
                                   }})

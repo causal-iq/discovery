@@ -50,16 +50,20 @@
 \ifrevisions
   \RequirePackage{soul}
   \RequirePackage[normalem]{ulem}
+  \setlength{\marginparwidth}{2cm}
   \RequirePackage{todonotes}
   \renewcommand{\st}[1]{\textcolor{red}{\sout{#1}}}
-
+  \newcommand{\rin}[1]{\todo[inline,noinlinepar, inlinewidth=1cm, size=\tiny]{#1}}
   \RequirePackage{tcolorbox}
   \tcbuselibrary{listings,breakable}
   \newtcbox{\hlref}{on line, colback=yellow, colframe=yellow!10!yellow, boxrule=0.3mm, arc=0.6mm,
-                    outer arc=0.6mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt, breakable}
+                   outer arc=0.6mm, boxsep=0pt, left=0pt, right=0pt, top=0pt, bottom=0pt, breakable}
+  \newcommand{\hlr}{\rowcolor{yellow}}
 \else
   \newcommand{\st}[1]{}
+  \newcommand{\rin}[1]{}
   \newcommand{\hl}[1]{#1}
   \newcommand{\todo}[1]{}
   \newcommand{\hlref}[1]{#1}
+  \newcommand{\hlr}{}
 \fi
