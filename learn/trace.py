@@ -233,13 +233,15 @@ class Trace():
         return self
 
     @classmethod
-    def update_scores(self, series, networks, score, root_dir=EXPTS_DIR):
+    def update_scores(self, series, networks, score, test=False,
+                      root_dir=EXPTS_DIR):
         """
             Update score in all traces of a series
 
             :param str series: series to update traces for
             :param list networks: list of networks to update
             :param str score: score to update e.g. 'bic', 'loglik'
+            :param bool test: whether score should be evaluated on test data
             :param str root_dir: root directory holding trace files
 
             :raise ValueError: if bad arg values
@@ -267,8 +269,9 @@ class Trace():
             Ns = {int(id.split('_')[0][1:]) for id in traces}
             dstype = 'continuous' if network.endswith('_c') else 'categorical'
             gauss = '' if dstype == 'categorical' else '-g'
+            N_reqd = 1000000 if test is True else max(Ns)
             data = NumPy.read(EXPTS_DIR + '/datasets/' + network + '.data.gz',
-                              dstype=dstype, N=max(Ns))
+                              dstype=dstype, N=N_reqd)
 
             # Obtain scores for initial graphs unless doing log likelihood
 
@@ -295,6 +298,10 @@ class Trace():
                 # set subset of data matching N for this trace
 
                 N = int(id.split('_')[0][1:])
+                if test is True:
+                    seed = int(id.split('_')[1]) if '_' in id else 0
+                    print(f'Seed is {seed}')
+                    data.set_N(N, seed=seed, random_selection=True)
                 if N != data.N:
                     data.set_N(N)
                 learnt = trace.result
@@ -313,9 +320,12 @@ class Trace():
                 # initial and learnt score stored in trace entries
 
                 if score == 'loglik':
-                    print('{} {}: {} score --> {:.3e}'
-                          .format(network, id, score, learnt_score))
-                    trace.context['loglik'] = learnt_score
+                    print('{} {}: {}{} score --> {:.3e}'
+                          .format(network, id,
+                                  ('test ' if test is True else 'train '),
+                                  score, learnt_score))
+                    trace.context['lltest' if test is True
+                                  else 'loglik'] = learnt_score
                     scores[(network, id)] = (None, learnt_score)
 
                 else:

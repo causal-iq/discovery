@@ -112,6 +112,12 @@ def _generate_table2(reqd_metric, raw_metrics, ignore, impute):
                               and not isnan(s['loglik'])]
                     value = stdev(values) if len(values) > 2 else NaN
 
+                elif reqd_metric == 'lltest-std':  # st. dev of lltest values
+                    values = [s['lltest'] for s in samples
+                              if 'lltest' in s and s['lltest'] is not None
+                              and not isnan(s['lltest'])]
+                    value = stdev(values) if len(values) > 2 else NaN
+
                 elif reqd_metric == 'expts':  # number of sub-samples
                     value = len(samples)
 
@@ -266,8 +272,12 @@ def summary_analysis(series, networks, Ns, Ss=None, metrics=None, maxtime=None,
                                if 'pretime' in trace.context else 0.0)
                     analysis.summary.update({'pretime': pretime})
 
-                    # Compute non-standard Prec, Recall
+                    # Compute non-standard LLTest, Prec, Recall
 
+                    if 'lltest' in metrics:
+                        lltest = (trace.context['lltest'] / N
+                                  if 'lltest' in trace.context else None)
+                        analysis.summary.update({'lltest': lltest})
                     if 'p-e' in metrics or 'r-e' in metrics:
                         try:
                             graph = PDAG.toCPDAG(trace.result)
