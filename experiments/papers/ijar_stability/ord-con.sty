@@ -1,0 +1,99 @@
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllllll}
+\toprule
+Metric & TABU/BASE3 & TABU/STABLE3/DEC_SCORE & TABU/STABLE3/INC_SCORE & TABU/STABLE3/SCORE_PLUS & HC/BASE3 & HC/STABLE3/SCORE_PLUS \\
+\midrule
+p-e & 0.5382 & 0.5194 & 0.4530 & 0.5421 & 0.5033 & 0.5098 \\
+r-e & 0.5994 & 0.5955 & 0.5137 & 0.5882 & 0.5740 & 0.5699 \\
+f1-e & 0.5621 & 0.5498 & 0.4760 & 0.5591 & 0.5303 & 0.5324 \\
+f1-e-std & 0.0998 & 0.0000 & 0.0000 & 0.0000 & 0.1002 & 0.0000 \\
+bsf-e & 0.7533 & 0.7598 & 0.7220 & 0.7658 & 0.7295 & 0.7419 \\
+score & -52.3305 & -52.3299 & -52.3338 & -52.3205 & -52.3368 & -52.3268 \\
+score-std & 0.0151 & 0.0000 & 0.0000 & 0.0000 & 0.0160 & 0.0000 \\
+lltest & -51.5208 & -51.5132 & -51.5249 & -51.5118 & -51.5252 & -51.5194 \\
+lltest-std & 0.1583 & 0.1539 & 0.1545 & 0.1535 & 0.1588 & 0.1548 \\
+\bottomrule
+\end{tabular}
+\caption{Cont. order comparison}
+\label{tab:?}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lllll}
+\toprule
+Metric & TABU/BASE3 & TABU/STABLE3/SCORE_PLUS & TABU/STABLE3/SC4_PLUS & TABU/STABLE3/SP_GREEDY \\
+\midrule
+p-e & 0.5382 & 0.5421 & 0.6054 & 0.6260 \\
+r-e & 0.5994 & 0.5882 & 0.6398 & 0.6518 \\
+f1-e & 0.5621 & 0.5591 & 0.6171 & 0.6333 \\
+f1-e-std & 0.0998 & 0.0000 & 0.0000 & 0.0010 \\
+bsf-e & 0.7533 & 0.7658 & 0.7828 & 0.7900 \\
+score & -52.3305 & -52.3205 & -52.3213 & -52.2998 \\
+score-std & 0.0151 & 0.0000 & 0.0000 & 0.0000 \\
+lltest & -51.5208 & -51.5118 & -51.5116 & -51.4999 \\
+lltest-std & 0.1583 & 0.1535 & 0.1535 & 0.1529 \\
+\bottomrule
+\end{tabular}
+\caption{Cont. adv order comparison}
+\label{tab:?}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+\toprule
+network & TABU/BASE3 & TABU/STABLE3/SCORE_PLUS & TABU/STABLE3/SC4_PLUS & TABU/STABLE3/SP_GREEDY & HC/BASE3 & HC/STABLE3/SCORE_PLUS & HC/SCORE/REF \\
+\midrule
+sachs_c & 0.5040 & 0.3595 & 0.5655 & 0.4635 & 0.5654 & 0.3830 & 1.0000 \\
+covid_c & 0.4342 & 0.4640 & 0.4652 & 0.5545 & 0.3785 & 0.2955 & 1.0000 \\
+building_c & 0.8291 & 0.8035 & 0.9523 & 0.9247 & 0.7157 & 0.8390 & 1.0000 \\
+magic-niab_c & 0.6426 & 0.7000 & 0.7133 & 0.7030 & 0.6159 & 0.6172 & 1.0000 \\
+magic-irri_c & 0.5487 & 0.5855 & 0.5923 & 0.6090 & 0.5277 & 0.5440 & 1.0000 \\
+ecoli70_c & 0.5535 & 0.5605 & 0.5905 & 0.6392 & 0.5050 & 0.5745 & 1.0000 \\
+arth150_c & 0.4223 & 0.4408 & 0.4408 & 0.5389 & 0.4038 & 0.4733 & 1.0000 \\
+\bottomrule
+\end{tabular}
+\caption{F1 by continuous network and series}
+\label{?}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+\toprule
+network & TABU/BASE3 & TABU/STABLE3/SCORE_PLUS & TABU/STABLE3/SC4_PLUS & TABU/STABLE3/SP_GREEDY & HC/BASE3 & HC/STABLE3/SCORE_PLUS & HC/SCORE/REF \\
+\midrule
+sachs_c & -67.9587 & -67.9577 & -67.9577 & -67.9576 & -67.9609 & -67.9591 & -67.9874 \\
+covid_c & -90.0674 & -90.0530 & -90.0661 & -90.0506 & -90.0705 & -90.0701 & -90.1249 \\
+building_c & -2.3933 & -2.3826 & -2.3780 & -2.3754 & -2.4021 & -2.3838 & -2.3891 \\
+magic-niab_c & -48.9989 & -48.9891 & -48.9891 & -48.9860 & -49.0019 & -48.9916 & -49.2406 \\
+magic-irri_c & -76.7411 & -76.7399 & -76.7422 & -76.7149 & -76.7451 & -76.7361 & -77.2543 \\
+ecoli70_c & -42.2674 & -42.2642 & -42.2585 & -42.2298 & -42.2815 & -42.2775 & -42.3818 \\
+arth150_c & -37.8868 & -37.8572 & -37.8572 & -37.7844 & -37.8956 & -37.8694 & -38.6545 \\
+\bottomrule
+\end{tabular}
+\caption{BIC by continuous network and series}
+\label{?}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllllll}
+\toprule
+network & TABU/BASE3 & TABU/STABLE3/SCORE_PLUS & TABU/STABLE3/SC4_PLUS & TABU/STABLE3/SP_GREEDY & HC/BASE3 & HC/STABLE3/SCORE_PLUS & HC/SCORE/REF \\
+\midrule
+sachs_c & -67.7511 & -67.7509 & -67.7509 & -67.7510 & -67.7583 & -67.7643 & -67.7821 \\
+covid_c & -89.6879 & -89.6798 & -89.6842 & -89.6814 & -89.6876 & -89.6832 & -89.6232 \\
+building_c & -1.6840 & -1.6834 & -1.6840 & -1.6807 & -1.6831 & -1.6847 & -1.7450 \\
+magic-niab_c & -48.2959 & -48.3042 & -48.3042 & -48.2976 & -48.2981 & -48.3054 & -48.1161 \\
+magic-irri_c & -75.9513 & -75.9507 & -75.9454 & -75.9058 & -75.9550 & -75.9597 & -75.8025 \\
+ecoli70_c & -41.2728 & -41.2737 & -41.2723 & -41.2786 & -41.2814 & -41.2846 & -41.3535 \\
+arth150_c & -36.0027 & -35.9402 & -35.9402 & -35.9045 & -36.0130 & -35.9537 & -36.1481 \\
+\bottomrule
+\end{tabular}
+\caption{Loglik by continuous network and series}
+\label{?}
+\end{table}
