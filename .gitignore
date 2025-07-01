@@ -5,3 +5,8 @@ __pycache__/
 
 .pytest_cache/
 .Rproj.user
+
+# Ignore build artifacts
+dist/
+build/
+*.egg-info/
