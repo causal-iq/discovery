@@ -1,0 +1,32 @@
+{% set description -%}
+This deposit serves as the entry point for all digital assets required to
+reproduce the results of the CausalIQ project and associated papers.
+It provides links to curated lists of datasets, experiment results, and
+published papers, each maintained as separate Zenodo deposits.
+All assets are organized for transparency, reproducibility, and ease of access.
+{%- endset %}
+
+{% set notes -%}
+This entry point is part of the Causal Discovery Community on Zenodo.
+All linked assets are maintained as separate deposits for modularity and
+versioning.
+{%- endset %}
+
+{
+  "title": "CausalIQ Reproducibility Entry Point",
+  "description": "{{ description | replace('\n', ' ') }}",
+  "creators": [
+    {
+      "name": "{{ creator_name }}",
+      "orcid": "{{ creator_orcid }}",
+      "affiliation": "{{ creator_affiliation }}"
+    }
+  ],
+  "license": "{{ license }}",
+  "upload_type": "{{ upload_type }}",
+  "keywords": {{ keywords | tojson }},
+  "related_identifiers": {{ related_identifiers | tojson }},
+  "language": "{{ language }}",
+  "access_right": "{{ access_right }}",
+  "notes": "{{ notes | replace('\n', ' ') }}"
+}

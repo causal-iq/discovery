@@ -11,7 +11,7 @@ It includes:
 - A framework for **reproducing published figures and results**
 
 ---
-
+    
 ## 📦 Project Goals
 
 - Provide an installable Python package of reusable algorithms (`causaliq/`)
@@ -22,21 +22,30 @@ It includes:
 
 ## 🔁 Reproducibility Workflow (Coming Soon)
 
-You can reproduce figures and tables from supported papers using the `reproduce.py` script with the following arguments:
+You can reproduce figures and tables from supported papers using the `repro.py` script with the following arguments:
 
-- `--paper` short name for the paper (e.g. `2025kitsoncausal`) which matches the bib citation label
-- `--mode` controls how much is reproduced from scratch:
-  - `--learn` run structure learning from datasets and perform analysis
-  - `--analyse` perform analysis using structure learning trace files downloaded from Zenodo to generate the paper tables and figures (avoiding structure learning)
-  - `--download` just download tables and figures from Zenodo
-- `--overwrite` whether to regenerate files already on systems (otherwise make use of datasets, trace files, tables and figures already present locally)
-
-**Example:**
-
-```
-python reproduce.py --paper kitson2025stable --mode learn --item figure4
+```bash
+python repro.py <operation> <target> [--run]
 ```
 
+**Arguments:**
+
+- `<operation>` (positional): defines what te script will do, one of:
+  - `learn` - performs all required structure learnng and analysis to generate asset
+  - `analyse` - downloads structure learning results but performs analysis to generate analysis
+  - `download` - downloads required results and asset
+- `<target>` (positional): Path to the asset to reproduce (e.g., `papers/ijar_stable/fig1`)
+- `--run`: Actually perform the operation (omit for a dry run with time estimates)
+- `--help`: Show usage instructions
+
+**Examples:**
+
+- Dry run (shows what structure learning and analysis would be done to reproduce fig1 of paper ijar_stable):  
+  `python repro.py learn papers/ijar_stable/fig1`
+- Actually download structure learning results, but rerun analysis locally for tab2:  
+  `python repro.py analyse papers/ijar_stable/tab2 --run`
+- Just download results and selected assets from Zenodo:  
+  `python repro.py download papers/ijar_stable/fig1`
 
 ## 📁 Planned Directory Structure
 

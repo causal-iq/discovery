@@ -10,3 +10,9 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Ignore sandbox_status.json only under causaliq_repro/zenodo
+causaliq_repro/zenodo/**/sandbox_status.json
+
+# But do NOT ignore it under tests/data/causaliq/repro
+!tests/data/causaliq/repro/**/sandbox_status.json
