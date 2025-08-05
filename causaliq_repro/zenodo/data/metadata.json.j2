@@ -1,0 +1,22 @@
+{% set description -%}
+This deposit provides links to all datasets required to reproduce the results
+of the CausalIQ project and associated papers.
+{%- endset %}
+
+{
+  "title": "CausalIQ Datasets",
+  "description": "{{ description | replace('\n', ' ') }}",
+  "creators": [
+    {
+      "name": "{{ creator_name }}",
+      "orcid": "{{ creator_orcid }}",
+      "affiliation": "{{ creator_affiliation }}"
+    }
+  ],
+  "license": "{{ license }}",
+  "upload_type": "{{ upload_type }}",
+  "keywords": {{ keywords | tojson }},
+  "related_identifiers": {{ related_identifiers | tojson }},
+  "language": "{{ language }}",
+  "access_right": "{{ access_right }}"
+}

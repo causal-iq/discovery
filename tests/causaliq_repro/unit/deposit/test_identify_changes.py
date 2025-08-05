@@ -5,15 +5,16 @@ from causaliq_repro.deposit import Deposit, METADATA_TEMPLATE, README_TEMPLATE
 
 
 # New root deposit
-def test_root_create():
+def test_root_create(monkeypatch):
     deposit = Deposit.__new__(Deposit)
-    deposit.status = {
-        "id": None
-    }
+    deposit.base = ""
+    deposit.name = ""
+    deposit.status = {}
     checksums = {
         METADATA_TEMPLATE: "CHECKSUM_METADATA_1",
         README_TEMPLATE: "CHECKSUM_README_1"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 107)
 
     changed = deposit._identify_changes(checksums)
 
@@ -24,30 +25,36 @@ def test_root_create():
         ],
         "deleted": [],
         "status": {
-            "id": None,
             "checksum": "CHECKSUM_METADATA_1",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_1"
+                README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
+                                  "size": 107}
             }
         }
     }
 
 
 # Unchanged root deposit
-def test_root_unchanged():
+def test_root_unchanged(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1"
+            README_TEMPLATE: {
+                "checksum": "CHECKSUM_README_1",
+                "size": 107
+            }
         }
     }
     checksums = {
         METADATA_TEMPLATE: "CHECKSUM_METADATA_1",
         README_TEMPLATE: "CHECKSUM_README_1"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 107)
 
     changed = deposit._identify_changes(checksums)
 
@@ -55,20 +62,24 @@ def test_root_unchanged():
 
 
 # Updating root metadata
-def test_root_update_metadata():
+def test_root_update_metadata_only(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1"
+            README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
+                              "size": 107}
         }
     }
     checksums = {
         METADATA_TEMPLATE: "CHECKSUM_METADATA_2",
         README_TEMPLATE: "CHECKSUM_README_1"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 107)
 
     changed = deposit._identify_changes(checksums)
 
@@ -77,31 +88,36 @@ def test_root_update_metadata():
         "files": [],
         "deleted": [],
         "status": {
-            "id": 1234567,
+            "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_2",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_1"
+                README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
+                                  "size": 107}
             }
         }
     }
 
 
 # Updating root readme
-def test_root_update_readme():
+def test_root_update_readme(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1"
+            README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
+                              "size": 107}
         }
     }
     checksums = {
         METADATA_TEMPLATE: "CHECKSUM_METADATA_1",
         README_TEMPLATE: "CHECKSUM_README_2"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 107)
 
     changed = deposit._identify_changes(checksums)
 
@@ -110,31 +126,38 @@ def test_root_update_readme():
         "files": [README_TEMPLATE],
         "deleted": [],
         "status": {
-            "id": 1234567,
+            "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_1",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_2"
+                README_TEMPLATE: {"checksum": "CHECKSUM_README_2",
+                                  "size": 107}
             }
         }
     }
 
 
 # Updating root metadata and readme
-def test_root_update_metadata_and_readme():
+def test_root_update_metadata_and_readme(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1"
+            README_TEMPLATE: {
+                "checksum": "CHECKSUM_README_1",
+                "size": 107
+            }
         }
     }
     checksums = {
         METADATA_TEMPLATE: "CHECKSUM_METADATA_2",
         README_TEMPLATE: "CHECKSUM_README_2"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 107)
 
     changed = deposit._identify_changes(checksums)
 
@@ -143,27 +166,31 @@ def test_root_update_metadata_and_readme():
         "files": [README_TEMPLATE],
         "deleted": [],
         "status": {
-            "id": 1234567,
+            "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_2",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_2"
+                README_TEMPLATE: {
+                    "checksum": "CHECKSUM_README_2",
+                    "size": 107
+                }
             }
         }
     }
 
 
 # New dataset deposit
-def test_dataset_create():
+def test_dataset_create(monkeypatch):
     deposit = Deposit.__new__(Deposit)
-    deposit.status = {
-        "id": None
-    }
+    deposit.base = ""
+    deposit.name = ""
+    deposit.status = {}
     checksums = {
         METADATA_TEMPLATE: "CHECKSUM_METADATA_1",
         README_TEMPLATE: "CHECKSUM_README_1",
         "network.dsc": "CHECKSUM_DSC_1"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 1024)
 
     changed = deposit._identify_changes(checksums)
 
@@ -175,26 +202,39 @@ def test_dataset_create():
         ],
         "deleted": [],
         "status": {
-            "id": None,
             "checksum": "CHECKSUM_METADATA_1",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_1",
-                "network.dsc": "CHECKSUM_DSC_1"
+                README_TEMPLATE: {
+                    "checksum": "CHECKSUM_README_1",
+                    "size": 1024
+                },
+                "network.dsc": {
+                    "checksum": "CHECKSUM_DSC_1",
+                    "size": 1024
+                }
             }
         }
     }
 
 
 # Unchanged dataset deposit
-def test_dataset_unchanged():
+def test_dataset_unchanged(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1",
-            "network.dsc": "CHECKSUM_DSC_1"
+            README_TEMPLATE: {
+                "checksum": "CHECKSUM_README_1",
+                "size": 3000
+            },
+            "network.dsc": {
+                "checksum": "CHECKSUM_DSC_1",
+                "size": 3000
+            }
         }
     }
     checksums = {
@@ -202,6 +242,7 @@ def test_dataset_unchanged():
         README_TEMPLATE: "CHECKSUM_README_1",
         "network.dsc": "CHECKSUM_DSC_1"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 3000)
 
     changed = deposit._identify_changes(checksums)
 
@@ -209,15 +250,23 @@ def test_dataset_unchanged():
 
 
 # Add file to dataset
-def test_dataset_add_file():
+def test_dataset_add_file(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1",
-            "network.dsc": "CHECKSUM_DSC_1"
+            README_TEMPLATE: {
+                "checksum": "CHECKSUM_README_1",
+                "size": 2048
+            },
+            "network.dsc": {
+                "checksum": "CHECKSUM_DSC_1",
+                "size": 2048
+            }
         }
     }
     checksums = {
@@ -226,6 +275,7 @@ def test_dataset_add_file():
         "network.dsc": "CHECKSUM_DSC_1",
         "network.xdsl": "CHECKSUM_XDSL_1"
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 2048)
 
     changed = deposit._identify_changes(checksums)
 
@@ -237,29 +287,49 @@ def test_dataset_add_file():
         ],
         "deleted": [],
         "status": {
-            "id": 1234567,
+            "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_2",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_2",
-                "network.dsc": "CHECKSUM_DSC_1",
-                "network.xdsl": "CHECKSUM_XDSL_1"
+                README_TEMPLATE: {
+                    "checksum": "CHECKSUM_README_2",
+                    "size": 2048
+                },
+                "network.dsc": {
+                    "checksum": "CHECKSUM_DSC_1",
+                    "size": 2048
+                },
+                "network.xdsl": {
+                    "checksum": "CHECKSUM_XDSL_1",
+                    "size": 2048
+                }
             }
         }
     }
 
 
 # Delete file from dataset
-def test_dataset_delete_file():
+def test_dataset_delete_file(monkeypatch):
     deposit = Deposit.__new__(Deposit)
+    deposit.base = ""
+    deposit.name = ""
     deposit.status = {
-        "id": 1234567,
+        "recid": 1234567,
         "published": False,
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
-            README_TEMPLATE: "CHECKSUM_README_1",
-            "network.dsc": "CHECKSUM_DSC_1",
-            "network.xdsl": "CHECKSUM_XDSL_1"
+            README_TEMPLATE: {
+                "checksum": "CHECKSUM_README_1",
+                "size": 107
+            },
+            "network.dsc": {
+                "checksum": "CHECKSUM_DSC_1",
+                "size": 107
+            },
+            "network.xdsl": {
+                "checksum": "CHECKSUM_XDSL_1",
+                "size": 107
+            }
         }
     }
     checksums = {
@@ -267,6 +337,7 @@ def test_dataset_delete_file():
         README_TEMPLATE: "CHECKSUM_README_2",
         "network.dsc": "CHECKSUM_DSC_1",
     }
+    monkeypatch.setattr("causaliq_repro.deposit.getsize", lambda _: 107)
 
     changed = deposit._identify_changes(checksums)
 
@@ -279,12 +350,18 @@ def test_dataset_delete_file():
             "network.xdsl"
         ],
         "status": {
-            "id": 1234567,
+            "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_2",
             "files": {
-                README_TEMPLATE: "CHECKSUM_README_2",
-                "network.dsc": "CHECKSUM_DSC_1"
+                README_TEMPLATE: {
+                    "checksum": "CHECKSUM_README_2",
+                    "size": 107
+                },
+                "network.dsc": {
+                    "checksum": "CHECKSUM_DSC_1",
+                    "size": 107
+                }
             }
         }
     }

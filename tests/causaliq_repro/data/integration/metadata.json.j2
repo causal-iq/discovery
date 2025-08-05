@@ -1,0 +1,26 @@
+{% set description -%}
+This is the root entry for CausalIQ integration test deposits.
+{%- endset %}
+
+{% set notes -%}
+This is just an integration test deposit - it is the only one that is published.
+{%- endset %}
+
+{
+  "title": "CausalIQ Integration Test Root Deposit",
+  "description": "{{ description | replace('\n', ' ') }}",
+  "creators": [
+    {
+      "name": "{{ creator_name }}",
+      "orcid": "{{ creator_orcid }}",
+      "affiliation": "{{ creator_affiliation }}"
+    }
+  ],
+  "license": "{{ license }}",
+  "upload_type": "{{ upload_type }}",
+  "keywords": {{ keywords | tojson }},
+  "related_identifiers": {{ related_identifiers | tojson }},
+  "language": "{{ language }}",
+  "access_right": "{{ access_right }}",
+  "notes": "{{ notes | replace('\n', ' ') }}"
+}

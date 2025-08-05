@@ -1,0 +1,26 @@
+{% set description -%}
+This is a hub deposit for CausalIQ integration test deposits.
+{%- endset %}
+
+{% set notes -%}
+This is just an integration test deposit.
+{%- endset %}
+
+{
+  "title": "CausalIQ Integration Test Hub Deposit",
+  "description": "{{ description | replace('\n', ' ') }}",
+  "creators": [
+    {
+      "name": "{{ creator_name }}",
+      "orcid": "{{ creator_orcid }}",
+      "affiliation": "{{ creator_affiliation }}"
+    }
+  ],
+  "license": "{{ license }}",
+  "upload_type": "{{ upload_type }}",
+  "keywords": {{ keywords | tojson }},
+  "related_identifiers": {{ related_identifiers | tojson }},
+  "language": "{{ language }}",
+  "access_right": "{{ access_right }}",
+  "notes": "{{ notes | replace('\n', ' ') }}"
+}

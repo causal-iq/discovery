@@ -1,0 +1,13 @@
+{
+    "checksum": "cc219de1d799c839308bc486e09f70678201934e1ffed4cf39f6a706a73a6120",
+    "files": {
+        "readme.md.j2": {
+            "checksum": "e8be9776ba331aee6952ef16dd205ff7d67618447b5efb3d4de36e173296443c",
+            "size": 112
+        }
+    },
+    "recid": 306032,
+    "conceptid": "306031",
+    "published": false,
+    "version": 1
+}

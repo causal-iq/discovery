@@ -1,11 +1,42 @@
 # Class encapsulating Zenodo deposits
 
 from os import scandir
+from os.path import getsize
+from enum import Enum
 from hashlib import new as new_hashlib
 import requests
+from requests.models import Response
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
-from json import load, loads, JSONDecodeError
+from json import load, loads, dump, JSONDecodeError
+
+
+class StrEnum(str, Enum):
+    pass
+
+
+class ZenodoOp(StrEnum):  # Operations possible on Zenodo deposits
+    CREATE = "create deposit"
+    UPDATE = "update metadata"
+    PUBLISH = "publish deposit"
+    DOWNLOAD = "download file"
+    DELETE = "delete deposit"
+    ADD_FILE = "add file"
+
+
+class ResourceType(StrEnum):  # Supported resource types
+    OTHER = "other"
+
+
+class SchemeType(StrEnum):  # Scheme type of identifier (URL or DOI)
+    URL = "URL"
+    DOI = "DOI"
+
+
+class RelationType(StrEnum):  # Supported relations between CausalIQ deposits
+    IS_DOCUMENTED_BY = "isDocumentedBy"
+    IS_PART_OF = "IsPartOf"
+
 
 METADATA_TEMPLATE = "metadata.json.j2"
 README_TEMPLATE = "readme.md.j2"
@@ -17,12 +48,12 @@ SANDBOX_URL = "https://sandbox.zenodo.org/api"
 
 LICENSE = "CC-BY-4.0"
 CREATOR_ORCID = "0000-0002-7970-1453"
-COMMON_METADATA = {
+COMMON_METADATA = {  # Common metadata in all CausalIQ deposits
     "creator_name": "Kitson, Neville Kenneth",
     "creator_orcid": CREATOR_ORCID,
     "creator_affiliation": "see ORCID",
     "license": LICENSE,
-    "upload_type": "other",
+    "upload_type": ResourceType.OTHER.value,
     "keywords": [
         "Bayesian Networks",
         "Causal Discovery",
@@ -32,15 +63,16 @@ COMMON_METADATA = {
     "related_identifiers": [
         {
             "identifier": f"https://orcid.org/{CREATOR_ORCID}",
-            "relation": "isDocumentedBy",
-            "scheme": "URL"
+            "relation": RelationType.IS_DOCUMENTED_BY.value,
+            "scheme": SchemeType.URL.value,
+            "resource_type": ResourceType.OTHER.value
         }
     ],
     "language": "eng",
     "access_right": "open"
 }
 
-COMMON_README = {
+COMMON_README = {  # Common field values in all readme.md files
     "license": LICENSE,
     "contact_name": "Dr. Ken Kitson",
     "creator_orcid": CREATOR_ORCID,
@@ -49,24 +81,128 @@ COMMON_README = {
 }
 
 
+class ZenodoError(Exception):  # Signals unexpected response from Zenodo
+    pass
+
+
 class Deposit:
     """
         Zenodo deposit
     """
-    def __init__(self, name: str, live: bool, base_dir: str = ""):
+    def __init__(self, name: str, live: bool, base_dir: str = ZENODO_DIR):
         """
-            Instantiate specified deposit from template file
+            Instantiate specified deposit from local files
 
             :param str name: (pathlike) name of the resource e.g. "/data/asia"
             :param bool live: whether this is a live deposit, else sandbox
             :param str base_dir: use to change file directory for testing
         """
         self.name = name
-        self.base = base_dir + ZENODO_DIR
+        self.base = base_dir
         self.live = live
 
         self._render_jinja2_templates()
-        self._read_status_json()
+        self._set_related_identifiers()
+        self._read_status()
+
+    def upload(self, dry_run: bool, token: str):
+        """
+            Ensures deposit on Zenodo matches local files and metadata
+
+            :param bool dry_run: whether this ia just a dry run
+            :param str token: authentication token required to update Zenodo
+        """
+        MSG = "\n** Uploading '{}' to {} Zenodo"
+        print(MSG.format(self.name, "LIVE" if self.live else "sandbox"))
+
+        # get names of local files and their checksums
+        checksums = self._get_checksums(self.base + self.name)
+
+        # Identify changes required to deposit
+        changes = self._identify_changes(checksums)
+        if changes is not None:
+            self.status = dict(changes["status"])
+
+        if changes is None:
+            print(f"'{self.name}' unchanged - nothing to upload")
+        else:
+            # create the deposit on Zenodo if necessary
+            if "recid" not in self.status:
+                self._create_deposit(dry_run, token)
+
+            # or modify its metadata if necessary
+            elif changes["metadata"] is True:
+                self._update_deposit(dry_run, token)
+
+            # upload changed files
+            for file in changes["files"]:
+                if file == "readme.md.j2":
+                    self._add_file(dry_run, token, ("readme.md", self.readme))
+                else:
+                    with open(self.base + self.name + "/" + file, "rb") as fd:
+                        self._add_file(dry_run, token, (file, fd))
+
+            # update the local status file if not a dry run
+            if dry_run is False:
+                self._write_status()
+
+    def download(self, file: str, dry_run: bool, token: str):
+        """
+        Download a single file from Zenodo.
+
+        :param str file: file to download from deposit
+        :param bool dry_run: whether this ia just a dry run
+        :param str token: Authentication token for Zenodo
+
+        :raises ValueError: if the file download fails
+        """
+        operation = ZenodoOp.DOWNLOAD
+        print(f"\n** Download {self.name}/{file}" +
+              f" from {'LIVE' if self.live else 'sandbox'} Zenodo")
+
+        if dry_run is False:
+            response = requests.get(**self._request(operation, token,
+                                                    (file, None)))
+            if response.status_code == 200:
+                if file != "readme.md":
+                    path = self.base + self.name + '/' + file
+                    with open(path, "wb") as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                        print(f"Saved to {path}")
+            else:
+                error_message = (
+                    f"Failed to download file: {response.status_code} "
+                    f"{response.text}"
+                )
+                raise ValueError(error_message)
+
+        loc_file = "readme.md.j2" if file == "readme.md" else file
+        print(f"   - {operation.value} {file} (recid: {self.status['recid']}, "
+              f" {self.status['files'][loc_file]['size']} bytes)")
+        return
+
+    def delete(self, dry_run: bool, token: str):
+        """
+        Delete a (draft) deposit from Zenodo.
+
+        :param bool dry_run: whether this ia just a dry run
+        :param str token: Authentication token for Zenodo
+
+        :raises ValueError: if the API request fails
+        """
+        operation = ZenodoOp.DELETE
+        print(f"\n** Deleting '{self.name}' " +
+              f"from {'LIVE' if self.live else 'sandbox'} Zenodo")
+        recid = self.status["recid"]
+
+        if dry_run is False:
+            response = requests.delete(**self._request(operation, token))
+            self._check_response(operation, response)
+            self.status = {}
+            self._write_status()
+
+        print(f"   - {operation.value} (recid: {recid})")
 
     def _render_jinja2_templates(self):
         """
@@ -78,12 +214,14 @@ class Deposit:
         try:
             env = Environment(loader=FileSystemLoader(self.base + self.name))
 
+            # Render metadata template into Python dict structure
             template = env.get_template(METADATA_TEMPLATE)
             rendered_metadata = template.render(**COMMON_METADATA)
             self.metadata = loads(
                 rendered_metadata
-            )  # Parse JSON into Python structure
+            )
 
+            # Render the readme.md template into markdown
             template = env.get_template(README_TEMPLATE)
             self.readme = template.render(**COMMON_README)
 
@@ -95,26 +233,6 @@ class Deposit:
 
         except Exception as e:
             raise ValueError(f"Error rendering {self.name}: {e})")
-
-    def _read_status_json(self):
-        """
-            Read the appropriate status JSON file to check status of
-            deposit on either live or sandbox Zenodod
-        """
-        path = self.base + self.name + ("/zenodo" if self.live else
-                                        "/sandbox") + "_status.json"
-        try:
-            with open(path, "r") as f:
-                self.status = load(f)
-
-        except FileNotFoundError as e:
-            raise FileNotFoundError(f"Status not found in {self.name}: {e}")
-
-        except JSONDecodeError as e:
-            raise ValueError(f"Status not valid JSON: {self.name} ({e})")
-
-        except Exception as e:
-            raise ValueError(f"Error reading status of {self.name}: {e}")
 
     def _get_checksums(self, folder):
         """
@@ -146,15 +264,11 @@ class Deposit:
             :returns dict/None: {"metadata": bool, has metadata changed,
                                  "status": dict, contents of new status record}
         """
-        status = {
-            "id": self.status["id"]
-        }
-        if "published" in self.status:
-            status["published"] = self.status["published"]
+        status = dict(self.status)
         changed = {}
 
         # See if metadata needs to be changed
-        changed["metadata"] = (self.status["id"] is None or
+        changed["metadata"] = ("recid" not in self.status or
                                self.status["checksum"] !=
                                checksums[METADATA_TEMPLATE])
         status["checksum"] = checksums[METADATA_TEMPLATE]
@@ -165,15 +279,17 @@ class Deposit:
         for file, checksum in checksums.items():
             if file == METADATA_TEMPLATE:
                 continue
-            status['files'][file] = checksum
-            if (self.status["id"] is None
+            status['files'][file] = {"checksum": checksum,
+                                     "size": getsize(self.base + self.name +
+                                                     "/" + file)}
+            if ("recid" not in self.status
                     or file not in self.status["files"]
-                    or self.status["files"][file] != checksum):
+                    or self.status["files"][file]["checksum"] != checksum):
                 changed["files"].append(file)
 
         # Check for deleted files
         changed["deleted"] = []
-        if self.status["id"] is not None:
+        if "recid" in self.status:
             for file in self.status["files"]:
                 if file not in checksums:
                     changed["deleted"].append(file)
@@ -181,103 +297,215 @@ class Deposit:
         changed.update({"status": status})
         return changed if changed['status'] != self.status else None
 
-    def upload(self, dry_run: bool, auth_token: str):
+    def _related_info(self, name: str):
         """
-            Ensures deposit on Zenodo matches local files
+            Returns info for a related deposit
 
-            :param bool dry_run: whether this ia just a dry run
-            :param str auth_token: token required to update Zenodo
+            :param str name: deposit name
+
+            :returns str/None: related identifier if deposit on Zenodo
         """
-        MSG = "\n** Uploading '{}' to {} Zenodo"
-        print(MSG.format(self.name, "LIVE" if self.live else "sandbox"))
+        # get status of the deposit
+        status = Deposit(name=name, live=self.live, base_dir=self.base).status
 
-        # get names of local files and their checksums
-        checksums = self._get_checksums(self.base + self.name)
+        # return None if deposit not on Zenodo
+        if "recid" not in status:
+            return None
 
-        # Identify changes required to deposit
-        changes = self._identify_changes(checksums)
-
-        if changes is None:
-            print(f"'{self.name}' unchanged - nothing to upload")
+        # Use DOI if deposit published, otherwise URL
+        if "doi" in status:
+            id = status["doi"]
+            scheme = SchemeType.DOI.value
         else:
-            # create the deposit on Zenodo if necessary
-            if self.status["id"] is None:
-                self._create_draft_deposit(dry_run, auth_token)
+            id = ((ZENODO_URL if self.live
+                   else SANDBOX_URL).replace("api", "records") +
+                  f"/{status['recid']}?preview={status['version']}")
+            scheme = SchemeType.URL.value
 
-    def _create_draft_deposit(self, dry_run: bool, auth_token: str):
+        return {
+            "identifier": id,
+            "relation": RelationType.IS_PART_OF.value,
+            "scheme": scheme,
+            "resource_type": ResourceType.OTHER.value
+        }
+
+    def _set_related_identifiers(self):
+        """
+            Sets the related identifiers of parent and children
+        """
+        # Add in the related identifier of parent (if any)
+        if self.name != "":
+            parent = "/".join(self.name.split("/")[:-1])
+            related = self._related_info(name=parent)
+            if related is not None:
+                self.metadata["related_identifiers"].append(related)
+
+        # Add in the related identifiers of any children
+
+    def _create_deposit(self, dry_run: bool, token: str):
         """
             Create a draft deposit on Zenodo sandbox without files
 
             :param bool dry_run: whether this ia just a dry run
-            :param str auth_token: token required to update Zenodo
+            :param str token: token required to update Zenodo
 
-            :raises ValueError: if the API request fails
+            :raises ZenodoError: if the API request fails
         """
-        MSG = "   - draft deposit created (id: {})"
-        if dry_run is True:
-            self.status["id"] = -1
-            self.status["published"] = False
-            print(MSG.format(self.status["id"]))
-            return
-
-        response = requests.get(SANDBOX_URL + "/deposit/depositions",
-                                headers={"Authorization":
-                                         f"Bearer {auth_token}"})
-        if response.status_code != 200:
-            raise ValueError("Invalid token or insufficient permissions")
-
-        url = SANDBOX_URL + "/deposit/depositions"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {auth_token}"
-        }
-        data = {
-            "metadata": self.metadata  # Use pre-rendered metadata
-        }
-
-        response = requests.post(url, json=data, headers=headers)
-
-        if response.status_code != 201:
-            error_message = (
-                f"Failed to create deposit: {response.status_code} "
-                f"{response.text}"
-            )
-            raise ValueError(error_message)
-
-        deposit_info = response.json()
-        self.status["id"] = deposit_info['id']
-        self.status["published"] = False
-        print(MSG.format(self.status["id"]))
-
-    def delete(self, dry_run: bool, auth_token: str):
-        """
-        Delete a (draft) deposit from Zenodo.
-
-        :param int deposit_id: ID of the deposit to delete
-        :param str auth_token: Authentication token for Zenodo
-        :param bool sandbox: Whether to use the sandbox environment
-
-        :raises ValueError: if the API request fails
-        """
-        print(f"\n** Deleting '{self.name}' " +
-              f"from {'LIVE' if self.live else 'sandbox'} Zenodo")
-
+        operation = ZenodoOp.CREATE
         if dry_run is False:
-            base_url = ZENODO_URL if self.live else SANDBOX_URL
-            url = f"{base_url}/deposit/depositions/{self.status['id']}"
+            response = requests.post(**self._request(operation, token))
+            info = self._check_response(operation, response)
+            self.status["recid"] = info['id']
+            self.status["conceptid"] = info["conceptrecid"]
+        else:
+            self.status["recid"] = -1  # pretend id for dry runs
+            self.status["conceptid"] = -2  # pretend conceptid
+        self.status["published"] = False
+        self.status["version"] = 1
 
-            headers = {
-                "Authorization": f"Bearer {auth_token}"
+        print(f"   - {operation.value} (recid: {self.status['recid']})")
+
+    def _add_file(self, dry_run: bool, token: str, file_data: tuple):
+        """
+            Add a file to a draft deposit
+
+            :param bool dry_run: whether this ia just a dry run
+            :param str token: token required to update Zenodo
+            :param tuple file_data: (str: file name,
+                                     str/file descriptor: content or pointer)
+
+            :raises ZenodoError: if the API request fails
+       """
+        operation = ZenodoOp.ADD_FILE
+        if dry_run is False:
+            response = requests.post(**self._request(operation, token,
+                                                     file_data=file_data))
+            self._check_response(operation, response)
+
+        loc_name = ("readme.md.j2" if file_data[0] == "readme.md"
+                    else file_data[0])
+        print(f"   - {operation.value} {file_data[0]} " +
+              f"({self.status['files'][loc_name]['size']} bytes)")
+
+    def _update_deposit(self, dry_run: bool, token: str):
+        """
+            Update metadata of an existing draft deposit on Zenodo.
+
+            :param bool dry_run: whether this ia just a dry run
+            :param str token: Authentication token for Zenodo
+
+            :raises ZenodoError: if the API request fails
+        """
+        operation = ZenodoOp.UPDATE
+        if dry_run is False:
+            response = requests.put(**self._request(operation, token))
+            self._check_response(operation, response)
+
+        print(f"   - {operation.value} (id: {self.status['recid']})")
+
+    def _request(self, operation: str, token: str, file_data: tuple = None):
+        """
+            Builds the Zenodo request - the URL, headers and content
+
+            :param str operation: operation being performed
+            :param str token: authentication token
+            :param tuple file_data: (str: file name,
+                                     str/file descriptor: content or pointer)
+
+            :returns str: the complete Zenodo request URL
+        """
+        # construct request URL for specific operation
+        base_url = ZENODO_URL if self.live else SANDBOX_URL
+        if operation == ZenodoOp.DOWNLOAD:
+            # req_url = "/need-url-format-for-published-file"
+            req_url = (f"/records/{self.status['recid']}/draft/files/" +
+                       f"{file_data[0]}/content")
+        else:
+            req_url = "/deposit/depositions"
+            if "recid" in self.status:
+                req_url += f"/{self.status['recid']}"
+        request = {"url": base_url + req_url}
+
+        # supply authentication token
+        headers = {"Authorization": f"Bearer {token}" if token else None}
+
+        # supply metadata information with create and update operation
+        if operation in {ZenodoOp.CREATE, ZenodoOp.UPDATE}:
+            headers.update({"Content-Type": "application/json"})
+            request["json"] = {
+                "metadata": self.metadata
             }
 
-            response = requests.delete(url, headers=headers)
+        # supply file name and contents when adding a file
+        if operation == ZenodoOp.ADD_FILE:
+            request["url"] += "/files"
+            request["files"] = {"file": file_data}
 
-            if response.status_code != 204:
-                error_message = (
-                    f"Failed to delete deposit: {response.status_code} "
-                    f"{response.text}"
-                )
-                raise ValueError(error_message)
+        # Add stream flag when downloading a file
+        if operation == ZenodoOp.DOWNLOAD:
+            request["stream"] = True
 
-        print(f"   - draft deposit deleted (id: {self.status['id']})")
-        self.status = {"id": None}
+        request["headers"] = headers
+        return request
+
+    def _check_response(self, operation: str, response: Response):
+        """
+            Checks the response status code is as expected
+
+            :param str operation: operation being performed
+            :param Response response: response to Zenodo request
+
+            :raises ZenodoError: if expected status code not received
+        """
+        EXPECTED_STATUS = {
+            ZenodoOp.CREATE: 201,
+            ZenodoOp.UPDATE: 200,
+            ZenodoOp.DELETE: 204,
+            ZenodoOp.ADD_FILE: 201
+        }
+        if response.status_code != EXPECTED_STATUS[operation]:
+            error_message = (
+                f"{operation.value}: {response.status_code} "
+                f"{response.text}"
+            )
+            raise ZenodoError(error_message)
+
+        return response.json() if operation != ZenodoOp.DELETE else None
+
+    def _read_status(self):
+        """
+            Read the appropriate status JSON file to check status of
+            deposit on either live or sandbox Zenodod
+        """
+        path = (
+            self.base + self.name +
+            ("/zenodo" if self.live else "/sandbox") + "_status.json"
+        )
+        try:
+            with open(path, "r") as f:
+                self.status = load(f)
+
+        except FileNotFoundError as e:
+            raise FileNotFoundError(f"Status not found in {self.name}: {e}")
+
+        except JSONDecodeError as e:
+            raise ValueError(f"Status not valid JSON: {self.name} ({e})")
+
+        except Exception as e:
+            raise ValueError(f"Error reading status of {self.name}: {e}")
+
+    def _write_status(self):
+        """
+            Write the current status to the appropriate status JSON file.
+
+            :raises ValueError: if unable to write the status
+        """
+        path = (self.base + self.name +
+                ("/zenodo" if self.live else "/sandbox") + "_status.json")
+
+        try:
+            with open(path, "w") as f:
+                dump(self.status, f, indent=4)
+
+        except Exception as e:
+            raise ValueError(f"Error writing status of {self.name}: {e}")
