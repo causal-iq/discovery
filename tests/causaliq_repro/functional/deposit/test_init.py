@@ -14,57 +14,57 @@ BASE_DIR = REPRO_TEST_DATA_DIR + "functional/deposit/init/"
 # Non-existant name
 def test_bad_name_error():
     with pytest.raises(FileNotFoundError):
-        Deposit(name="bad_name", live=False, base_dir=BASE_DIR)
+        Deposit(name="bad_name", sandbox=True, base_dir=BASE_DIR)
 
 
 # Missing metadata.json.j2 template
 def test_no_metadata_error():
     with pytest.raises(FileNotFoundError):
-        Deposit(name="", live=True, base_dir=BASE_DIR + "no_metadata/")
+        Deposit(name="", sandbox=False, base_dir=BASE_DIR + "no_metadata/")
 
 
 # Binary metadata.json.j2 template
 def test_binary_metadata_error():
     with pytest.raises(ValueError):
-        Deposit(name="", live=True, base_dir=BASE_DIR + "binary_metadata/")
+        Deposit(name="", sandbox=False, base_dir=BASE_DIR + "binary_metadata/")
 
 
 # Bad JSON metadata.json.j2 template
 def test_bad_json_metadata_error():
     with pytest.raises(ValueError):
-        Deposit(name="", live=True, base_dir=BASE_DIR + "bad_json_metadata/")
+        Deposit(name="", sandbox=False, base_dir=BASE_DIR + "bad_json_metadata/")
 
 
 # Missing readme.md.j2 template
 def test_no_readme_error():
     with pytest.raises(FileNotFoundError):
-        Deposit(name="", live=True, base_dir=BASE_DIR + "no_readme/")
+        Deposit(name="", sandbox=False, base_dir=BASE_DIR + "no_readme/")
 
 
 # Missing zenodo_status JSON file
 def test_no_zenodo_status_error():
     with pytest.raises(FileNotFoundError):
-        Deposit(name="", live=True, base_dir=BASE_DIR + "no_zenodo_status/")
+        Deposit(name="", sandbox=False, base_dir=BASE_DIR + "no_zenodo_status/")
 
 
 # Binary zenodo_status JSON file
 def test_binary_zenodo_status_error():
     with pytest.raises(ValueError):
-        Deposit(name="", live=True,
+        Deposit(name="", sandbox=False,
                 base_dir=BASE_DIR + "binary_zenodo_status/")
 
 
 # Bad JSON zenodo_status JSON file
 def test_bad_json_zenodo_status_error():
     with pytest.raises(ValueError):
-        Deposit(name="", live=True,
+        Deposit(name="", sandbox=False,
                 base_dir=BASE_DIR + "bad_json_zenodo_status/")
 
 
 # Missing sandbox_status JSON file
 def test_no_sandbox_status_error():
     with pytest.raises(FileNotFoundError):
-        Deposit(name="", live=False,
+        Deposit(name="", sandbox=True,
                 base_dir=BASE_DIR + "no_sandbox_status/")
 
 
@@ -72,4 +72,4 @@ def test_no_sandbox_status_error():
 
 # Instantiation of the live root object
 def test_live_root():
-    Deposit(name="/", live=True)
+    Deposit(name="/", sandbox=False)

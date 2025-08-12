@@ -11,8 +11,15 @@ dist/
 build/
 *.egg-info/
 
-# Ignore sandbox_status.json only under causaliq_repro/zenodo
+# Ignore temporary files in test data
+tests/**/*.tmp
+
+# Ignore sandbox_status.json in production repro area
 causaliq_repro/zenodo/**/sandbox_status.json
 
-# But do NOT ignore it under tests/data/causaliq/repro
-!tests/data/causaliq/repro/**/sandbox_status.json
+# But do NOT ignore sandbox_status.json for functional tests
+!tests/causaliq_repro/data/functional/**/sandbox_status.json
+# but ignore in them for integration test as tests themselves will create them
+tests/causaliq_repro/data/integration/**/sandbox_status.json
+# except for the root1 integration test
+!tests/causaliq_repro/data/integration/root1/**/sandbox_status.json

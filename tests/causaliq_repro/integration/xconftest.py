@@ -18,14 +18,14 @@ def ensure_deposit_present(name: str, token: str):
     """
     # See if deposit present on sandbox by trying to download "readme.md"
     try:
-        base_dir = REPRO_TEST_DATA_DIR + "integration/"
-        deposit = Deposit(name=name, live=False, base_dir=base_dir)
+        base_dir = REPRO_TEST_DATA_DIR + "integration/root1/"
+        deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
         deposit.download(file="readme.md", dry_run=False, token=token)
-    #     print(f"   - '{name}' present on sandbox Zenodo")
+        print(f"   - '{name}' present on sandbox Zenodo")
 
     # if deposit not on sandbox, upload to recreate it
     except ValueError:
-    #     print(f"   - '{name}' not on sandbox Zenodo - recreating it ...")
+        print(f"   - '{name}' not on sandbox Zenodo - recreating it ...")
         deposit.status = {}
         deposit.upload(dry_run=False, token=token)
 
@@ -33,12 +33,13 @@ def ensure_deposit_present(name: str, token: str):
 @pytest.fixture(scope="session", autouse=True)
 def global_setup():
     # Perform setup
-    # print("\n\nGlobal setup: Ensuring required deposits on sandbox ...")
+    print("\n\n--- Global setup: Ensuring required deposits on sandbox ...")
 
-    token = get_zenodo_token(live=False)
+    token = get_zenodo_token(sandbox=True)
 
     ensure_deposit_present(name="", token=token)
-    ensure_deposit_present(name="/hub", token=token)
+    ensure_deposit_present(name="/hub1", token=token)
+    print("\n--- Global setup ends\n")
 
     yield
     # Perform teardown

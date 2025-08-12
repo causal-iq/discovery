@@ -39,21 +39,21 @@ def run_repro():
     print(f"Zenodo: {args.zenodo}")
 
 
-def get_zenodo_token(live: bool):
+def get_zenodo_token(sandbox: bool):
     """
         Get and check Zenodo access tokens for live and sandbox systems
 
-        :param bool live: live token required, otherwise sandbox
+        :param bool sandbox: sandbox token required, otherwise live
 
         :returns str/None: validated token, otherwise None
     """
     # Obtain token and Zenodo user email from environment variables
-    token = getenv(ZENODO_LIVE_ENV if live else ZENODO_SANDBOX_ENV)
+    token = getenv(ZENODO_SANDBOX_ENV if sandbox else ZENODO_LIVE_ENV)
     email = getenv(ZENODO_EMAIL_ENV)
 
     # Check that the token works
     if token is not None:
-        url = (ZENODO_LIVE_BASE if live else ZENODO_SANDBOX_BASE) + "/me"
+        url = (ZENODO_SANDBOX_BASE if sandbox else ZENODO_LIVE_BASE) + "/me"
         response = get_url(url=url,
                            headers={"Authorization": f"Bearer {token}"})
         token = (token if response.status_code == 200
@@ -67,8 +67,8 @@ def get_args():
         Check and return the command line arguments
     """
     # See if this is an admin user
-    admin = (get_zenodo_token(live=True) is not None
-             and get_zenodo_token(live=False) is not None)
+    admin = (get_zenodo_token(sandbox=False) is not None
+             and get_zenodo_token(sandbox=True) is not None)
 
     # Set up the supported command line arguments
     parser = ArgumentParser(
@@ -111,6 +111,6 @@ def get_args():
     # set live/sandbox if not set, and add token to args
     args.zenodo = ("live" if admin is False else
                    ("sandbox" if args.operation == "upload" else "live"))
-    args.token = get_zenodo_token(live=(args.zenodo == "live"))
+    args.token = get_zenodo_token(sandbox=(args.zenodo == "sandbox"))
 
     return args

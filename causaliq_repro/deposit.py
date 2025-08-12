@@ -19,9 +19,11 @@ class ZenodoOp(StrEnum):  # Operations possible on Zenodo deposits
     CREATE = "create deposit"
     UPDATE = "update metadata"
     PUBLISH = "publish deposit"
-    DOWNLOAD = "download file"
+    DOWNLOAD_FILE = "download file"
+    GET_METADATA = "get metadata"
     DELETE = "delete deposit"
     ADD_FILE = "add file"
+    REMOVE_FILE = "remove file"
 
 
 class ResourceType(StrEnum):  # Supported resource types
@@ -89,17 +91,17 @@ class Deposit:
     """
         Zenodo deposit
     """
-    def __init__(self, name: str, live: bool, base_dir: str = ZENODO_DIR):
+    def __init__(self, name: str, sandbox: bool, base_dir: str = ZENODO_DIR):
         """
             Instantiate specified deposit from local files
 
             :param str name: (pathlike) name of the resource e.g. "/data/asia"
-            :param bool live: whether this is a live deposit, else sandbox
+            :param bool sandbox: whether this is a sandbox deposit, else live
             :param str base_dir: use to change file directory for testing
         """
         self.name = name
         self.base = base_dir
-        self.live = live
+        self.sandbox = sandbox
 
         self._render_jinja2_templates()
         self._set_related_identifiers()
@@ -113,7 +115,7 @@ class Deposit:
             :param str token: authentication token required to update Zenodo
         """
         MSG = "\n** Uploading '{}' to {} Zenodo"
-        print(MSG.format(self.name, "LIVE" if self.live else "sandbox"))
+        print(MSG.format(self.name, "sandbox" if self.sandbox else "LIVE"))
 
         # get names of local files and their checksums
         checksums = self._get_checksums(self.base + self.name)
@@ -124,7 +126,7 @@ class Deposit:
             self.status = dict(changes["status"])
 
         if changes is None:
-            print(f"'{self.name}' unchanged - nothing to upload")
+            print(f"   - no changes made (recid: {self.status['recid']})")
         else:
             # create the deposit on Zenodo if necessary
             if "recid" not in self.status:
@@ -134,13 +136,19 @@ class Deposit:
             elif changes["metadata"] is True:
                 self._update_deposit(dry_run, token)
 
-            # upload changed files
+            # remove deleted or changed files
+            for file_data in changes["deleted"]:
+                self._remove_file(dry_run, token, file_data)
+
+            # upload new or changed files
             for file in changes["files"]:
                 if file == "readme.md.j2":
-                    self._add_file(dry_run, token, ("readme.md", self.readme))
+                    fileid = self._add_file(dry_run, token,
+                                            ("readme.md", self.readme))
                 else:
                     with open(self.base + self.name + "/" + file, "rb") as fd:
-                        self._add_file(dry_run, token, (file, fd))
+                        fileid = self._add_file(dry_run, token, (file, fd))
+                self.status["files"][file]["fileid"] = fileid
 
             # update the local status file if not a dry run
             if dry_run is False:
@@ -156,9 +164,9 @@ class Deposit:
 
         :raises ValueError: if the file download fails
         """
-        operation = ZenodoOp.DOWNLOAD
+        operation = ZenodoOp.DOWNLOAD_FILE
         print(f"\n** Download {self.name}/{file}" +
-              f" from {'LIVE' if self.live else 'sandbox'} Zenodo")
+              f" from {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
 
         if dry_run is False:
             response = requests.get(**self._request(operation, token,
@@ -182,6 +190,29 @@ class Deposit:
               f" {self.status['files'][loc_file]['size']} bytes)")
         return
 
+    def get_metadata(self, dry_run: bool, token: str):
+        """
+        Get metedata of a depsoit on Zenodo
+
+        :param bool dry_run: whether this ia just a dry run
+        :param str token: Authentication token for Zenodo
+
+        :raises ValueError: if the file download fails
+        """
+        operation = ZenodoOp.GET_METADATA
+        print(f"\n** Get metadata of '{self.name}'" +
+              f" from {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
+        recid = self.status["recid"]
+
+        if dry_run is False:
+            response = requests.get(**self._request(operation, token))
+            info = self._check_response(operation, response)
+        else:
+            info = None
+
+        print(f"   - {operation.value} (recid: {recid})")
+        return info
+
     def delete(self, dry_run: bool, token: str):
         """
         Delete a (draft) deposit from Zenodo.
@@ -193,7 +224,7 @@ class Deposit:
         """
         operation = ZenodoOp.DELETE
         print(f"\n** Deleting '{self.name}' " +
-              f"from {'LIVE' if self.live else 'sandbox'} Zenodo")
+              f"from {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
         recid = self.status["recid"]
 
         if dry_run is False:
@@ -275,24 +306,42 @@ class Deposit:
 
         # Check for new and modified files
         status["files"] = {}
-        changed["files"] = []
+        changed["files"] = set()
+        changed["deleted"] = set()
         for file, checksum in checksums.items():
+            # metadata template file is never added to deposit
             if file == METADATA_TEMPLATE:
                 continue
+
+            # record latest checksum and size in new status dict
             status['files'][file] = {"checksum": checksum,
                                      "size": getsize(self.base + self.name +
                                                      "/" + file)}
+
+            # replicate the fileid of already ploaded file into new status
+            if ("files" in self.status and file in self.status["files"]
+                    and "fileid" in self.status["files"][file]):
+                status["files"][file]["fileid"] = (self.status["files"]
+                                                   [file]["fileid"])
+
+            # the file is new or modified so add it to changed["files"]
             if ("recid" not in self.status
                     or file not in self.status["files"]
                     or self.status["files"][file]["checksum"] != checksum):
-                changed["files"].append(file)
+                changed["files"].add(file)
+
+                # if existing file being modified must be deleted first
+                if "recid" in self.status and file in self.status["files"]:
+                    changed["deleted"].add((file,
+                                            self.status["files"]
+                                            [file]["fileid"]))
 
         # Check for deleted files
-        changed["deleted"] = []
         if "recid" in self.status:
             for file in self.status["files"]:
                 if file not in checksums:
-                    changed["deleted"].append(file)
+                    changed["deleted"].add((file, self.status["files"]
+                                            [file]["fileid"]))
 
         changed.update({"status": status})
         return changed if changed['status'] != self.status else None
@@ -306,7 +355,8 @@ class Deposit:
             :returns str/None: related identifier if deposit on Zenodo
         """
         # get status of the deposit
-        status = Deposit(name=name, live=self.live, base_dir=self.base).status
+        status = Deposit(name=name, sandbox=self.sandbox,
+                         base_dir=self.base).status
 
         # return None if deposit not on Zenodo
         if "recid" not in status:
@@ -317,7 +367,7 @@ class Deposit:
             id = status["doi"]
             scheme = SchemeType.DOI.value
         else:
-            id = ((ZENODO_URL if self.live
+            id = ((ZENODO_URL if self.sandbox is False
                    else SANDBOX_URL).replace("api", "records") +
                   f"/{status['recid']}?preview={status['version']}")
             scheme = SchemeType.URL.value
@@ -375,17 +425,51 @@ class Deposit:
                                      str/file descriptor: content or pointer)
 
             :raises ZenodoError: if the API request fails
+
+            :returns str: the Zenodo fileid
        """
         operation = ZenodoOp.ADD_FILE
         if dry_run is False:
             response = requests.post(**self._request(operation, token,
                                                      file_data=file_data))
             self._check_response(operation, response)
+            fileid = response.json()["id"]
+            recid = self.status["recid"]
+        else:
+            fileid = "not-applicable-for-dry-run"
+            recid = -1
 
         loc_name = ("readme.md.j2" if file_data[0] == "readme.md"
                     else file_data[0])
         print(f"   - {operation.value} {file_data[0]} " +
-              f"({self.status['files'][loc_name]['size']} bytes)")
+              f"(recid: {recid}, fileid: {fileid}, "
+              f"{self.status['files'][loc_name]['size']} bytes)")
+        return fileid
+
+    def _remove_file(self, dry_run: bool, token: str, file_data: tuple):
+        """
+            Remove a file from a draft deposit
+
+            :param bool dry_run: whether this ia just a dry run
+            :param str token: token required to update Zenodo
+            :param tuple file_data: (str: file name,
+                                     str: file id)
+
+            :raises ZenodoError: if the API request fails
+       """
+        operation = ZenodoOp.REMOVE_FILE
+        if dry_run is False:
+            response = requests.delete(**self._request(operation, token,
+                                                       file_data=file_data))
+            self._check_response(operation, response)
+            recid = self.status["recid"]
+        else:
+            recid = -1
+
+        loc_name = ("readme.md" if file_data[0] == "readme.md.j2"
+                    else file_data[0])
+        print(f"   - {operation.value} {loc_name} " +
+              f"(recid: {recid}, fileid: {file_data[1]})")
 
     def _update_deposit(self, dry_run: bool, token: str):
         """
@@ -401,7 +485,7 @@ class Deposit:
             response = requests.put(**self._request(operation, token))
             self._check_response(operation, response)
 
-        print(f"   - {operation.value} (id: {self.status['recid']})")
+        print(f"   - {operation.value} (recid: {self.status['recid']})")
 
     def _request(self, operation: str, token: str, file_data: tuple = None):
         """
@@ -415,8 +499,8 @@ class Deposit:
             :returns str: the complete Zenodo request URL
         """
         # construct request URL for specific operation
-        base_url = ZENODO_URL if self.live else SANDBOX_URL
-        if operation == ZenodoOp.DOWNLOAD:
+        base_url = ZENODO_URL if self.sandbox is False else SANDBOX_URL
+        if operation == ZenodoOp.DOWNLOAD_FILE:
             # req_url = "/need-url-format-for-published-file"
             req_url = (f"/records/{self.status['recid']}/draft/files/" +
                        f"{file_data[0]}/content")
@@ -429,9 +513,13 @@ class Deposit:
         # supply authentication token
         headers = {"Authorization": f"Bearer {token}" if token else None}
 
+        # request JSON response for create, update and get_metadata
+        if operation in {ZenodoOp.GET_METADATA, ZenodoOp.CREATE,
+                         ZenodoOp.UPDATE}:
+            headers.update({"Content-Type": "application/json"})
+
         # supply metadata information with create and update operation
         if operation in {ZenodoOp.CREATE, ZenodoOp.UPDATE}:
-            headers.update({"Content-Type": "application/json"})
             request["json"] = {
                 "metadata": self.metadata
             }
@@ -441,8 +529,12 @@ class Deposit:
             request["url"] += "/files"
             request["files"] = {"file": file_data}
 
+        # supply file id when removing a file
+        if operation == ZenodoOp.REMOVE_FILE:
+            request["url"] += f"/files/{file_data[1]}"
+
         # Add stream flag when downloading a file
-        if operation == ZenodoOp.DOWNLOAD:
+        if operation == ZenodoOp.DOWNLOAD_FILE:
             request["stream"] = True
 
         request["headers"] = headers
@@ -460,8 +552,10 @@ class Deposit:
         EXPECTED_STATUS = {
             ZenodoOp.CREATE: 201,
             ZenodoOp.UPDATE: 200,
+            ZenodoOp.GET_METADATA: 200,
             ZenodoOp.DELETE: 204,
-            ZenodoOp.ADD_FILE: 201
+            ZenodoOp.ADD_FILE: 201,
+            ZenodoOp.REMOVE_FILE: 204
         }
         if response.status_code != EXPECTED_STATUS[operation]:
             error_message = (
@@ -470,16 +564,17 @@ class Deposit:
             )
             raise ZenodoError(error_message)
 
-        return response.json() if operation != ZenodoOp.DELETE else None
+        return (response.json() if operation not in
+                {ZenodoOp.DELETE, ZenodoOp.REMOVE_FILE} else None)
 
     def _read_status(self):
         """
             Read the appropriate status JSON file to check status of
-            deposit on either live or sandbox Zenodod
+            deposit on either live or sandbox Zenodo
         """
         path = (
             self.base + self.name +
-            ("/zenodo" if self.live else "/sandbox") + "_status.json"
+            ("/sandbox" if self.sandbox else "/zenodo") + "_status.json"
         )
         try:
             with open(path, "r") as f:
@@ -501,7 +596,7 @@ class Deposit:
             :raises ValueError: if unable to write the status
         """
         path = (self.base + self.name +
-                ("/zenodo" if self.live else "/sandbox") + "_status.json")
+                ("/sandbox" if self.sandbox else "/zenodo") + "_status.json")
 
         try:
             with open(path, "w") as f:

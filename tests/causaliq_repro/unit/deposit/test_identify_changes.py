@@ -20,10 +20,10 @@ def test_root_create(monkeypatch):
 
     assert changed == {
         "metadata": True,
-        "files": [
+        "files": {
             README_TEMPLATE
-        ],
-        "deleted": [],
+        },
+        "deleted": set(),
         "status": {
             "checksum": "CHECKSUM_METADATA_1",
             "files": {
@@ -46,7 +46,8 @@ def test_root_unchanged(monkeypatch):
         "files": {
             README_TEMPLATE: {
                 "checksum": "CHECKSUM_README_1",
-                "size": 107
+                "size": 107,
+                "fileid": "pretend-file-id"
             }
         }
     }
@@ -72,7 +73,8 @@ def test_root_update_metadata_only(monkeypatch):
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
             README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
-                              "size": 107}
+                              "size": 107,
+                              "fileid": "readme-md-fileid"}
         }
     }
     checksums = {
@@ -85,15 +87,16 @@ def test_root_update_metadata_only(monkeypatch):
 
     assert changed == {
         "metadata": True,
-        "files": [],
-        "deleted": [],
+        "files": set(),
+        "deleted": set(),
         "status": {
             "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_2",
             "files": {
                 README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
-                                  "size": 107}
+                                  "size": 107,
+                                  "fileid": "readme-md-fileid"}
             }
         }
     }
@@ -110,7 +113,8 @@ def test_root_update_readme(monkeypatch):
         "checksum": "CHECKSUM_METADATA_1",
         "files": {
             README_TEMPLATE: {"checksum": "CHECKSUM_README_1",
-                              "size": 107}
+                              "size": 107,
+                              "fileid": "readme-md-fileid"}
         }
     }
     checksums = {
@@ -123,15 +127,16 @@ def test_root_update_readme(monkeypatch):
 
     assert changed == {
         "metadata": False,
-        "files": [README_TEMPLATE],
-        "deleted": [],
+        "files": {README_TEMPLATE},
+        "deleted": {(README_TEMPLATE, "readme-md-fileid")},
         "status": {
             "recid": 1234567,
             "published": False,
             "checksum": "CHECKSUM_METADATA_1",
             "files": {
                 README_TEMPLATE: {"checksum": "CHECKSUM_README_2",
-                                  "size": 107}
+                                  "size": 107,
+                                  "fileid": "readme-md-fileid"}
             }
         }
     }
@@ -149,7 +154,8 @@ def test_root_update_metadata_and_readme(monkeypatch):
         "files": {
             README_TEMPLATE: {
                 "checksum": "CHECKSUM_README_1",
-                "size": 107
+                "size": 107,
+                "fileid": "readme-md-fileid"
             }
         }
     }
@@ -163,8 +169,8 @@ def test_root_update_metadata_and_readme(monkeypatch):
 
     assert changed == {
         "metadata": True,
-        "files": [README_TEMPLATE],
-        "deleted": [],
+        "files": {README_TEMPLATE},
+        "deleted": {(README_TEMPLATE, "readme-md-fileid")},
         "status": {
             "recid": 1234567,
             "published": False,
@@ -172,7 +178,8 @@ def test_root_update_metadata_and_readme(monkeypatch):
             "files": {
                 README_TEMPLATE: {
                     "checksum": "CHECKSUM_README_2",
-                    "size": 107
+                    "size": 107,
+                    "fileid": "readme-md-fileid"
                 }
             }
         }
@@ -196,11 +203,11 @@ def test_dataset_create(monkeypatch):
 
     assert changed == {
         "metadata": True,
-        "files": [
+        "files": {
             README_TEMPLATE,
             "network.dsc"
-        ],
-        "deleted": [],
+        },
+        "deleted": set(),
         "status": {
             "checksum": "CHECKSUM_METADATA_1",
             "files": {
@@ -229,11 +236,13 @@ def test_dataset_unchanged(monkeypatch):
         "files": {
             README_TEMPLATE: {
                 "checksum": "CHECKSUM_README_1",
-                "size": 3000
+                "size": 3000,
+                "fileid": "readme-md-fileid"
             },
             "network.dsc": {
                 "checksum": "CHECKSUM_DSC_1",
-                "size": 3000
+                "size": 3000,
+                "fileid": "network-dsc-fileid"
             }
         }
     }
@@ -261,11 +270,13 @@ def test_dataset_add_file(monkeypatch):
         "files": {
             README_TEMPLATE: {
                 "checksum": "CHECKSUM_README_1",
-                "size": 2048
+                "size": 2048,
+                "fileid": "readme-md-fileid"
             },
             "network.dsc": {
                 "checksum": "CHECKSUM_DSC_1",
-                "size": 2048
+                "size": 2048,
+                "fileid": "network-dsc-fileid"
             }
         }
     }
@@ -281,11 +292,11 @@ def test_dataset_add_file(monkeypatch):
 
     assert changed == {
         "metadata": True,
-        "files": [
+        "files": {
             README_TEMPLATE,
             "network.xdsl"
-        ],
-        "deleted": [],
+        },
+        "deleted": {(README_TEMPLATE, "readme-md-fileid")},
         "status": {
             "recid": 1234567,
             "published": False,
@@ -293,11 +304,13 @@ def test_dataset_add_file(monkeypatch):
             "files": {
                 README_TEMPLATE: {
                     "checksum": "CHECKSUM_README_2",
-                    "size": 2048
+                    "size": 2048,
+                    "fileid": "readme-md-fileid"
                 },
                 "network.dsc": {
                     "checksum": "CHECKSUM_DSC_1",
-                    "size": 2048
+                    "size": 2048,
+                    "fileid": "network-dsc-fileid"
                 },
                 "network.xdsl": {
                     "checksum": "CHECKSUM_XDSL_1",
@@ -320,15 +333,18 @@ def test_dataset_delete_file(monkeypatch):
         "files": {
             README_TEMPLATE: {
                 "checksum": "CHECKSUM_README_1",
-                "size": 107
+                "size": 107,
+                "fileid": "readme-md-fileid"
             },
             "network.dsc": {
                 "checksum": "CHECKSUM_DSC_1",
-                "size": 107
+                "size": 107,
+                "fileid": "network-dsc-fileid"
             },
             "network.xdsl": {
                 "checksum": "CHECKSUM_XDSL_1",
-                "size": 107
+                "size": 107,
+                "fileid": "network-xdsl-fileid"
             }
         }
     }
@@ -343,12 +359,13 @@ def test_dataset_delete_file(monkeypatch):
 
     assert changed == {
         "metadata": True,
-        "files": [
+        "files": {
             README_TEMPLATE,
-        ],
-        "deleted": [
-            "network.xdsl"
-        ],
+        },
+        "deleted": {
+            (README_TEMPLATE, "readme-md-fileid"),
+            ("network.xdsl", "network-xdsl-fileid")
+        },
         "status": {
             "recid": 1234567,
             "published": False,
@@ -356,11 +373,13 @@ def test_dataset_delete_file(monkeypatch):
             "files": {
                 README_TEMPLATE: {
                     "checksum": "CHECKSUM_README_2",
-                    "size": 107
+                    "size": 107,
+                    "fileid": "readme-md-fileid"
                 },
                 "network.dsc": {
                     "checksum": "CHECKSUM_DSC_1",
-                    "size": 107
+                    "size": 107,
+                    "fileid": "network-dsc-fileid"
                 }
             }
         }
