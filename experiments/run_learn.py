@@ -11,6 +11,7 @@ from fileio.numpy import NumPy
 from fileio.oracle import Oracle
 from call.bnlearn import bnlearn_learn
 from call.tetrad import tetrad_learn
+from call.causal import causal_learn
 from learn.hc import hc
 from learn.trace import Trace
 from learn.knowledge import Knowledge
@@ -143,6 +144,18 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
         except RuntimeError:
             print('*** tetrad failed to learn graph')
             return (None, False)
+
+    elif package == Package.CAUSAL:
+
+        # causal-learn Python package from Carnegie-Mellon
+
+        try:
+            _, trace = causal_learn(props['algorithm'].value['method'],
+                                    data, params=params, context=context)
+        except RuntimeError:
+            print('*** causal-learn failed to learn graph')
+            return (None, False)
+
     else:
 
         # bnlearn algorithm

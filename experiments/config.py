@@ -17,6 +17,7 @@ class Package(Enum):  # supported learning packages
     BNBENCH = {'arg': 'bnbench', 'name': 'BNBENCH'}
     BNLEARN = {'arg': 'bnlearn', 'name': 'BNLEARN'}
     TETRAD = {'arg': 'tetrad', 'name': 'TETRAD'}
+    CAUSAL = {'arg': 'causal', 'name': 'CAUSAL-LEARN'}
 
 
 class Algorithm(Enum):  # supported algorithms
@@ -34,6 +35,8 @@ class Algorithm(Enum):  # supported algorithms
              'colour': '#da8bc3'}
     FGES = {'method': 'fges', 'name': 'FGES', 'label': 'FGES',
             'colour': '#aaaa00'}
+    GES = {'method': 'ges', 'name': 'GES', 'label': 'GES',
+           'colour': '#bb0000'}
 
 
 class Ordering(Enum):  # types of node ordering supported
@@ -74,6 +77,14 @@ SERIES_P = {
                  'ordering': Ordering.WORST,
                  'knowledge': RuleSet.EQUIV_ADD,
                  'kparams': {'limit': 1, 'ignore': 0, 'expertise': 1.0}},
+
+    # These are experimental causal-learn series
+
+    "CAUSAL/GES/STD_BDEU": {"package": Package.CAUSAL,
+                            "algorithm": Algorithm.GES,
+                            "params": {"score": "bde",
+                                       "iss": 1,
+                                       "base": "e"}}
 }
 
 
