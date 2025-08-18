@@ -37,7 +37,8 @@ class SchemeType(StrEnum):  # Scheme type of identifier (URL or DOI)
 
 class RelationType(StrEnum):  # Supported relations between CausalIQ deposits
     IS_DOCUMENTED_BY = "isDocumentedBy"
-    IS_PART_OF = "IsPartOf"
+    IS_PART_OF = "isPartOf"
+    HAS_PART = "hasPart"
 
 
 METADATA_TEMPLATE = "metadata.json.j2"
@@ -91,20 +92,25 @@ class Deposit:
     """
         Zenodo deposit
     """
-    def __init__(self, name: str, sandbox: bool, base_dir: str = ZENODO_DIR):
+    def __init__(self, name: str, sandbox: bool, base_dir: str = ZENODO_DIR,
+                 load_related: bool = True):
         """
             Instantiate specified deposit from local files
 
             :param str name: (pathlike) name of the resource e.g. "/data/asia"
             :param bool sandbox: whether this is a sandbox deposit, else live
             :param str base_dir: use to change file directory for testing
+            :param bool load_related: whether to load links to related deposits
+                                      - is set to False to stop infinite
+                                        recursion when assembling related links
         """
         self.name = name
         self.base = base_dir
         self.sandbox = sandbox
 
         self._render_jinja2_templates()
-        self._set_related_identifiers()
+        if load_related is True:
+            self._set_related_identifiers()
         self._read_status()
 
     def upload(self, dry_run: bool, token: str):
@@ -128,9 +134,11 @@ class Deposit:
         if changes is None:
             print(f"   - no changes made (recid: {self.status['recid']})")
         else:
+            update_related = False
             # create the deposit on Zenodo if necessary
             if "recid" not in self.status:
                 self._create_deposit(dry_run, token)
+                update_related = True
 
             # or modify its metadata if necessary
             elif changes["metadata"] is True:
@@ -153,6 +161,11 @@ class Deposit:
             # update the local status file if not a dry run
             if dry_run is False:
                 self._write_status()
+
+            # update links to this deposit in related deposits
+            if update_related is True:
+                self._update_related(to=self.name, dry_run=dry_run,
+                                     token=token)
 
     def download(self, file: str, dry_run: bool, token: str):
         """
@@ -234,6 +247,26 @@ class Deposit:
             self._write_status()
 
         print(f"   - {operation.value} (recid: {recid})")
+
+        # update links in related deposits
+        self._update_related(to=self.name, dry_run=dry_run, token=token)
+
+    def _update_related(self, to: str, dry_run: bool, token: str):
+        """
+            Update the related links of all related deposits
+
+            :param str to: links referring to this deposit must be updated
+            :param bool dry_run: whether this ia just a dry run
+            :param str token: Authentication token for Zenodo
+        """
+        # Update related links in parent deposit if there is one
+        if to != "":
+            parent = "/".join(self.name.split("/")[:-1])
+            print(f" * Updating related link to '{to}' in '{parent}' " +
+                  f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
+            parent = Deposit(name=parent, sandbox=self.sandbox,
+                             base_dir=self.base)
+            parent._update_deposit(dry_run=dry_run, token=token)
 
     def _render_jinja2_templates(self):
         """
@@ -346,17 +379,20 @@ class Deposit:
         changed.update({"status": status})
         return changed if changed['status'] != self.status else None
 
-    def _related_info(self, name: str):
+    def _related_info(self, name: str, relation: RelationType):
         """
-            Returns info for a related deposit
+            Returns info for a related deposit in Zenodo metadata format
 
             :param str name: deposit name
+            :param RelationType relation: the relation type
 
             :returns str/None: related identifier if deposit on Zenodo
         """
-        # get status of the deposit
-        status = Deposit(name=name, sandbox=self.sandbox,
-                         base_dir=self.base).status
+        # get status and resource_type of the deposit
+        deposit = Deposit(name=name, sandbox=self.sandbox,
+                          base_dir=self.base, load_related=False)
+        status = deposit.status
+        resource_type_str = deposit.metadata["upload_type"]
 
         # return None if deposit not on Zenodo
         if "recid" not in status:
@@ -374,23 +410,31 @@ class Deposit:
 
         return {
             "identifier": id,
-            "relation": RelationType.IS_PART_OF.value,
+            "relation": relation.value,
             "scheme": scheme,
-            "resource_type": ResourceType.OTHER.value
+            "resource_type": resource_type_str
         }
 
     def _set_related_identifiers(self):
         """
             Sets the related identifiers of parent and children
         """
-        # Add in the related identifier of parent (if any)
+        # Add in the related identifier of parent on Zenodo (if any)
         if self.name != "":
             parent = "/".join(self.name.split("/")[:-1])
-            related = self._related_info(name=parent)
-            if related is not None:
-                self.metadata["related_identifiers"].append(related)
+            parent = self._related_info(name=parent,
+                                        relation=RelationType.IS_PART_OF)
+            if parent is not None:
+                self.metadata["related_identifiers"].append(parent)
 
-        # Add in the related identifiers of any children
+        # Add in the related identifiers of any children on Zenodo
+        for child in scandir(self.base + self.name):
+            if not child.is_dir():
+                continue
+            child = self._related_info(name=child.name,
+                                       relation=RelationType.HAS_PART)
+            if child is not None:
+                self.metadata["related_identifiers"].append(child)
 
     def _create_deposit(self, dry_run: bool, token: str):
         """

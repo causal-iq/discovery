@@ -7,9 +7,15 @@ from os import remove as remove_local_file
 
 from tests.common import REPRO_TEST_DATA_DIR
 from causaliq_repro.repro import get_zenodo_token
-from causaliq_repro.deposit import Deposit
+from causaliq_repro.deposit import Deposit, SANDBOX_URL
 
-BASE_DIR = REPRO_TEST_DATA_DIR + "integration/root2/"
+IS_DOCUMENTED_BY = {  # expected "is documented by" related link
+    "https://orcid.org/0000-0002-7970-1453": {
+        "relation": "isDocumentedBy",
+        "resource_type": "other",
+        "scheme": "url"
+    }
+}
 
 
 # --- Test fixtures and helper functions
@@ -39,23 +45,47 @@ def get_stdout(capsys):
     return stdout
 
 
+# Helper function to generate expected stdout for related deposit changes
+def related_link_stdout(to: str, related: dict, sandbox: bool) -> str:
+    """
+        Returns expected stdout for changes made to related deposits
+
+        :param str to: name of deposit initially updated
+        :param dict related: related deposits, {name: recid}
+        :param bool sandbox: sanbox or live Zenodo being used
+
+        :returns str: expected stdout for the related deposit changes
+    """
+    str = ''
+    for name, recid in related.items():
+        str += (f" * Updating related link to '{to}' in '{name}'"
+                f" on {'sandbox' if sandbox else 'LIVE'} Zenodo\n"
+                f"   - update metadata (recid: {recid})\n")
+    return str
+
+
 # Perform and check upload which creates a new draft deposit
-def check_upload_create(name: str, token: str, capsys: CaptureFixture):
+def check_upload_create(name: str, related: dict, base_dir: str, token: str,
+                        capsys: CaptureFixture) -> int:
     """
         Checks creation of a new draft deposit
 
         :param str name: deposit name
+        :param dict related: {name: recid} of related deposits updated
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
+
+        :returns int: recid of created deposit
     """
     # Write an empty status file to force upload
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     deposit.status = {}
     deposit._write_status()
 
     # Upload the initial deposit with just a readme file
     capsys.readouterr()
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     deposit.upload(dry_run=False, token=token)
     recid = deposit.status["recid"]
     fileid = deposit.status["files"]["readme.md.j2"]["fileid"]
@@ -65,26 +95,30 @@ def check_upload_create(name: str, token: str, capsys: CaptureFixture):
     stdout = get_stdout(capsys)
     assert stdout == (
         "\n"
-        "** Uploading '' to sandbox Zenodo\n"
+        f"** Uploading '{name}' to sandbox Zenodo\n"
         f"   - create deposit (recid: {recid})\n"
         f"   - add file readme.md (recid: {recid}, "
         f"fileid: {fileid}, {size} bytes)\n"
-    )
+    ) + related_link_stdout(to=name, related=related, sandbox=True)
+
+    return recid
 
 
 # Perform and check upload where nothing has changed
-def check_upload_nochange(name: str, token: str, capsys: CaptureFixture):
+def check_upload_nochange(name: str, base_dir: str, token: str,
+                          capsys: CaptureFixture):
     """
         Checks upload where nothing has changed
 
         :param str name: deposit name
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
     """
 
     # Upload the initial deposit with just a readme file
     capsys.readouterr()
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     deposit.upload(dry_run=False, token=token)
     recid = deposit.status["recid"]
 
@@ -118,13 +152,14 @@ def set_changes(changes: dict = {}):
 
 
 # Perform and check upload where metadata has changed
-def check_upload_metadata_changed(name: str, token: str,
+def check_upload_metadata_changed(name: str, base_dir: str, token: str,
                                   capsys: CaptureFixture,
                                   monkeypatch: MonkeyPatch):
     """
         Checks upload where metadata change is simulated
 
         :param str name: deposit name
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
         :param MonkeyPatch monkeypatch: fixture to patch function behaviour
@@ -134,7 +169,7 @@ def check_upload_metadata_changed(name: str, token: str,
     capsys.readouterr()
     monkeypatch.setattr(Deposit, "_identify_changes",
                         set_changes({'metadata': True}))
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     deposit.metadata["title"] = deposit.metadata["title"].replace("2", "2A")
     deposit.upload(dry_run=False, token=token)
     monkeypatch.undo()
@@ -150,20 +185,22 @@ def check_upload_metadata_changed(name: str, token: str,
 
 
 # Perform and check upload where metadata and readme has changed
-def check_upload_metadata_and_readme_changed(name: str, token: str,
+def check_upload_metadata_and_readme_changed(name: str, base_dir: str,
+                                             token: str,
                                              capsys: CaptureFixture,
                                              monkeypatch: MonkeyPatch):
     """
         Checks upload where metadata and readme change has been simulated
 
         :param str name: deposit name
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
         :param MonkeyPatch monkeypatch: fixture to patch function behaviour
     """
     # Simulate the metadata being changed
     capsys.readouterr()
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
 
     # patch _identify_changes return to signal metadata & readme change
     fileid = deposit.status["files"]["readme.md.j2"]["fileid"]
@@ -188,21 +225,23 @@ def check_upload_metadata_and_readme_changed(name: str, token: str,
 
 
 # Perform and check retrieving metadata
-def check_get_metadata(name: str, rootid: str, files: set[str], token: str,
-                       capsys: CaptureFixture):
+def check_get_metadata(name: str, rootid: str, files: set[str], related: dict,
+                       base_dir: str, token: str, capsys: CaptureFixture):
     """
         Checks getting metadata of a draft deposit
 
         :param str name: deposit name
         :param str rootid: root id for this test
         :param set files: set of expected filenames in deposit
+        :param dict related: related deposits that are expected
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
     """
 
     # Check the metadata of the deposit
     capsys.readouterr()
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     recid = deposit.status["recid"]
     info = deposit.get_metadata(dry_run=False, token=token)
 
@@ -210,7 +249,7 @@ def check_get_metadata(name: str, rootid: str, files: set[str], token: str,
     stdout = get_stdout(capsys)
     assert stdout == (
         "\n"
-        "** Get metadata of '' from sandbox Zenodo\n"
+        f"** Get metadata of '{name}' from sandbox Zenodo\n"
         f"   - get metadata (recid: {recid})\n"
     )
 
@@ -221,28 +260,33 @@ def check_get_metadata(name: str, rootid: str, files: set[str], token: str,
     assert {f["filename"] for f in info["files"]} == files
     assert info['state'] == "unsubmitted"
 
-    print(info["metadata"]["related_identifiers"])
-    get_stdout(capsys)
+    # check the related links are as expected
+    actual = {r["identifier"]: {"relation": r["relation"],
+                                "resource_type": r["resource_type"],
+                                "scheme": r["scheme"]}
+              for r in info["metadata"]["related_identifiers"]}
+    assert actual == dict(related, **IS_DOCUMENTED_BY)
 
 
 # Perform and check adding a file
-def check_add_file(name: str, filename: str, token: str,
+def check_add_file(name: str, filename: str, base_dir: str, token: str,
                    capsys: CaptureFixture):
     """
         Checks adding a file to a draft deposit
 
         :param str name: deposit name
         :param str filename: local name of file to add
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
     """
     # Write new file to local directory
-    with open(BASE_DIR + filename, "w") as f:
+    with open(base_dir + filename, "w") as f:
         f.write("This is a test deposit file.\nLine 2 of the deposit file.\n")
 
     # Upload deposit which adds file
     capsys.readouterr()
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     deposit.upload(dry_run=False, token=token)
     recid = deposit.status["recid"]
     fileid = deposit.status["files"][filename]["fileid"]
@@ -259,22 +303,23 @@ def check_add_file(name: str, filename: str, token: str,
 
 
 # Perform and check removing a file
-def check_remove_file(name: str, filename: str, token: str,
+def check_remove_file(name: str, filename: str, base_dir: str, token: str,
                       capsys: CaptureFixture):
     """
         Checks removing a file from a draft deposit
 
         :param str name: deposit name
         :param str filename: local name of file to remove
+        :param str base_dir: local base (i.e., top-level) directory
         :param str token: Zenodo authentication token
         :param CaptureFixture capsys: fixture to capture stdout & stderr
     """
     # Remove file from local system
-    remove_local_file(BASE_DIR + filename)
+    remove_local_file(base_dir + filename)
 
     # Upload deposit which removes file
     capsys.readouterr()
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     fileid = deposit.status["files"][filename]["fileid"]
     recid = deposit.status["recid"]
     deposit.upload(dry_run=False, token=token)
@@ -289,20 +334,29 @@ def check_remove_file(name: str, filename: str, token: str,
 
 
 # Perform and check deletion of a draft deposit
-def check_delete(name: str, token: str, capsys: CaptureFixture):
-    deposit = Deposit(name=name, sandbox=True, base_dir=BASE_DIR)
+def check_delete(name: str, related: dict, base_dir: str, token: str,
+                 capsys: CaptureFixture):
+    """
+        Checks deleting a draft deposit
+
+        :param str name: deposit name
+        :param dict related: {name: recid} of related deposits updated
+        :param str base_dir: local base (i.e., top-level) directory
+        :param str token: Zenodo authentication token
+        :param CaptureFixture capsys: fixture to capture stdout & stderr
+    """
+    deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
     recid = deposit.status["recid"]
 
     capsys.readouterr()
     deposit.delete(dry_run=False, token=token)
-    captured = capsys.readouterr()
 
-    print(captured.out)
-    assert captured.out == (
+    stdout = get_stdout(capsys)
+    assert stdout == (
         "\n"
         f"** Deleting '{name}' from sandbox Zenodo\n"
         f"   - delete deposit (recid: {recid})\n"
-    )
+    ) + related_link_stdout(to=name, related=related, sandbox=True)
 
     assert deposit.status == {}
 
@@ -312,51 +366,112 @@ def check_delete(name: str, token: str, capsys: CaptureFixture):
 # Test workflow with a draft root node
 def test_root_only(token: str, capsys: CaptureFixture,
                    monkeypatch: MonkeyPatch):
+    base_dir = REPRO_TEST_DATA_DIR + "integration/root2/"
 
     # upload which creates the root deposit
-    check_upload_create(name="", token=token, capsys=capsys)
+    check_upload_create(name="", related={}, base_dir=base_dir, token=token,
+                        capsys=capsys)
 
     # checking root deposit metadata
-    check_get_metadata(name="", rootid="2", files={"readme.md"}, token=token,
-                       capsys=capsys)
+    check_get_metadata(name="", rootid="2", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
 
     # upload where nothing has changed
-    check_upload_nochange(name="", token=token, capsys=capsys)
+    check_upload_nochange(name="", base_dir=base_dir, token=token,
+                          capsys=capsys)
 
     # upload where metadata has changed
-    check_upload_metadata_changed(name="", token=token, capsys=capsys,
-                                  monkeypatch=monkeypatch)
+    check_upload_metadata_changed(name="", base_dir=base_dir, token=token,
+                                  capsys=capsys, monkeypatch=monkeypatch)
 
     # check that deposit metadata has been changed
-    check_get_metadata(name="", rootid="2A", files={"readme.md"}, token=token,
-                       capsys=capsys)
+    check_get_metadata(name="", rootid="2A", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
 
     # adding a file
-    check_add_file(name="", filename="testfile.tmp", token=token,
-                   capsys=capsys)
+    check_add_file(name="", filename="testfile.tmp", base_dir=base_dir,
+                   token=token, capsys=capsys)
 
     # check that file has been added to deposit
     check_get_metadata(name="", rootid="2A",
-                       files={"readme.md", "testfile.tmp"}, token=token,
-                       capsys=capsys)
+                       files={"readme.md", "testfile.tmp"}, related={},
+                       base_dir=base_dir,
+                       token=token, capsys=capsys)
 
     # upload where metadata and readme has changed
-    check_upload_metadata_and_readme_changed(name="", token=token,
-                                             capsys=capsys,
+    check_upload_metadata_and_readme_changed(name="", base_dir=base_dir,
+                                             token=token, capsys=capsys,
                                              monkeypatch=monkeypatch)
 
     # check that metadata has been changed, still two files
     check_get_metadata(name="", rootid="2B",
-                       files={"readme.md", "testfile.tmp"}, token=token,
-                       capsys=capsys)
+                       files={"readme.md", "testfile.tmp"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
 
     # removing a file
-    check_remove_file(name="", filename="testfile.tmp", token=token,
-                      capsys=capsys)
+    check_remove_file(name="", filename="testfile.tmp", base_dir=base_dir,
+                      token=token, capsys=capsys)
 
     # check that file has been has been removed from deposit
-    check_get_metadata(name="", rootid="2B", files={"readme.md"}, token=token,
-                       capsys=capsys)
+    check_get_metadata(name="", rootid="2B", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
 
     # delete the root deposit
-    check_delete(name="", token=token, capsys=capsys)
+    check_delete(name="", related={}, base_dir=base_dir, token=token,
+                 capsys=capsys)
+
+
+# Test workflow with a draft root and hub
+def test_root_and_hub(token: str, capsys: CaptureFixture,
+                      monkeypatch: MonkeyPatch):
+    base_dir = REPRO_TEST_DATA_DIR + "integration/root3/"
+
+    # upload which creates the root deposit
+    root_id = check_upload_create(name="", related={}, base_dir=base_dir,
+                                  token=token, capsys=capsys)
+    root_url = (SANDBOX_URL.replace("api", "") +
+                f"records/{root_id}?preview=1")
+
+    # checking root deposit metadata
+    check_get_metadata(name="", rootid="3", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
+
+    # upload which creates the hub deposit
+    hub_id = check_upload_create(name="hub", related={'': root_id},
+                                 base_dir=base_dir, token=token, capsys=capsys)
+    hub_url = (SANDBOX_URL.replace("api", "") +
+               f"records/{hub_id}?preview=1")
+
+    # checking hub deposit metadata - related should reference root
+    related = {
+        root_url: {"relation": "isPartOf",
+                   "resource_type": "other",
+                   "scheme": "url"
+                   }
+    }
+    check_get_metadata(name="hub", rootid="3 Hub", files={"readme.md"},
+                       related=related, base_dir=base_dir, token=token,
+                       capsys=capsys)
+
+    # checking root deposit metadata - related should now reference hub
+    related = {
+        hub_url: {"relation": "hasPart",
+                  "resource_type": "other",
+                  "scheme": "url"
+                  }
+    }
+    check_get_metadata(name="", rootid="3", files={"readme.md"},
+                       related=related, base_dir=base_dir, token=token,
+                       capsys=capsys)
+
+    # delete the hub deposit
+    check_delete(name="hub", related={'': root_id}, base_dir=base_dir,
+                 token=token, capsys=capsys)
+
+    # check root deposit has hub related link removed
+    check_get_metadata(name="", rootid="3", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
+
+    # delete the root deposit
+    check_delete(name="", related={}, base_dir=base_dir, token=token,
+                 capsys=capsys)
