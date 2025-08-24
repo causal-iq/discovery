@@ -2,14 +2,17 @@
 # system testing of run_learn structure learning entry point
 # - checking that traces are repeatable for BNLEARN/TABU_STD
 
+from call.r import requires_r_and_bnlearn
 from run_learn import run_learn
 from fileio.common import TESTDATA_DIR
 from experiments.trace_analysis import trace_analysis
 
 
-# Series BNLEARN/TABU_STD
+# --- Series BNLEARN/TABU_STD
 
-def systest_run_learn_bnlearn_tabu_std_asia_10_ok():  # asia N=10
+# asia N=10
+@requires_r_and_bnlearn
+def systest_run_learn_bnlearn_tabu_std_asia_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
 
     # single-valued columns so no graph produced
@@ -19,7 +22,9 @@ def systest_run_learn_bnlearn_tabu_std_asia_10_ok():  # asia N=10
                      root_dir) is False
 
 
-def systest_run_learn_bnlearn_tabu_std_asia_100_ok():  # asia N=100
+# asia, N=100
+@requires_r_and_bnlearn
+def systest_run_learn_bnlearn_tabu_std_asia_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_STD',
                       'networks': 'asia', 'N': '100', 'nodes': None},
@@ -37,7 +42,9 @@ def systest_run_learn_bnlearn_tabu_std_asia_100_ok():  # asia N=100
     assert t0.result == t1.result
 
 
-def systest_run_learn_bnlearn_tabu_std_asia_1k_ok():  # asia N=1k
+# asia N=1k
+@requires_r_and_bnlearn
+def systest_run_learn_bnlearn_tabu_std_asia_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_STD',
                       'networks': 'asia', 'N': '1k', 'nodes': None},
@@ -55,7 +62,9 @@ def systest_run_learn_bnlearn_tabu_std_asia_1k_ok():  # asia N=1k
     assert t0.result == t1.result
 
 
-def systest_run_learn_bnlearn_tabu_std_sports_10_ok():  # sports N=10
+# sports N=10
+@requires_r_and_bnlearn
+def systest_run_learn_bnlearn_tabu_std_sports_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_STD',
                       'networks': 'sports', 'N': '10', 'nodes': None},
@@ -73,7 +82,9 @@ def systest_run_learn_bnlearn_tabu_std_sports_10_ok():  # sports N=10
     assert t0.result == t1.result
 
 
-def systest_run_learn_bnlearn_tabu_std_sports_100_ok():  # sports N=100
+# sports N=100
+@requires_r_and_bnlearn
+def systest_run_learn_bnlearn_tabu_std_sports_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_STD',
                       'networks': 'sports', 'N': '100', 'nodes': None},
@@ -91,7 +102,9 @@ def systest_run_learn_bnlearn_tabu_std_sports_100_ok():  # sports N=100
     assert t0.result == t1.result
 
 
-def systest_run_learn_bnlearn_tabu_std_sports_1k_ok():  # sports N=1k
+# sports N=1k
+@requires_r_and_bnlearn
+def systest_run_learn_bnlearn_tabu_std_sports_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_STD',
                       'networks': 'sports', 'N': '1K', 'nodes': None},

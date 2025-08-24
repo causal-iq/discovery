@@ -1,15 +1,15 @@
 // {'algorithm': 'HC', 'in': 'experiments/bn/cancer.dsc', 'N': 10, 'id': 'HC_N_1/cancer/N10', 'params': {'score': 'BIC'}, 'os': 'Windows v10.0.19041', 'cpu': 'Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz', 'python': '3.8.2.final.0 (64 bit)', 'ram': 16, 'software_version': 3}
 digraph {
-	graph [dpi=300 splines=true]
-	Cancer [label=Cancer pos="1.312,1.403!"]
-	Dyspnoea [label=Dyspnoea pos="0.659,0.250!"]
-	Pollution [label=Pollution pos="0.617,2.556!"]
-	Smoker [label=Smoker pos="2.006,2.556!"]
-	Xray [label=Xray pos="1.965,0.250!"]
+	graph [dpi=300 splines=true start=42]
+	Cancer [label=Cancer pos="1.329,1.406!"]
+	Dyspnoea [label=Dyspnoea pos="0.676,0.250!"]
+	Pollution [label=Pollution pos="0.621,2.562!"]
+	Smoker [label=Smoker pos="2.051,2.562!"]
+	Xray [label=Xray pos="1.996,0.250!"]
 	Dyspnoea -> Pollution [label="[1*]  " color=gold3 fontcolor=gold3 fontsize=12 labelfloat=true penwidth=5.29]
 	Dyspnoea -> Cancer [label="[2*]  " color="#990000" fontcolor="#990000" fontsize=12 labelfloat=true penwidth=4.97]
 	Dyspnoea -> Xray [label="[3*]  " color=gold3 fontcolor=gold3 fontsize=12 labelfloat=true penwidth=4.11]
-	Pollution -> Cancer [color=lightblue3]
 	Cancer -> Xray [color=lightblue3]
+	Pollution -> Cancer [color=lightblue3]
 	Smoker -> Cancer [color=lightblue3]
 }

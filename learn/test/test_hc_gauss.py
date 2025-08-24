@@ -11,9 +11,11 @@ from fileio.common import TESTDATA_DIR
 from fileio.pandas import Pandas
 from core.bn import BN
 from learn.hc import hc
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_learn
 
 
+# Set Pandas options to display whole dataframe
 @pytest.fixture
 def showall():
     set_option('display.max_rows', None)
@@ -21,6 +23,7 @@ def showall():
     set_option('display.width', None)
 
 
+# Helper to check bnlearn and bnbench learn same graphs
 def check_hc(id, N, expect=None, reverse=False):
     """
         Run hc test, comparing bnbench with bnlearn.
@@ -62,134 +65,174 @@ def check_hc(id, N, expect=None, reverse=False):
         print(dag.to_string())
 
 
-# bivariate networks
+# --- bivariate networks
 
 # these show variable ordering has an effect - reverse=True, reverses
 # order of columns in the DataFrame
 
-def test_hc_xy_10_ok(showall):  # X->Y 10 rows, no trace
+# X->Y 10 rows, no trace
+@requires_r_and_bnlearn
+def test_hc_xy_10_ok(showall):
     check_hc('/xdsl/xy', 10, '[X][Y|X]')
-    # check_hc('/xdsl/xy', 10, '[X|Y][Y]', reverse=True)
 
 
-def test_hc_xy_100_ok(showall):  # X->Y 100 rows
+# X->Y 100 rows
+@requires_r_and_bnlearn
+def test_hc_xy_100_ok(showall):
     check_hc('/xdsl/xy', 100, '[X][Y|X]')
     check_hc('/xdsl/xy', 100, '[X|Y][Y]', reverse=True)
 
 
-def test_hc_xy_10k_ok(showall):  # X->Y 10K rows
+# X->Y 10K rows
+@requires_r_and_bnlearn
+def test_hc_xy_10k_ok(showall):
     check_hc('/xdsl/xy', 10000, '[X][Y|X]')
     check_hc('/xdsl/xy', 10000, '[X|Y][Y]', reverse=True)
 
 
-# This shows that reversing the finction from y = f(x) to x = f(y) has
-# no effect; variable ordering still the important thing
+# --- This shows that reversing the function from y = f(x) to x = f(y) has
+# --- no effect; variable ordering still the important thing
 
-def test_hc_yx_10_ok(showall):  # X<-Y 10K rows
+# X<-Y 10K rows
+@requires_r_and_bnlearn
+def test_hc_yx_10_ok(showall):
     check_hc('/xdsl/yx', 10, '[X][Y|X]')
     check_hc('/xdsl/yx', 10, '[X|Y][Y]', reverse=True)
 
 
-def test_hc_yx_100_ok(showall):  # X<-Y 10K rows
+# X<-Y 10K rows
+@requires_r_and_bnlearn
+def test_hc_yx_100_ok(showall):
     check_hc('/xdsl/yx', 100, '[X][Y|X]')
     check_hc('/xdsl/yx', 100, '[X|Y][Y]', reverse=True)
 
 
-def test_hc_yx_10k_ok(showall):  # X<-Y 10K rows
+# X<-Y 10K rows
+@requires_r_and_bnlearn
+def test_hc_yx_10k_ok(showall):
     check_hc('/xdsl/yx', 10000, '[X][Y|X]')
     check_hc('/xdsl/yx', 10000, '[X|Y][Y]', reverse=True)
 
 
-# These all correctly show independence regardless of variable order
+# --- These all correctly show independence regardless of variable order
 
-def test_hc_x_y_10_ok(showall):  # X Y 10 rows
+# X Y 10 rows
+@requires_r_and_bnlearn
+def test_hc_x_y_10_ok(showall):
     check_hc('/xdsl/x_y', 10, '[X][Y]')
     check_hc('/xdsl/x_y', 10, '[X][Y]', reverse=True)
 
 
-def test_hc_x_y_100_ok(showall):  # X Y 100 rows
+# X Y 100 rows
+@requires_r_and_bnlearn
+def test_hc_x_y_100_ok(showall):
     check_hc('/xdsl/x_y', 100, '[X][Y]')
     check_hc('/xdsl/x_y', 100, '[X][Y]', reverse=True)
 
 
-def test_hc_x_y_10k_ok(showall):  # X Y 10k rows
+# X Y 10k rows
+@requires_r_and_bnlearn
+def test_hc_x_y_10k_ok(showall):
     check_hc('/xdsl/x_y', 10000, '[X][Y]')
     check_hc('/xdsl/x_y', 10000, '[X][Y]', reverse=True)
 
 
-# Trivariate networks
+# --- Trivariate networks
+# --- Chain X->Y->Z again shows influence of variable ordering
 
-# Chain X->Y->Z again shows influence of variable ordering
-
-def test_hc_xyz_10_ok(showall):  # X->Y->Z 10 rows
+# X->Y->Z 10 rows
+@requires_r_and_bnlearn
+def test_hc_xyz_10_ok(showall):
     check_hc('/xdsl/xyz', 10, '[X][Y|X][Z|Y]')
     check_hc('/xdsl/xyz', 10, '[X|Y][Y|Z][Z]', reverse=True)
 
 
-def test_hc_xyz_100_ok(showall):  # X->Y->Z 100 rows, reversed order
+# X->Y->Z 100 rows, reversed order
+@requires_r_and_bnlearn
+def test_hc_xyz_100_ok(showall):
     check_hc('/xdsl/xyz', 100, '[X][Y|X][Z|Y]')
     check_hc('/xdsl/xyz', 100, '[X|Y][Y|Z][Z]', reverse=True)
 
 
-def test_hc_xyz_10k_ok(showall):  # X->Y->Z 10k rows
+# X->Y->Z 10k rows
+@requires_r_and_bnlearn
+def test_hc_xyz_10k_ok(showall):
     check_hc('/xdsl/xyz', 10000, '[X][Y|X][Z|Y]')
     check_hc('/xdsl/xyz', 10000, '[X|Y][Y|Z][Z]', reverse=True)
 
 
-# Reverse chain X<-Y<-Z again shows influence of variable order.
-# The very weak strength of edge X--Y means it is not discovered at N=10,
-# At 100 X<-Z<-Y is delvered with XYZ ordering and X Y<-Z with ZYX ordering
-# At 10K chain learnt with direction driven by variable order
+# --- Reverse chain X<-Y<-Z again shows influence of variable order.
+# --- The very weak strength of edge X--Y means it is not discovered at N=10,
+# -   At 100 X<-Z<-Y is delvered with XYZ ordering and X Y<-Z with ZYX ordering
+# -   At 10K chain learnt with direction driven by variable order
 
-def test_hc_zyx_10_ok(showall):  # X<-Y<-Z 10 rows
+# X<-Y<-Z 10 rows
+@requires_r_and_bnlearn
+def test_hc_zyx_10_ok(showall):
     check_hc('/xdsl/zyx', 10, '[X][Y][Z|Y]')
     check_hc('/xdsl/zyx', 10, '[X][Y|Z][Z]', reverse=True)
 
 
-def test_hc_zyx_100_ok(showall):  # X<-Y<-Z 100 rows
+# X<-Y<-Z 100 rows
+@requires_r_and_bnlearn
+def test_hc_zyx_100_ok(showall):
     check_hc('/xdsl/zyx', 100, '[X|Z][Y][Z|Y]')
     check_hc('/xdsl/zyx', 100, '[X|Z][Y|Z][Z]', reverse=True)
 
 
-def test_hc_zyx_10k_ok(showall):  # X<-Y<-Z 10k rows
+# X<-Y<-Z 10k rows
+@requires_r_and_bnlearn
+def test_hc_zyx_10k_ok(showall):
     check_hc('/xdsl/zyx', 10000, '[X|Y][Y|Z][Z]', reverse=True)
 
 
-# Collider X->Y<-Z
-# With XYZ ordering, collider learnt correctly (adds X->Y, then Y<-Z)
-# With ZYX ordering adds Y->X, then Z->X and then Z->Y to compensate
-# (at N=10, only Y->X discovered)
+# --- Collider X->Y<-Z
+# --- With XYZ ordering, collider learnt correctly (adds X->Y, then Y<-Z)
+# --- With ZYX ordering adds Y->X, then Z->X and then Z->Y to compensate
+# --- (at N=10, only Y->X discovered)
 
-def test_hc_xy_zy_10_ok(showall):  # X->Y<-Z 10 rows
+# X->Y<-Z 10 rows
+@requires_r_and_bnlearn
+def test_hc_xy_zy_10_ok(showall):
     check_hc('/xdsl/xy_zy', 10, '[X][Y|X:Z][Z]')
     check_hc('/xdsl/xy_zy', 10, '[X|Y][Y][Z]', reverse=True)
 
 
-def test_hc_xy_zy_100_ok(showall):  # X->Y<-Z 100 rows
+# X->Y<-Z 100 rows
+@requires_r_and_bnlearn
+def test_hc_xy_zy_100_ok(showall):
     check_hc('/xdsl/xy_zy', 100, '[X][Y|X:Z][Z]')
     check_hc('/xdsl/xy_zy', 100, '[X|Y:Z][Y|Z][Z]', reverse=True)
 
 
-def test_hc_xy_zy_10k_ok(showall):  # X->Y<-Z 10k rows
+# X->Y<-Z 10k rows
+@requires_r_and_bnlearn
+def test_hc_xy_zy_10k_ok(showall):
     check_hc('/xdsl/xy_zy', 10000, '[X][Y|X:Z][Z]')
     check_hc('/xdsl/xy_zy', 10000, '[X|Y:Z][Y|Z][Z]', reverse=True)
 
 
-# Seven node bnlearn example gaussian model.
+# --- Seven node bnlearn example gaussian model.
 
-def test_hc_gauss_10_ok(showall):  # Gauss 10 rows
+# Gauss 10 rows
+@requires_r_and_bnlearn
+def test_hc_gauss_10_ok(showall):
     check_hc('/xdsl/gauss', 10, '[A][B|A][C|A:D][D|A:B:E:G][E][F|C:E:G][G]')
     check_hc('/xdsl/gauss', 10, '[A|D][B|A:D:E:G][C|A:D][D][E][F|C:E:G][G]',
              reverse=True)
 
 
-def test_hc_gauss_100_ok(showall):  # Gauss 100 rows
+# Gauss 100 rows
+@requires_r_and_bnlearn
+def test_hc_gauss_100_ok(showall):
     check_hc('/xdsl/gauss', 100, '[A][B][C|A:B][D|B][E][F|A:D:E:G][G]')
     check_hc('/xdsl/gauss', 100, '[A][B|D][C|A:B][D][E][F|A:D:E:G][G]',
              reverse=True)
 
 
-def test_hc_gauss_1K_ok(showall):  # Gauss 1K rows
+# Gauss 1K rows
+@requires_r_and_bnlearn
+def test_hc_gauss_1K_ok(showall):
     check_hc('/xdsl/gauss', 1000, '[A][B][C|A:B][D|B][E][F|A:D:E:G][G]')
     check_hc('/xdsl/gauss', 1000, '[A][B|D][C|A:B][D][E][F|A:D:E:G][G]',
              reverse=True)

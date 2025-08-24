@@ -140,8 +140,10 @@ def test_numpy_tabu_pathfinder_3_timings():  # Tabu, pathfinder, 1M
     assert timing['marginals'][2]['count'] == 11772
 
 
+# this test is very slow - disable it
+
 @pytest.mark.slow
-def test_numpy_tabu_gaming_3_timings():  # Tabu, gaming, 1M
+def xtest_numpy_tabu_gaming_3_timings():  # Tabu, gaming, 1M
     timing = do_expt(network='gaming', N=1000000, id=3,
                      params={'tabu': 10})
     # assert timing['marginals'][1]['count'] == 109

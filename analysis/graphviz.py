@@ -11,7 +11,7 @@ from analysis.trace import TraceAnalysis
 STATUS_COLOUR = {'ok': 'darkgreen', 'eqv': 'indianred1', 'rev': '#990000',
                  'ext': 'gold3', 'mis': 'lightblue3', 'abs': 'darkorchid4'}
 
-DOT_NODE = compile('^(\\S+)\\s\\[height\\=.*pos\\=\\"(\\S+)\\".*$')
+DOT_NODE = compile(r"^(\S+)\s*\[height\=.*pos\=\"(.*)\".*$")
 
 
 def node_positions(analysis):
@@ -27,6 +27,7 @@ def node_positions(analysis):
     # Use 'dot' layout engine suitable for DAGs and add nodes
 
     dot = gv.Digraph(engine='dot')
+    dot.graph_attr['start'] = '42'
     for node in analysis.result.nodes:
         dot.node(node, node)
 
@@ -84,7 +85,7 @@ def traceviz(analysis, dir, filename=None):
     # attributes so arcs drawn around nodes, and dpi is 300, and add nodes.
 
     dot = gv.Digraph(comment=analysis.context, engine='neato')
-    dot.attr('graph', dpi='300', splines='true')
+    dot.attr('graph', dpi='300', splines='true', start='42')
     for node in analysis.result.nodes:
         dot.node(node, node, pos=positions[node])
 

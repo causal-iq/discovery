@@ -4,6 +4,7 @@
 from pytest import MonkeyPatch, fixture, skip
 from _pytest.capture import CaptureFixture
 from os import remove as remove_local_file
+from json import dump
 
 from tests.common import REPRO_TEST_DATA_DIR
 from causaliq_repro.repro import get_zenodo_token
@@ -62,6 +63,21 @@ def related_link_stdout(to: str, related: dict, sandbox: bool) -> str:
                 f" on {'sandbox' if sandbox else 'LIVE'} Zenodo\n"
                 f"   - update metadata (recid: {recid})\n")
     return str
+
+
+# Helper function writing empty sandbox status file
+def write_empty_status_file(name: str, base_dir: str):
+    """
+        Write empty status file.
+
+        :param str name: deposit name
+        :param str base_dir: base directory for the local deposit files
+    """
+    try:
+        with open(f"{base_dir}{name}/sandbox_status.json", "w") as f:
+            dump({}, f, indent=4)
+    except Exception as e:
+        raise ValueError(f"Error writing status of {name}: {e}")
 
 
 # Perform and check upload which creates a new draft deposit
@@ -368,6 +384,9 @@ def test_root_only(token: str, capsys: CaptureFixture,
                    monkeypatch: MonkeyPatch):
     base_dir = REPRO_TEST_DATA_DIR + "integration/root2/"
 
+    # Ensure empty status files are present
+    write_empty_status_file(name="", base_dir=base_dir)
+
     # upload which creates the root deposit
     check_upload_create(name="", related={}, base_dir=base_dir, token=token,
                         capsys=capsys)
@@ -425,6 +444,10 @@ def test_root_only(token: str, capsys: CaptureFixture,
 def test_root_and_hub(token: str, capsys: CaptureFixture,
                       monkeypatch: MonkeyPatch):
     base_dir = REPRO_TEST_DATA_DIR + "integration/root3/"
+
+    # Ensure empty status files are present
+    write_empty_status_file(name="", base_dir=base_dir)
+    write_empty_status_file(name="hub", base_dir=base_dir)
 
     # upload which creates the root deposit
     root_id = check_upload_create(name="", related={}, base_dir=base_dir,

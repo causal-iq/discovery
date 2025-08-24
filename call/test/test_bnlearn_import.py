@@ -5,24 +5,31 @@ import pytest
 from random import random
 from os import remove
 
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_import
 from fileio.common import TESTDATA_DIR, EXPTS_DIR
 from core.bn import BN
 
 
-@pytest.fixture(scope="function")  # temp file, automatically removed
+# temp file, automatically removed
+@pytest.fixture(scope="function")
 def tmpfile():
     _tmpfile = TESTDATA_DIR + '/tmp/{}.xdsl'.format(int(random() * 10000000))
     yield _tmpfile
-    remove(_tmpfile)
+    try:
+        remove(_tmpfile)
+    except Exception:
+        pass
 
 
-def test_bnlearn_type_error_1():  # No argument
+# No argument
+def test_bnlearn_type_error_1():
     with pytest.raises(TypeError):
         bnlearn_import()
 
 
-def test_bnlearn_type_error_2():  # Bad arg type
+# Bad arg type
+def test_bnlearn_type_error_2():
     with pytest.raises(TypeError):
         bnlearn_import(False)
     with pytest.raises(TypeError):
@@ -31,22 +38,27 @@ def test_bnlearn_type_error_2():  # Bad arg type
         bnlearn_import(37)
 
 
-def test_bnlearn_filenotfound_error_1():  # Non-existent rda
+# Non-existent rda
+def test_bnlearn_filenotfound_error_1():
     with pytest.raises(FileNotFoundError):
         bnlearn_import('nonexistent')
 
 
-def test_bnlearn_value_error_1():  # Invalid RDA file
+# Invalid RDA file
+def test_bnlearn_value_error_1():
     with pytest.raises(ValueError):
         bnlearn_import('not_rda')
 
 
-def test_bnlearn_value_error_2():  # No BN inside RDA
+# No BN inside RDA
+def test_bnlearn_value_error_2():
     with pytest.raises(ValueError):
         bnlearn_import('not_bn')
 
 
-def test_bnlearn_import_gauss_1_ok():  # Import gauss
+# Import gauss
+@requires_r_and_bnlearn
+def test_bnlearn_import_gauss_1_ok():
     bn = bnlearn_import('gauss')
     assert bn.dag.to_string() == '[A][B][C|A:B][D|B][E][F|A:D:E:G][G]'
     assert set(bn.cnds) == {'A', 'B', 'C', 'D', 'E', 'F', 'G'}
@@ -69,7 +81,9 @@ def test_bnlearn_import_gauss_1_ok():  # Import gauss
     assert ref == bn
 
 
-def test_bnlearn_import_building_1_ok():  # Import building
+# Import building
+@requires_r_and_bnlearn
+def test_bnlearn_import_building_1_ok():
     bn = bnlearn_import('building')
     assert bn.dag.to_string() == \
         ('[X1|X10:X2:X9]' +
@@ -153,7 +167,9 @@ def test_bnlearn_import_building_1_ok():  # Import building
     assert ref == bn
 
 
-def test_bnlearn_import_ecoli70_1_ok():  # Import ecoli70 [n=46]
+# Import ecoli70 [n=46]
+@requires_r_and_bnlearn
+def test_bnlearn_import_ecoli70_1_ok():
     bn = bnlearn_import('ecoli70')
 
     print('\n\necoli70 BN:\n{}\nNode distributions:'.format(bn.dag))
@@ -294,7 +310,9 @@ def test_bnlearn_import_ecoli70_1_ok():  # Import ecoli70 [n=46]
     assert ref == bn
 
 
-def test_bnlearn_import_magic_niab_1_ok(tmpfile):  # Import magic-niab [n=44]
+# Import magic-niab [n=44]
+@requires_r_and_bnlearn
+def test_bnlearn_import_magic_niab_1_ok(tmpfile):
     bn = bnlearn_import('magic-niab')
 
     # xdsl will be Genie compliant: '.' ==> '_' in node names
@@ -427,7 +445,9 @@ def test_bnlearn_import_magic_niab_1_ok(tmpfile):  # Import magic-niab [n=44]
     assert ref == bn
 
 
-def test_bnlearn_import_magic_irri_1_ok():  # Import magic-irri [n=64]
+# Import magic-irri [n=64]
+@requires_r_and_bnlearn
+def test_bnlearn_import_magic_irri_1_ok():
     bn = bnlearn_import('magic-irri')
 
     # bn.write(EXPTS_DIR + '/bn/xdsl/magic-irri_c.xdsl')
@@ -440,7 +460,9 @@ def test_bnlearn_import_magic_irri_1_ok():  # Import magic-irri [n=64]
         print(' {}: {}'.format(node, cnd))
 
 
-def test_bnlearn_import_arth150_1_ok(tmpfile):  # Import arth150 [n=107]
+# Import arth150 [n=107]
+@requires_r_and_bnlearn
+def test_bnlearn_import_arth150_1_ok(tmpfile):
     bn = bnlearn_import('arth150')
 
     # bn.write(EXPTS_DIR + '/bn/xdsl/arth150_c.xdsl')

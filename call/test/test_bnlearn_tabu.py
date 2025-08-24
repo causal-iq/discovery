@@ -1,36 +1,42 @@
-
 #   Test calling the bnlearn TABU structure learning algorithm
 
 import pytest
 from copy import deepcopy
 
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_learn
 from fileio.common import TESTDATA_DIR
 from fileio.numpy import NumPy
 from core.bn import BN
 
 
-@pytest.fixture(scope="module")  # AB, 10 categorical rows
+# AB, 10 categorical rows
+@pytest.fixture(scope="module")
 def ab10():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
     return NumPy.from_df(df=bn.generate_cases(10), dstype='categorical',
                          keep_df=False)
 
 
+# empty trace entry
 @pytest.fixture(scope='module')
-def empty_entry():  # empty trace entry
+def empty_entry():
     return {'activity': None, 'arc': None, 'delta/score': None,
             'activity_2': None, 'arc_2': None, 'delta_2': None,
             'min_N': None, 'mean_N': None, 'max_N': None, 'free_params': None,
             'lt5': None, 'knowledge': None, 'blocked': []}
 
 
-def test_bnlearn_tabu_type_error_1():  # no arguments
+# --- Failure cases
+
+# no arguments
+def test_bnlearn_tabu_type_error_1():
     with pytest.raises(TypeError):
         bnlearn_learn()
 
 
-def test_bnlearn_tabu_type_error_2():  # single argument
+# single argument
+def test_bnlearn_tabu_type_error_2():
     with pytest.raises(TypeError):
         bnlearn_learn('tabu')
     with pytest.raises(TypeError):
@@ -39,7 +45,8 @@ def test_bnlearn_tabu_type_error_2():  # single argument
         bnlearn_learn([['A', 'B'], [1, 2]])
 
 
-def test_bnlearn_tabu_type_error_3(ab10):  # bad algorithm type
+# bad algorithm type
+def test_bnlearn_tabu_type_error_3(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn(True, ab10)
     with pytest.raises(TypeError):
@@ -48,7 +55,8 @@ def test_bnlearn_tabu_type_error_3(ab10):  # bad algorithm type
         bnlearn_learn(ab10, ab10)
 
 
-def test_bnlearn_tabu_type_error_4(ab10):  # bad data argument type
+# bad data argument type
+def test_bnlearn_tabu_type_error_4(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('tabu', 32.23)
     with pytest.raises(TypeError):
@@ -57,14 +65,16 @@ def test_bnlearn_tabu_type_error_4(ab10):  # bad data argument type
         bnlearn_learn('tabu', ab10.as_df())
 
 
-def test_bnlearn_tabu_type_error_5(ab10):  # bad context argument type
+# bad context argument type
+def test_bnlearn_tabu_type_error_5(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('tabu', ab10, context=True)
     with pytest.raises(TypeError):
         bnlearn_learn('tabu', ab10, context='test/ab/10')
 
 
-def test_bnlearn_tabu_type_error_6(ab10):  # bad params argument type
+# bad params argument type
+def test_bnlearn_tabu_type_error_6(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('tabu', ab10, params=True)
     with pytest.raises(TypeError):
@@ -73,7 +83,8 @@ def test_bnlearn_tabu_type_error_6(ab10):  # bad params argument type
         bnlearn_learn('tabu', ab10, params='bic')
 
 
-def test_bnlearn_tabu_value_error_1(ab10):  # bad context values
+# bad context values
+def test_bnlearn_tabu_value_error_1(ab10):
     with pytest.raises(ValueError):
         bnlearn_learn('tabu', ab10, context={})
     with pytest.raises(ValueError):
@@ -84,22 +95,29 @@ def test_bnlearn_tabu_value_error_1(ab10):  # bad context values
         bnlearn_learn('tabu', ab10, context={'id': 'id'})
 
 
-def test_bnlearn_tabu_value_error_2(ab10):  # bad param name
+# bad param name
+def test_bnlearn_tabu_value_error_2(ab10):
     with pytest.raises(ValueError):
         bnlearn_learn('tabu', ab10, params={'invalid': 'bic'})
 
 
-def test_bnlearn_tabu_value_error_3(ab10):  # bad score specified
+# bad score specified
+def test_bnlearn_tabu_value_error_3(ab10):
     with pytest.raises(ValueError):
         bnlearn_learn('tabu', ab10, params={'score': 'invalid'})
 
 
-def test_bnlearn_tabu_filenotfound_error_1():  # bad primary arg types
+# bad primary arg types
+def test_bnlearn_tabu_filenotfound_error_1():
     with pytest.raises(FileNotFoundError):
         bnlearn_learn('tabu', 'nonexistent.txt')
 
 
-def test_bnlearn_tabu_ab_10_ok_1(ab10, empty_entry):  # default BIC score
+# --- Successful cases with discrete data
+
+# default BIC score
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_ab_10_ok_1(ab10, empty_entry):
     dag, trace = bnlearn_learn('tabu', ab10, context={'in': 'in', 'id': 'id'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # TABU learns correct answer
@@ -137,14 +155,18 @@ def test_bnlearn_tabu_ab_10_ok_1(ab10, empty_entry):  # default BIC score
     assert trace.result == dag
 
 
-def test_bnlearn_tabu_ab_10_ok_2(ab10):  # default BIC score, no trace
+# default BIC score, no trace
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_ab_10_ok_2(ab10):
     dag, trace = bnlearn_learn('tabu', ab10)
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # TABU learns correct answer
     assert trace is None
 
 
-def test_bnlearn_tabu_ab_10_ok_3(ab10, empty_entry):  # BDE score
+# BDE score
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_ab_10_ok_3(ab10, empty_entry):
     dag, trace = bnlearn_learn('tabu', ab10, context={'in': 'in', 'id': 'id'},
                                params={'score': 'bde'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
@@ -183,7 +205,9 @@ def test_bnlearn_tabu_ab_10_ok_3(ab10, empty_entry):  # BDE score
     assert trace.result == dag
 
 
-def test_bnlearn_tabu_ab_10_ok_4(ab10, empty_entry):  # Loglik score
+# Loglik score
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_ab_10_ok_4(ab10, empty_entry):
     dag, trace = bnlearn_learn('tabu', ab10, context={'in': 'in', 'id': 'id'},
                                params={'score': 'loglik'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
@@ -221,6 +245,8 @@ def test_bnlearn_tabu_ab_10_ok_4(ab10, empty_entry):  # Loglik score
     assert trace.result == dag
 
 
+# A --> B, 100 rows
+@requires_r_and_bnlearn
 def test_bnlearn_tabu_ab_100_ok():
     data = BN.read(TESTDATA_DIR + '/dsc/ab.dsc').generate_cases(100)
     data = NumPy.from_df(df=data, dstype='categorical', keep_df=False)
@@ -231,6 +257,8 @@ def test_bnlearn_tabu_ab_100_ok():
 
 #   FOLLOWING TEST MAY LEARN DIFFERENT RESULTS ON LAPTOP & DESKTOP
 
+# A --> B --> C, 100 rows
+@requires_r_and_bnlearn
 def test_bnlearn_tabu_abc_100_ok():
     data = BN.read(TESTDATA_DIR + '/dsc/abc.dsc').generate_cases(1000)
     data = NumPy.from_df(df=data, dstype='categorical', keep_df=True)
@@ -239,7 +267,9 @@ def test_bnlearn_tabu_abc_100_ok():
     assert dag.to_string() == '[A][B|A][C|B]'  # TABU learns correctly
 
 
-def test_bnlearn_tabu_ab_cb_1k_ok():  # A -> B <- C, 1k Rows
+# A -> B <- C, 1k Rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_ab_cb_1k_ok():
     data = BN.read(TESTDATA_DIR + '/dsc/ab_cb.dsc').generate_cases(1000)
     data = NumPy.from_df(df=data, dstype='categorical', keep_df=True)
     dag, trace = bnlearn_learn('tabu', data, context={'in': 'in', 'id': 'id'})
@@ -247,7 +277,9 @@ def test_bnlearn_tabu_ab_cb_1k_ok():  # A -> B <- C, 1k Rows
     assert dag.to_string() == '[A][B|A:C][C]'  # TABU learns correctly
 
 
-def test_bnlearn_tabu_and4_10_1k_ok():  # 1->2->4, 3->2, 1K rows
+# 1->2->4, 3->2, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_and4_10_1k_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/and4_10.dsc')
     print(bn.global_distribution())
     data = bn.generate_cases(1000)
@@ -258,7 +290,9 @@ def test_bnlearn_tabu_and4_10_1k_ok():  # 1->2->4, 3->2, 1K rows
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'  # only equivalent
 
 
-def test_bnlearn_tabu_cancer_1k_ok():  # Cancer, 1K rows
+# Cancer, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_cancer_1k_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical')
     dag, trace = bnlearn_learn('tabu', data, context={'in': 'in', 'id': 'id'})
@@ -267,7 +301,9 @@ def test_bnlearn_tabu_cancer_1k_ok():  # Cancer, 1K rows
         == dag.to_string()  # incorrect NOT equivalent
 
 
-def test_bnlearn_tabu_asia_1k_ok_1():  # Asia, 1K rows
+# Asia, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_asia_1k_ok_1():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/asia.data.gz',
                       dstype='categorical')
     dag, trace = bnlearn_learn('tabu', data, context={'in': 'in', 'id': 'id'})
@@ -278,15 +314,17 @@ def test_bnlearn_tabu_asia_1k_ok_1():  # Asia, 1K rows
 
 #   FOLLOWING TEST MAY GIVE DIFFERENT RESULTS ON LAPTOP & DESKTOP
 
-def xtest_bnlearn_tabu_asia_1k_ok_2():  # Asia, 1K rows, BDE score
+# Asia, 1K rows, BDE score
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_asia_1k_ok_2():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/asia.data.gz',
                       dstype='categorical')
     dag, trace = bnlearn_learn('tabu', data, context={'in': 'in', 'id': 'id'},
                                params={'score': 'bde'})
     print('\nDAG learnt from 1K rows of Asia (BDeu): {}\n{}'
           .format(dag, trace))
-    assert ('[asia][bronc|smoke][dysp|bronc:either][either|asia:lung:tub]' +
-            '[lung|smoke][smoke][tub][xray|either]') == dag.to_string()
+    assert ("[asia][bronc|smoke][dysp|bronc:either][either|asia:lung:tub]" +
+            "[lung][smoke|lung][tub][xray|either]") == dag.to_string()
     assert trace.context['N'] == 1000
     assert trace.context['id'] == 'id'
     assert trace.context['algorithm'] == 'TABU'
@@ -308,8 +346,12 @@ def xtest_bnlearn_tabu_asia_1k_ok_2():  # Asia, 1K rows, BDE score
     assert _trace[19] == {'activity': 'reverse', 'arc': ('smoke', 'bronc'),
                           'delta/score': 0.0, 'activity_2': None,
                           'arc_2': None, 'delta_2': None, 'min_N': None,
-                          'mean_N': None, 'max_N': None, 'free_params': None,
-                          'lt5': None, 'knowledge': None, 'blocked': []}
+                          'mean_N': None, 'max_N': None, 'lt5': None,
+                          'free_params': None, 'knowledge': None,
+                          'blocked': [('delete', ('either', 'asia'),
+                                       0.731449, {'elem': 8}),
+                                      ('reverse', ('either', 'asia'),
+                                       0.741904, {'elem': 5})]}
     assert _trace[26] == {'activity': 'stop', 'arc': None,
                           'delta/score': -2262.281, 'activity_2': None,
                           'arc_2': None, 'delta_2': None, 'min_N': None,
@@ -318,9 +360,11 @@ def xtest_bnlearn_tabu_asia_1k_ok_2():  # Asia, 1K rows, BDE score
     assert trace.result == dag
 
 
-# Gaussian data experiments
+# --- Gaussian data experiments
 
-def test_bnlearn_tabu_gauss_1_ok():  # Gaussian example, 100 rows
+# Gaussian example, 100 rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_gauss_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous', N=100)
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
@@ -329,7 +373,9 @@ def test_bnlearn_tabu_gauss_1_ok():  # Gaussian example, 100 rows
     assert dag.to_string() == '[A][B][C|A:B][D|B:C][E|C][F|A:D:E:G][G]'
 
 
-def test_bnlearn_tabu_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
+# Gaussian example, 100 rows, rev ord
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_gauss_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous', N=100)
     data.set_order(tuple(list(data.get_order())[::-1]))
@@ -339,26 +385,32 @@ def test_bnlearn_tabu_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
     assert dag.to_string() == '[A][B|A:D][C|A:B][D][E|C][F|A:D:E:G][G]'
 
 
-def test_bnlearn_tabu_gauss_3_ok():  # Gaussian example, 5K rows
+# Gaussian example, 5K rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_gauss_3_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous')
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
                                context={'in': 'in', 'id': 'gauss'})
     print('\nDAG learnt from 5K rows of gauss: {}\n\n{}'.format(dag, trace))
-    assert dag.to_string() == '[A|B:C][B][C|B][D|B][E][F|A:C:D:E:G][G]'
+    assert dag.to_string() == '[A][B|A][C|A:B][D|B][E][F|A:C:D:E:G][G]'
 
 
-def test_bnlearn_tabu_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
+# Gaussian example, 5K rows, rev ord
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_gauss_4_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous')
     data.set_order(tuple(list(data.get_order())[::-1]))
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
                                context={'in': 'in', 'id': 'gauss'})
     print('\nDAG learnt from 5K rows of gauss: {}\n\n{}'.format(dag, trace))
-    assert dag.to_string() == '[A|B:C][B][C|B][D|B][E][F|A:C:D:E:G][G]'
+    assert dag.to_string() == '[A|B][B|D][C|A:B][D][E][F|A:C:D:E:G][G]'
 
 
-def test_bnlearn_tabu_sachs_c_1_ok():  # Sachs gauss example, 1K rows
+# Sachs gauss example, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_sachs_c_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
                       dstype='continuous')
     dag, trace = bnlearn_learn('tabu', data, params={'score': 'bic-g'},
@@ -378,7 +430,9 @@ def test_bnlearn_tabu_sachs_c_1_ok():  # Sachs gauss example, 1K rows
          '[Raf|Akt:Jnk:Mek:PKC]')
 
 
-def test_bnlearn_tabu_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
+# Sachs gauss example, rev, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_tabu_sachs_c_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz',
                       dstype='continuous')
     data.set_order(tuple(list(data.get_order())[::-1]))

@@ -90,6 +90,45 @@ G = tabustable.learn_structure(df, score="bic", tabu_length=15)
 
 ---
 
+## 🛠️ Setting Up R and bnlearn
+
+Many of the papers in this project compare structure learning algorithms, including those implemented in the R package `bnlearn`. To use these algorithms, you need to set up R and `bnlearn` in your environment.
+
+### Steps to Set Up R and bnlearn
+
+1. **Install R**:
+   - Download and install R from [CRAN](https://cran.r-project.org/).
+   - Ensure you install a version compatible with `bnlearn` (e.g., R 4.5.1).
+
+2. **Install the `bnlearn` Package**:
+   - Open an R console and run the following command:
+     ```R
+     install.packages("bnlearn")
+     ```
+
+3. **Set the `CAUSALIQ_R_SCRIPT` Environment Variable**:
+   - Locate the `Rscript` executable. This is typically found in the `bin` directory of your R installation (e.g., `C:\Program Files\R\R-4.5.1\bin\Rscript.exe` on Windows).
+   - Set the `CAUSALIQ_R_SCRIPT` environment variable to the full path of the `Rscript` executable. For example:
+     - On **Windows**:
+       ```powershell
+       $env:CAUSALIQ_R_SCRIPT="C:\Program Files\R\R-4.5.1\bin\Rscript.exe"
+       ```
+     - On **Linux/Mac** (add to `.bashrc` or `.zshrc`):
+       ```bash
+       export CAUSALIQ_R_SCRIPT="/usr/local/bin/Rscript"
+       ```
+
+4. **Verify the Setup**:
+   - Run the following command in your terminal to ensure `Rscript` is accessible:
+     ```bash
+     $env:CAUSALIQ_R_SCRIPT --version
+     ```
+   - Ensure the `bnlearn` package is installed by running:
+     ```R
+     library(bnlearn)
+     ```
+
+By following these steps, you will be able to use the R-based structure learning algorithms in this project.
 
 ---
 

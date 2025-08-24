@@ -1,28 +1,31 @@
-
 #   Test calling the bnlearn HC structure learning algorithm
 
 import pytest
 from pandas import DataFrame
 
 from call.bnlearn import bnlearn_learn
+from call.r import requires_r_and_bnlearn
 from fileio.common import TESTDATA_DIR
 from fileio.pandas import Pandas
 from fileio.numpy import NumPy
 from core.bn import BN
 
 
-@pytest.fixture(scope="module")  # AB, 10 categorical rows
+# AB, 10 categorical rows
+@pytest.fixture(scope="module")
 def ab10():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
     return Pandas(df=bn.generate_cases(10))
 
 
-def test_bnlearn_hc_type_error_1():  # no arguments
+# no arguments
+def test_bnlearn_hc_type_error_1():
     with pytest.raises(TypeError):
         bnlearn_learn()
 
 
-def test_bnlearn_hc_type_error_2():  # single argument
+# single argument
+def test_bnlearn_hc_type_error_2():
     with pytest.raises(TypeError):
         bnlearn_learn('hc')
     with pytest.raises(TypeError):
@@ -31,7 +34,8 @@ def test_bnlearn_hc_type_error_2():  # single argument
         bnlearn_learn([['A', 'B'], [1, 2]])
 
 
-def test_bnlearn_hc_type_error_3(ab10):  # bad algorithm type
+# bad algorithm type
+def test_bnlearn_hc_type_error_3(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn(True, ab10)
     with pytest.raises(TypeError):
@@ -40,7 +44,8 @@ def test_bnlearn_hc_type_error_3(ab10):  # bad algorithm type
         bnlearn_learn(ab10, ab10)
 
 
-def test_bnlearn_hc_type_error_4(ab10):  # bad data argument type
+# bad data argument type
+def test_bnlearn_hc_type_error_4(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('hc', 32.23)
     with pytest.raises(TypeError):
@@ -49,14 +54,16 @@ def test_bnlearn_hc_type_error_4(ab10):  # bad data argument type
         bnlearn_learn('hc', ab10.as_df())
 
 
-def test_bnlearn_hc_type_error_5(ab10):  # bad context argument type
+# bad context argument type
+def test_bnlearn_hc_type_error_5(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('hc', ab10, context=True)
     with pytest.raises(TypeError):
         bnlearn_learn('hc', ab10, context='test/ab/10')
 
 
-def test_bnlearn_hc_type_error_6(ab10):  # bad params argument type
+# bad params argument type
+def test_bnlearn_hc_type_error_6(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('hc', ab10, params=True)
     with pytest.raises(TypeError):
@@ -112,7 +119,9 @@ def test_bnlearn_hc_filenotfound_error_1():  # bad primary arg types
         bnlearn_learn('hc', 'nonexistent.txt')
 
 
-def test_bnlearn_hc_ab10_ok_1(ab10):  # default BIC score
+# default BIC score
+@requires_r_and_bnlearn
+def test_bnlearn_hc_ab10_ok_1(ab10):
     dag, trace = bnlearn_learn('hc', ab10, context={'in': 'in', 'id': 'id'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
@@ -142,14 +151,18 @@ def test_bnlearn_hc_ab10_ok_1(ab10):  # default BIC score
     assert trace.result == dag
 
 
-def test_bnlearn_hc_ab_10_ok_2(ab10):  # default BIC score, no trace
+# default BIC score, no trace
+@requires_r_and_bnlearn
+def test_bnlearn_hc_ab_10_ok_2(ab10):
     dag, trace = bnlearn_learn('hc', ab10)
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
     assert trace is None
 
 
-def test_bnlearn_hc_ab_10_ok_3(ab10):  # BDE score
+# BDE score
+@requires_r_and_bnlearn
+def test_bnlearn_hc_ab_10_ok_3(ab10):
     dag, trace = bnlearn_learn('hc', ab10, context={'in': 'in', 'id': 'id'},
                                params={'score': 'bde'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
@@ -181,7 +194,9 @@ def test_bnlearn_hc_ab_10_ok_3(ab10):  # BDE score
     assert trace.result == dag
 
 
-def test_bnlearn_hc_ab_10_ok_4(ab10):  # Loglik score
+# Loglik score
+@requires_r_and_bnlearn
+def test_bnlearn_hc_ab_10_ok_4(ab10):
     dag, trace = bnlearn_learn('hc', ab10, context={'in': 'in', 'id': 'id'},
                                params={'score': 'loglik'})
     print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
@@ -212,6 +227,8 @@ def test_bnlearn_hc_ab_10_ok_4(ab10):  # Loglik score
     assert trace.result == dag
 
 
+# AB, 100 rows
+@requires_r_and_bnlearn
 def test_bnlearn_hc_ab_100_ok():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
     data = Pandas(df=bn.generate_cases(100))
@@ -220,6 +237,8 @@ def test_bnlearn_hc_ab_100_ok():
     assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
 
 
+# ABC, 100 rows
+@requires_r_and_bnlearn
 def test_bnlearn_hc_abc_100_ok():
     bn = BN.read(TESTDATA_DIR + '/dsc/abc.dsc')
     data = Pandas(df=bn.generate_cases(100))
@@ -228,7 +247,9 @@ def test_bnlearn_hc_abc_100_ok():
     assert dag.to_string() == '[A][B|A][C|B]'  # HC learns correct answer
 
 
-def test_bnlearn_hc_ab_cb_1k_ok():  # A -> B <- C, 1k Rows
+# A -> B <- C, 1k Rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_ab_cb_1k_ok():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab_cb.dsc')
     data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
                          keep_df=False)
@@ -237,7 +258,9 @@ def test_bnlearn_hc_ab_cb_1k_ok():  # A -> B <- C, 1k Rows
     assert dag.to_string() == '[A][B|A][C|A:B]'  # incorrect and not-equivalent
 
 
-def test_bnlearn_hc_and4_10_1k_ok():  # 1->2->4, 3->2, 1K rows
+# 1->2->4, 3->2, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_and4_10_1k_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/and4_10.dsc')
     data = NumPy.from_df(bn.generate_cases(1000), dstype='categorical',
                          keep_df=False)
@@ -246,7 +269,9 @@ def test_bnlearn_hc_and4_10_1k_ok():  # 1->2->4, 3->2, 1K rows
     assert dag.to_string() == '[X1][X2|X1][X3|X2][X4|X2]'  # only equivalent
 
 
-def test_bnlearn_hc_cancer_1k_ok():  # Cancer, 1K rows
+# Cancer, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_cancer_1k_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/cancer.dsc')
     data = Pandas(bn.generate_cases(1000))
     dag, _ = bnlearn_learn('hc', data)
@@ -255,7 +280,9 @@ def test_bnlearn_hc_cancer_1k_ok():  # Cancer, 1K rows
         == dag.to_string()  # incorrect NOT equivalent
 
 
-def test_bnlearn_hc_asia_1k_ok_1():  # Asia, 1K rows
+# Asia, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_asia_1k_ok_1():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/asia.dsc')
     print(bn.global_distribution())
     data = Pandas(bn.generate_cases(1000))
@@ -265,7 +292,9 @@ def test_bnlearn_hc_asia_1k_ok_1():  # Asia, 1K rows
             '|bronc:lung][tub|either:lung][xray|either]') == dag.to_string()
 
 
-def test_bnlearn_hc_asia_1k_ok_2():  # Cancer, 1K rows, BDE score
+# Cancer, 1K rows, BDE score
+@requires_r_and_bnlearn
+def test_bnlearn_hc_asia_1k_ok_2():
     _in = TESTDATA_DIR + '/discrete/small/asia.dsc'
     id = 'test/asia_1k'
     bn = BN.read(_in)
@@ -308,7 +337,18 @@ def test_bnlearn_hc_asia_1k_ok_2():  # Cancer, 1K rows, BDE score
     assert trace.result == dag
 
 
-def test_bnlearn_hc_gauss_1_ok():  # Gaussian example, 100 rows
+# default BIC score, no trace
+@requires_r_and_bnlearn
+def test_bnlearn_hc_ab_10_ok_2a(ab10):
+    dag, trace = bnlearn_learn('hc', ab10)
+    print('\nDAG learnt from 10 rows of A->B: {}'.format(dag))
+    assert dag.to_string() == '[A][B|A]'  # HC learns correct answer
+    assert trace is None
+
+
+# Gaussian example, 100 rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_gauss_1_ok(ab10):
     _in = TESTDATA_DIR + '/simple/gauss.data.gz'
     data = Pandas.read(_in, dstype='continuous', N=100)
     dag, trace = bnlearn_learn('hc', data,
@@ -318,7 +358,9 @@ def test_bnlearn_hc_gauss_1_ok():  # Gaussian example, 100 rows
     assert dag.to_string() == '[A][B][C|A:B][D|B:C][E|C][F|A:D:E:G][G]'
 
 
-def test_bnlearn_hc_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
+# Gaussian example, 100 rows, rev ord
+@requires_r_and_bnlearn
+def test_bnlearn_hc_gauss_2_ok():
     _in = TESTDATA_DIR + '/simple/gauss.data.gz'
     data = NumPy.read(_in, dstype='continuous', N=100)
     data.set_order(tuple(list(data.get_order())[::-1]))
@@ -329,7 +371,9 @@ def test_bnlearn_hc_gauss_2_ok():  # Gaussian example, 100 rows, rev ord
     assert dag.to_string() == '[A][B|A:D][C|A:B][D][E|C][F|A:D:E:G][G]'
 
 
-def test_bnlearn_hc_gauss_3_ok():  # Gaussian example, 5K rows
+# Gaussian example, 5K rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_gauss_3_ok():
     _in = TESTDATA_DIR + '/simple/gauss.data.gz'
     data = Pandas.read(_in, dstype='continuous')
     dag, trace = bnlearn_learn('hc', data,
@@ -339,7 +383,9 @@ def test_bnlearn_hc_gauss_3_ok():  # Gaussian example, 5K rows
     assert dag.to_string() == '[A][B|A][C|A:B][D|B][E][F|A:C:D:E:G][G]'
 
 
-def test_bnlearn_hc_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
+# Gaussian example, 5K rows, rev ord
+@requires_r_and_bnlearn
+def test_bnlearn_hc_gauss_4_ok():
     _in = TESTDATA_DIR + '/simple/gauss.data.gz'
     data = NumPy.read(_in, dstype='continuous')
     data.set_order(tuple(list(data.get_order())[::-1]))
@@ -350,7 +396,9 @@ def test_bnlearn_hc_gauss_4_ok():  # Gaussian example, 5K rows, rev ord
     assert dag.to_string() == '[A|B][B|D][C|A:B][D][E][F|A:C:D:E:G][G]'
 
 
-def test_bnlearn_hc_sachs_c_1_ok():  # Sachs gauss example, 1K rows
+# Sachs gauss example, 1K rows
+@requires_r_and_bnlearn
+def test_bnlearn_hc_sachs_c_1_ok():
     _in = TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz'
     data = NumPy.read(_in, dstype='continuous')
     dag, trace = bnlearn_learn('hc', data,
@@ -371,6 +419,8 @@ def test_bnlearn_hc_sachs_c_1_ok():  # Sachs gauss example, 1K rows
          '[Raf|Akt:Jnk:Mek:PKC]')
 
 
+# Sachs gauss example, 1K rows
+@requires_r_and_bnlearn
 def test_bnlearn_hc_sachs_c_2_ok():  # Sachs gauss example, rev, 1K rows
     _in = TESTDATA_DIR + '/experiments/datasets/sachs_c.data.gz'
     data = NumPy.read(_in, dstype='continuous')

@@ -3,6 +3,7 @@
 
 import pytest
 
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_learn
 from fileio.common import TESTDATA_DIR
 from fileio.bayesys import read_constraints
@@ -14,7 +15,8 @@ from learn.knowledge import Knowledge
 from learn.knowledge_rule import RuleSet
 
 
-@pytest.fixture(scope="module")  # AB, 10 categorical rows
+# Generate 10 categorical rows for A --> B
+@pytest.fixture(scope="module")
 def ab10():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
     data = NumPy.from_df(df=bn.generate_cases(10), dstype='categorical',
@@ -22,21 +24,29 @@ def ab10():
     return (data, bn)
 
 
-def test_reqd_type_error_1_(ab10):  # bad Knowledge arg type
+# --- Failure cases
+
+# bad Knowledge arg type
+def test_reqd_type_error_1_(ab10):
     with pytest.raises(TypeError):
         bnlearn_learn('hc', ab10[0], knowledge=2)
     with pytest.raises(TypeError):
         bnlearn_learn('hc', ab10[0], knowledge=False)
 
 
-def test_reqd_value_error_1_(ab10):  # only reqd & tiers knowledge supported
+# only reqd & tiers knowledge supported
+def test_reqd_value_error_1_(ab10):
     knowledge = Knowledge(rules=RuleSet.EQUIV_SEQ,
                           params={'sequence': tuple([True])})
     with pytest.raises(ValueError):
         bnlearn_learn('hc', ab10[0], knowledge=knowledge)
 
 
-def test_reqd_hc_ab_1_ok(ab10):  # A --> B data, No knowledge
+# --- Successful learning cases
+
+# A --> B data, No knowledge
+@requires_r_and_bnlearn
+def test_reqd_hc_ab_1_ok(ab10):
     dag, trace = bnlearn_learn('hc', ab10[0],
                                context={'in': 'in', 'id': 'hc_ab_1'})
 
@@ -65,7 +75,9 @@ def test_reqd_hc_ab_1_ok(ab10):  # A --> B data, No knowledge
     assert trace.result == dag
 
 
-def test_reqd_hc_ab_2_ok(ab10):  # A --> B data, A --> B required
+# A --> B data, A --> B required
+@requires_r_and_bnlearn
+def test_reqd_hc_ab_2_ok(ab10):
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('A', 'B'): True},
                                   'initial': ab10[1].dag})
@@ -92,7 +104,9 @@ def test_reqd_hc_ab_2_ok(ab10):  # A --> B data, A --> B required
     assert trace.result == dag
 
 
-def test_reqd_hc_ab_3_ok(ab10):  # A --> B data, B --> A required
+# A --> B data, B --> A required
+@requires_r_and_bnlearn
+def test_reqd_hc_ab_3_ok(ab10):
     knowledge = Knowledge(rules=RuleSet.REQD_ARC,
                           params={'reqd': {('B', 'A'): True},
                                   'initial': ab10[1].dag})
@@ -119,7 +133,9 @@ def test_reqd_hc_ab_3_ok(ab10):  # A --> B data, B --> A required
     assert trace.result == dag
 
 
-def test_reqd_hc_cancer_1_ok():  # Cancer, no knowledge
+# Cancer, no knowledge
+@requires_r_and_bnlearn
+def test_reqd_hc_cancer_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     dag, trace = bnlearn_learn('hc', data,
@@ -161,7 +177,9 @@ def test_reqd_hc_cancer_1_ok():  # Cancer, no knowledge
     assert trace.result == dag
 
 
-def test_reqd_pc_cancer_1_ok():  # PC, Cancer data, No knowledge
+# PC, Cancer data, No knowledge
+@requires_r_and_bnlearn
+def test_reqd_pc_cancer_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('pc.stable', data,
@@ -174,7 +192,9 @@ def test_reqd_pc_cancer_1_ok():  # PC, Cancer data, No knowledge
          ('Dyspnoea', 'Cancer'): EdgeType.DIRECTED}
 
 
-def test_reqd_mmhc_cancer_1_ok():  # MMHC, Cancer data, No knowledge
+# MMHC, Cancer data, No knowledge
+@requires_r_and_bnlearn
+def test_reqd_mmhc_cancer_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('mmhc', data,
@@ -187,7 +207,9 @@ def test_reqd_mmhc_cancer_1_ok():  # MMHC, Cancer data, No knowledge
          ('Cancer', 'Dyspnoea'): EdgeType.DIRECTED}
 
 
-def test_reqd_h2pc_cancer_1_ok():  # H2PC, Cancer data, No knowledge
+# H2PC, Cancer data, No knowledge
+@requires_r_and_bnlearn
+def test_reqd_h2pc_cancer_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('h2pc', data,
@@ -200,7 +222,9 @@ def test_reqd_h2pc_cancer_1_ok():  # H2PC, Cancer data, No knowledge
          ('Cancer', 'Dyspnoea'): EdgeType.DIRECTED}
 
 
-def test_reqd_hc_cancer_2_ok():  # Cancer, S --> C, P --> C required
+# Cancer, S --> C, P --> C required
+@requires_r_and_bnlearn
+def test_reqd_hc_cancer_2_ok():
     bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
@@ -245,7 +269,9 @@ def test_reqd_hc_cancer_2_ok():  # Cancer, S --> C, P --> C required
     assert trace.result == dag
 
 
-def test_reqd_pc_cancer_2_ok():  # PC, Cancer data, No knowledge
+# PC, Cancer data, No knowledge
+@requires_r_and_bnlearn
+def test_reqd_pc_cancer_2_ok():
     bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
@@ -264,7 +290,9 @@ def test_reqd_pc_cancer_2_ok():  # PC, Cancer data, No knowledge
          ('Xray', 'Cancer'): EdgeType.DIRECTED}
 
 
-def test_reqd_mmhc_cancer_2_ok():  # MMHC, Cancer data, 2 reqd
+# MMHC, Cancer data, 2 reqd
+@requires_r_and_bnlearn
+def test_reqd_mmhc_cancer_2_ok():
     bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
@@ -284,7 +312,9 @@ def test_reqd_mmhc_cancer_2_ok():  # MMHC, Cancer data, 2 reqd
          ('Smoker', 'Cancer'): EdgeType.DIRECTED}
 
 
-def test_reqd_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
+# H2PC, Cancer data, 2 reqd
+@requires_r_and_bnlearn
+def test_reqd_h2pc_cancer_2_ok():
     bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
@@ -302,7 +332,9 @@ def test_reqd_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
                       context={'in': 'in', 'id': 'h2pc_cancer_2'})
 
 
-def test_reqd_h2pc_cancer_3_ok():  # H2PC, Cancer data, 1 reqd
+# H2PC, Cancer data, 1 reqd
+@requires_r_and_bnlearn
+def test_reqd_h2pc_cancer_3_ok():
     bn = BN.read(TESTDATA_DIR + '/experiments/bn/cancer.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
@@ -322,7 +354,9 @@ def test_reqd_h2pc_cancer_3_ok():  # H2PC, Cancer data, 1 reqd
          ('Smoker', 'Cancer'): EdgeType.DIRECTED}
 
 
-def test_reqd_hc_sports_1_ok():  # HC, Sports, no knowledge
+# HC, Sports, no knowledge
+@requires_r_and_bnlearn
+def test_reqd_hc_sports_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
     dag, trace = bnlearn_learn('hc', data, context={'in': 'in',
@@ -342,7 +376,9 @@ def test_reqd_hc_sports_1_ok():  # HC, Sports, no knowledge
          ('ATshots', 'ATshotsOnTarget'): EdgeType.DIRECTED}
 
 
-def test_reqd_hc_sports_7_ok():  # Sports, 9 required arcs
+# Sports, 9 required arcs
+@requires_r_and_bnlearn
+def test_reqd_hc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -364,7 +400,9 @@ def test_reqd_hc_sports_7_ok():  # Sports, 9 required arcs
          ('ATshotsOnTarget', 'ATgoals'): EdgeType.DIRECTED}
 
 
-def test_reqd_pc_sports_1_ok():  # PC, Sports, no knowledge
+# PC, Sports, no knowledge
+@requires_r_and_bnlearn
+def test_reqd_pc_sports_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('pc.stable', data, context={'in': 'in',
@@ -380,7 +418,9 @@ def test_reqd_pc_sports_1_ok():  # PC, Sports, no knowledge
          ('ATgoals', 'HDA'): EdgeType.DIRECTED}
 
 
-def test_reqd_pc_sports_7_ok():  # PC, Sports, 9 required arcs
+# PC, Sports, 9 required arcs
+@requires_r_and_bnlearn
+def test_reqd_pc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -401,7 +441,9 @@ def test_reqd_pc_sports_7_ok():  # PC, Sports, 9 required arcs
          ('HTshotOnTarget', 'HTgoals'): EdgeType.DIRECTED}
 
 
-def test_reqd_mmhc_sports_1_ok():  # MMHC, Sports, no knowledge
+# MMHC, Sports, no knowledge
+@requires_r_and_bnlearn
+def test_reqd_mmhc_sports_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
     pdag, _ = bnlearn_learn('mmhc', data, context={'in': 'in',
@@ -418,7 +460,9 @@ def test_reqd_mmhc_sports_1_ok():  # MMHC, Sports, no knowledge
          ('HTgoals', 'HDA'): EdgeType.DIRECTED}
 
 
-def test_reqd_mmhc_sports_7_ok():  # MMHC, Sports, 9 required arcs
+# MMHC, Sports, 9 required arcs
+@requires_r_and_bnlearn
+def test_reqd_mmhc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -439,7 +483,9 @@ def test_reqd_mmhc_sports_7_ok():  # MMHC, Sports, 9 required arcs
          ('ATshotsOnTarget', 'ATgoals'): EdgeType.DIRECTED}
 
 
-def test_reqd_h2pc_sports_1_ok():  # H2PC, Sports, no knowledge
+# H2PC, Sports, no knowledge
+@requires_r_and_bnlearn
+def test_reqd_h2pc_sports_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
     pdag, trace = bnlearn_learn('h2pc', data, context={'in': 'in',
@@ -455,7 +501,9 @@ def test_reqd_h2pc_sports_1_ok():  # H2PC, Sports, no knowledge
          ('HTgoals', 'HDA'): EdgeType.DIRECTED}
 
 
-def test_reqd_h2pc_sports_7_ok():  # H2PC, Sports, 9 required arcs
+# H2PC, Sports, 9 required arcs
+@requires_r_and_bnlearn
+def test_reqd_h2pc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -469,7 +517,9 @@ def test_reqd_h2pc_sports_7_ok():  # H2PC, Sports, 9 required arcs
                       context={'in': 'in', 'id': 'h2pc_sports_7'})
 
 
-def test_reqd_h2pc_sports_7a_ok():  # H2PC, Sports, 4 required arcs
+# H2PC, Sports, 4 required arcs
+@requires_r_and_bnlearn
+def test_reqd_h2pc_sports_7a_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -503,7 +553,9 @@ def test_reqd_h2pc_sports_7a_ok():  # H2PC, Sports, 4 required arcs
          ('ATshotsOnTarget', 'ATgoals'): EdgeType.DIRECTED}
 
 
-def test_stop_hc_ab_2_ok(ab10):  # A --> B data, A --> B prohibited
+# A --> B data, A --> B prohibited
+@requires_r_and_bnlearn
+def test_stop_hc_ab_2_ok(ab10):
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('A', 'B'): True}})
     dag, trace = bnlearn_learn('hc', ab10[0], knowledge=knowledge,
@@ -534,7 +586,9 @@ def test_stop_hc_ab_2_ok(ab10):  # A --> B data, A --> B prohibited
     assert trace.result == dag
 
 
-def test_stop_hc_ab_3_ok(ab10):  # A --> B data, B --> A prohibited
+# A --> B data, B --> A prohibited
+@requires_r_and_bnlearn
+def test_stop_hc_ab_3_ok(ab10):
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
                           params={'stop': {('B', 'A'): True}})
     dag, trace = bnlearn_learn('hc', ab10[0], knowledge=knowledge,
@@ -565,7 +619,9 @@ def test_stop_hc_ab_3_ok(ab10):  # A --> B data, B --> A prohibited
     assert trace.result == dag
 
 
-def test_stop_hc_cancer_2_ok():  # Cancer, prohibit C --> S
+# Cancer, prohibit C --> S
+@requires_r_and_bnlearn
+def test_stop_hc_cancer_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
@@ -609,7 +665,9 @@ def test_stop_hc_cancer_2_ok():  # Cancer, prohibit C --> S
     assert trace.result == dag
 
 
-def test_stop_pc_cancer_2_ok():  # PC, Cancer, prohibit D->C, X->C & C->S
+# PC, Cancer, prohibit D->C, X->C & C->S
+@requires_r_and_bnlearn
+def test_stop_pc_cancer_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
@@ -626,7 +684,9 @@ def test_stop_pc_cancer_2_ok():  # PC, Cancer, prohibit D->C, X->C & C->S
          ('Cancer', 'Dyspnoea'): EdgeType.DIRECTED}
 
 
-def test_stop_mmhc_cancer_2_ok():  # MMHC, Cancer, stop C->X, C->S
+# MMHC, Cancer, stop C->X, C->S
+@requires_r_and_bnlearn
+def test_stop_mmhc_cancer_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
@@ -642,7 +702,9 @@ def test_stop_mmhc_cancer_2_ok():  # MMHC, Cancer, stop C->X, C->S
          ('Xray', 'Cancer'): EdgeType.DIRECTED}
 
 
-def test_stop_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
+# H2PC, Cancer data, 2 reqd
+@requires_r_and_bnlearn
+def test_stop_h2pc_cancer_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/cancer.data.gz',
                       dstype='categorical', N=1000)
     knowledge = Knowledge(rules=RuleSet.STOP_ARC,
@@ -660,7 +722,9 @@ def test_stop_h2pc_cancer_2_ok():  # H2PC, Cancer data, 2 reqd
          ('Smoker', 'Cancer'): EdgeType.DIRECTED}
 
 
-def test_tiers_hc_sports_7_ok():  # Sports, HC, 3 tiers
+# Sports, HC, 3 tiers
+@requires_r_and_bnlearn
+def test_tiers_hc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -683,7 +747,9 @@ def test_tiers_hc_sports_7_ok():  # Sports, HC, 3 tiers
          ('HTgoals', 'HDA'): EdgeType.DIRECTED}
 
 
-def test_tiers_pc_sports_7_ok():  # PC, Sports, 3 tiers
+# PC, Sports, 3 tiers
+@requires_r_and_bnlearn
+def test_tiers_pc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -702,7 +768,9 @@ def test_tiers_pc_sports_7_ok():  # PC, Sports, 3 tiers
          ('ATgoals', 'HDA'): EdgeType.DIRECTED}
 
 
-def test_tiers_mmhc_sports_7_ok():  # MMHC, Sports, 3 tiers
+# MMHC, Sports, 3 tiers
+@requires_r_and_bnlearn
+def test_tiers_mmhc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)
@@ -724,7 +792,9 @@ def test_tiers_mmhc_sports_7_ok():  # MMHC, Sports, 3 tiers
     return
 
 
-def test_tiers_h2pc_sports_7_ok():  # H2PC, Sports, 3 tiers
+# H2PC, Sports, 3 tiers
+@requires_r_and_bnlearn
+def test_tiers_h2pc_sports_7_ok():
     bn = BN.read(TESTDATA_DIR + '/discrete/small/sports.dsc')
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/sports.data.gz',
                       dstype='categorical', N=1000)

@@ -1,14 +1,17 @@
 
 # system testing of run_learn where node names are randomised
 
+from call.r import requires_r_and_bnlearn
 from run_learn import run_learn
 from fileio.common import TESTDATA_DIR
 from experiments.trace_analysis import trace_analysis
 
 
-# Check BNBENCH/TABU insensitive to randomising node names - BASE2 series
+# --- Check BNBENCH/TABU insensitive to randomising node names - BASE2 series
 
-def systest_run_learn_tabu_nam_asia_10_ok():  # TABU/NAM asia N=10
+# TABU/NAM asia N=10
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_nam_asia_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TABU/NAM',
                       'networks': 'asia', 'N': '10;;0-1', 'nodes': None},
@@ -44,7 +47,9 @@ def systest_run_learn_tabu_nam_asia_10_ok():  # TABU/NAM asia N=10
     assert diffs is None
 
 
-def systest_run_learn_tabu_nam_asia_100_ok():  # TABU/NAM asia N=100
+# TABU/NAM asia N=100
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_nam_asia_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TABU/NAM',
                       'networks': 'asia', 'N': '100;;0-1', 'nodes': None},
@@ -80,7 +85,9 @@ def systest_run_learn_tabu_nam_asia_100_ok():  # TABU/NAM asia N=100
     assert diffs is None
 
 
-def systest_run_learn_tabu_nam_asia_1k_ok():  # TABU/NAM asia N=1k
+# TABU/NAM asia N=1k
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_nam_asia_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TABU/NAM',
                       'networks': 'asia', 'N': '1k;;0-1', 'nodes': None},
@@ -116,7 +123,9 @@ def systest_run_learn_tabu_nam_asia_1k_ok():  # TABU/NAM asia N=1k
     assert diffs is None
 
 
-def systest_run_learn_tabu_nam_sports_10_ok():  # TABU/NAM sports N=10
+# TABU/NAM sports N=10
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_nam_sports_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TABU/NAM',
                       'networks': 'sports', 'N': '10;;0-1', 'nodes': None},
@@ -152,7 +161,9 @@ def systest_run_learn_tabu_nam_sports_10_ok():  # TABU/NAM sports N=10
     assert diffs is None
 
 
-def systest_run_learn_tabu_nam_sports_100_ok():  # TABU/NAM sports N=1090
+# TABU/NAM sports N=1090
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_nam_sports_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TABU/NAM',
                       'networks': 'sports', 'N': '100;;0-1', 'nodes': None},
@@ -188,7 +199,9 @@ def systest_run_learn_tabu_nam_sports_100_ok():  # TABU/NAM sports N=1090
     assert diffs is None
 
 
-def systest_run_learn_tabu_nam_sports_1k_ok():  # TABU/NAM sports N=1k
+# TABU/NAM sports N=1k
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_nam_sports_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TABU/NAM',
                       'networks': 'sports', 'N': '1k;;0-1', 'nodes': None},
@@ -224,9 +237,11 @@ def systest_run_learn_tabu_nam_sports_1k_ok():  # TABU/NAM sports N=1k
     assert diffs is None
 
 
-# Check BNLEARN/TABU insensitive to randomising node names - TABU_NAM series
+# --- Check BNLEARN/TABU insensitive to randomising node names - TABU_NAM
 
-def systest_run_learn_tabu_bnl_asia_100_ok():  # asia N=100
+# asia N=100
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_bnl_asia_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_NAM',
                       'networks': 'asia', 'N': '100;;0-1', 'nodes': None},
@@ -263,7 +278,9 @@ def systest_run_learn_tabu_bnl_asia_100_ok():  # asia N=100
     assert diffs is None
 
 
-def systest_run_learn_tabu_bnl_asia_1k_ok():  # asia N=1k
+# asia N=1k
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_bnl_asia_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_NAM',
                       'networks': 'asia', 'N': '1K;;0-1', 'nodes': None},
@@ -300,7 +317,9 @@ def systest_run_learn_tabu_bnl_asia_1k_ok():  # asia N=1k
     assert diffs is None
 
 
-def systest_run_learn_tabu_bnl_sports_10_ok():  # sports N=10
+# sports N=10
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_bnl_sports_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_NAM',
                       'networks': 'sports', 'N': '10;;0-1', 'nodes': None},
@@ -337,7 +356,9 @@ def systest_run_learn_tabu_bnl_sports_10_ok():  # sports N=10
     assert diffs is None
 
 
-def systest_run_learn_tabu_bnl_sports_100_ok():  # sports N=100
+# sports N=100
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_bnl_sports_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_NAM',
                       'networks': 'sports', 'N': '100;;0-1', 'nodes': None},
@@ -374,7 +395,9 @@ def systest_run_learn_tabu_bnl_sports_100_ok():  # sports N=100
     assert diffs is None
 
 
-def systest_run_learn_tabu_bnl_sports_1k_ok():  # sports N=1K
+# sports N=1K
+@requires_r_and_bnlearn
+def systest_run_learn_tabu_bnl_sports_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'BNLEARN/TABU_NAM',
                       'networks': 'sports', 'N': '1k;;0-1', 'nodes': None},
@@ -411,9 +434,11 @@ def systest_run_learn_tabu_bnl_sports_1k_ok():  # sports N=1K
     assert diffs is None
 
 
-# Check TETRAD/FGES insenstive to node names
+# --- Check TETRAD/FGES insenstive to node names
 
-def systest_run_learn_fges_nam_asia_10_ok():  # asia N=10
+# asia N=10
+@requires_r_and_bnlearn
+def systest_run_learn_fges_nam_asia_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TETRAD/FGES_NAM',
                       'networks': 'asia', 'N': '10;;0-1', 'nodes': None},
@@ -442,7 +467,9 @@ def systest_run_learn_fges_nam_asia_10_ok():  # asia N=10
          'X000smoke', 'X006tub', 'X005xray']
 
 
-def systest_run_learn_fges_nam_asia_100_ok():  # asia N=100
+# asia N=100
+@requires_r_and_bnlearn
+def systest_run_learn_fges_nam_asia_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TETRAD/FGES_NAM',
                       'networks': 'asia', 'N': '100;;0-1', 'nodes': None},
@@ -471,7 +498,9 @@ def systest_run_learn_fges_nam_asia_100_ok():  # asia N=100
          'X000smoke', 'X006tub', 'X005xray']
 
 
-def systest_run_learn_fges_nam_asia_1k_ok():  # asia N=1k
+# asia N=1k
+@requires_r_and_bnlearn
+def systest_run_learn_fges_nam_asia_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TETRAD/FGES_NAM',
                       'networks': 'asia', 'N': '1k;;0-1', 'nodes': None},
@@ -500,7 +529,9 @@ def systest_run_learn_fges_nam_asia_1k_ok():  # asia N=1k
          'X000smoke', 'X006tub', 'X005xray']
 
 
-def systest_run_learn_fges_nam_sports_10_ok():  # sports N=10
+# sports N=10
+@requires_r_and_bnlearn
+def systest_run_learn_fges_nam_sports_10_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TETRAD/FGES_NAM',
                       'networks': 'sports', 'N': '10;;0-1', 'nodes': None},
@@ -529,7 +560,9 @@ def systest_run_learn_fges_nam_sports_10_ok():  # sports N=10
          'X005HTshot', 'X007HTshot', 'X006RDleve', 'X000posses']
 
 
-def systest_run_learn_fges_nam_sports_100_ok():  # sports N=100
+# sports N=100
+@requires_r_and_bnlearn
+def systest_run_learn_fges_nam_sports_100_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TETRAD/FGES_NAM',
                       'networks': 'sports', 'N': '100;;0-1', 'nodes': None},
@@ -558,7 +591,9 @@ def systest_run_learn_fges_nam_sports_100_ok():  # sports N=100
          'X005HTshot', 'X007HTshot', 'X006RDleve', 'X000posses']
 
 
-def systest_run_learn_fges_nam_sports_1k_ok():  # sports N=1K
+# sports N=1K
+@requires_r_and_bnlearn
+def systest_run_learn_fges_nam_sports_1k_ok():
     root_dir = TESTDATA_DIR + '/experiments'
     assert run_learn({'action': 'compare', 'series': 'TETRAD/FGES_NAM',
                       'networks': 'sports', 'N': '1k;;0-1', 'nodes': None},

@@ -2,7 +2,9 @@
 # Module test the graphviz module
 
 import pytest
+from shutil import which
 from random import random
+from functools import wraps
 from os import remove
 
 from fileio.common import TESTDATA_DIR
@@ -11,6 +13,18 @@ from core.bn import BN
 from analysis.graphviz import traceviz
 from analysis.trace import TraceAnalysis
 import testdata.example_dags as ex_dag
+
+
+# Decorator to skip tests if graphviz or its dependencies are not available.
+def requires_graphviz(func):
+    """Decorator to skip tests if graphviz or its dependencies are not available."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        pytest.importorskip("graphviz")  # Check for the Python graphviz package
+        if not which("dot"):  # Check for the Graphviz executable
+            pytest.skip("Graphviz executable 'dot' is not installed")
+        return func(*args, **kwargs)
+    return wrapper
 
 
 @pytest.fixture(scope='module')  # directory where tests write files
@@ -86,6 +100,7 @@ def test_traceviz_type_error_4(cancer10, dir):  # bad or missing filename arg
 # successful tracevizs
 
 def test_traceviz_cancer_ok_1(cancer10, dir, filename, refdir):
+    print(dir, filename)
     traceviz(cancer10, dir, filename)
     assert cmp(refdir + 'HC_N_1_cancer_N10.gv', dir + '/' + filename + '.gv')
 

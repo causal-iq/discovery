@@ -5,11 +5,15 @@ import pytest
 from pandas import DataFrame
 
 from core.metrics import dicts_same
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_indep
 from fileio.common import FileFormatError, TESTDATA_DIR
 
 
-def test_bnlearn_indep_type_error_1():  # bad primary arg types
+# --- Failure cases
+
+# bad primary arg types
+def test_bnlearn_indep_type_error_1():
     with pytest.raises(TypeError):
         bnlearn_indep()
     with pytest.raises(TypeError):
@@ -21,7 +25,8 @@ def test_bnlearn_indep_type_error_1():  # bad primary arg types
         bnlearn_indep('A', 'B', None, {'A': ['1', '0'], 'B': ['1', '0']}, 'mi')
 
 
-def test_bnlearn_indep_type_error_2():  # bad types in z list
+# bad types in z list
+def test_bnlearn_indep_type_error_2():
     lizards_data = TESTDATA_DIR + '/simple/lizards.csv'
     with pytest.raises(TypeError):
         bnlearn_indep('A', 'B', ['C', True],
@@ -32,7 +37,8 @@ def test_bnlearn_indep_type_error_2():  # bad types in z list
                       ['mi'])
 
 
-def test_bnlearn_indep_type_error_3():  # bad types in types list
+# bad types in types list
+def test_bnlearn_indep_type_error_3():
     lizards_data = TESTDATA_DIR + '/simple/lizards.csv'
     with pytest.raises(TypeError):
         bnlearn_indep('Diameter', 'Height', ['Species'], lizards_data,
@@ -42,18 +48,21 @@ def test_bnlearn_indep_type_error_3():  # bad types in types list
                       ['x2', ['mi']])
 
 
-def test_bnlearn_indep_file_error_1():  # non-existent file for data
+# non-existent file for data
+def test_bnlearn_indep_file_error_1():
     with pytest.raises(FileNotFoundError):
         bnlearn_indep('Diameter', 'Height', ['Species'], 'nonexistent.txt')
 
 
-def test_bnlearn_indep_file_error_2():  # binary file for data
+# binary file for data
+def test_bnlearn_indep_file_error_2():
     with pytest.raises(FileFormatError):
         bnlearn_indep('Diameter', 'Height', ['Species'],
                       TESTDATA_DIR + '/misc/null.sys')
 
 
-def test_bnlearn_indep_value_error_1():  # variable name duplicated
+# variable name duplicated
+def test_bnlearn_indep_value_error_1():
     with pytest.raises(ValueError):
         bnlearn_indep('Diameter', 'Height', ['Diameter'],
                       TESTDATA_DIR + '/simple/lizards.csv')
@@ -65,7 +74,8 @@ def test_bnlearn_indep_value_error_1():  # variable name duplicated
                       TESTDATA_DIR + '/simple/lizards.csv')
 
 
-def test_bnlearn_indep_value_error_2():  # variable names not in data
+# variable names not in data
+def test_bnlearn_indep_value_error_2():
     with pytest.raises(ValueError):
         bnlearn_indep('Diameter', 'Height', ['Unknown'],
                       TESTDATA_DIR + '/simple/lizards.csv')
@@ -80,7 +90,8 @@ def test_bnlearn_indep_value_error_2():  # variable names not in data
                       TESTDATA_DIR + '/simple/lizards.csv')
 
 
-def test_bnlearn_indep_value_error_3():  # duplicate tests specified
+# duplicate tests specified
+def test_bnlearn_indep_value_error_3():
     with pytest.raises(ValueError):
         bnlearn_indep('Diameter', 'Height', None,
                       TESTDATA_DIR + '/simple/lizards.csv', ['mi', 'mi'])
@@ -89,13 +100,15 @@ def test_bnlearn_indep_value_error_3():  # duplicate tests specified
                       TESTDATA_DIR + '/simple/lizards.csv', ['mi', 'x2', 'mi'])
 
 
-def test_bnlearn_indep_value_error_4():  # empty list of tests specified
+# empty list of tests specified
+def test_bnlearn_indep_value_error_4():
     with pytest.raises(ValueError):
         bnlearn_indep('Diameter', 'Height', None,
                       TESTDATA_DIR + '/simple/lizards.csv', [])
 
 
-def test_bnlearn_indep_value_error_5():  # unsupported test specified
+# unsupported test specified
+def test_bnlearn_indep_value_error_5():
     with pytest.raises(ValueError):
         bnlearn_indep('Diameter', 'Height', None,
                       TESTDATA_DIR + '/simple/lizards.csv',
@@ -105,15 +118,20 @@ def test_bnlearn_indep_value_error_5():  # unsupported test specified
                       TESTDATA_DIR + '/simple/lizards.csv', 'unsupported')
 
 
-def test_bnlearn_indep_a_b_ok():  # A, B unconnected
+# --- Successful independence tests
+
+# A, B unconnected
+@requires_r_and_bnlearn
+def test_bnlearn_indep_a_b_ok():
     data = DataFrame({'A': ['1', '0'], 'B': ['1', '0']})
     value = bnlearn_indep('A', 'B', None, data, types=['mi', 'x2'])
     print(value)
 
 
 # URL of bnlearn CI lizard tests is https://www.bnlearn.com/examples/ci.test/
-
-def test_bnlearn_indep_lizards_ok1():  # file of bnlearn lizards sample dataset
+# file of bnlearn lizards sample dataset
+@requires_r_and_bnlearn
+def test_bnlearn_indep_lizards_ok1():
     tests = bnlearn_indep('Height', 'Diameter', 'Species',
                           TESTDATA_DIR + '/simple/lizards.csv',
                           types=['mi', 'x2'])
@@ -122,7 +140,9 @@ def test_bnlearn_indep_lizards_ok1():  # file of bnlearn lizards sample dataset
                       tests['mi'].to_dict(), sf=4)
 
 
-def test_bnlearn_indep_lizards_ok2():  # file of bnlearn lizards sample dataset
+# file of bnlearn lizards sample dataset
+@requires_r_and_bnlearn
+def test_bnlearn_indep_lizards_ok2():
     tests = bnlearn_indep('Species', 'Diameter', 'Height',
                           TESTDATA_DIR + '/simple/lizards.csv', types='mi')
     print(tests['mi'].to_dict())

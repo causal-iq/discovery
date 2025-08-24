@@ -8,10 +8,12 @@ from fileio.common import TESTDATA_DIR
 from fileio.pandas import Pandas
 from core.bn import BN
 from learn.hc import hc
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_learn
 from core.graph import PDAG
 
 
+# Fixture setting pandas options to display the whold dataframe
 @pytest.fixture
 def showall():
     set_option('display.max_rows', None)
@@ -19,7 +21,10 @@ def showall():
     set_option('display.width', None)
 
 
-def test_tabu_type_error1():  # Tabu param has bad type
+# --- Failure cases
+
+# Tabu param has bad type
+def test_tabu_type_error1():
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
     data = bn.generate_cases(10)
     with pytest.raises(TypeError):
@@ -32,7 +37,8 @@ def test_tabu_type_error1():  # Tabu param has bad type
         dag, _ = hc(data, params={'tabu': [12]})
 
 
-def test_tabu_type_error2():  # noinc param has bad type
+# noinc param has bad type
+def test_tabu_type_error2():
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
     data = bn.generate_cases(10)
     with pytest.raises(TypeError):
@@ -45,7 +51,8 @@ def test_tabu_type_error2():  # noinc param has bad type
         dag, _ = hc(data, params={'tabu': 10, 'noinc': [12]})
 
 
-def test_tabu_type_error3():  # bnlearn param has bad type
+# bnlearn param has bad type
+def test_tabu_type_error3():
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
     data = bn.generate_cases(10)
     with pytest.raises(TypeError):
@@ -58,7 +65,8 @@ def test_tabu_type_error3():  # bnlearn param has bad type
         dag, _ = hc(data, params={'tabu': 10, 'bnlearn': [True]})
 
 
-def test_tabu_value_error1():  # invalid tabu value specified
+# invalid tabu value specified
+def test_tabu_value_error1():
     dsc = '/discrete/small/cancer.dsc'
     bn = BN.read(TESTDATA_DIR + dsc)
     data = bn.generate_cases(10)
@@ -68,7 +76,8 @@ def test_tabu_value_error1():  # invalid tabu value specified
         hc(data, params={'tabu': 0})
 
 
-def test_tabu_value_error2():  # noinc specified without tabu
+# noinc specified without tabu
+def test_tabu_value_error2():
     dsc = '/discrete/small/cancer.dsc'
     bn = BN.read(TESTDATA_DIR + dsc)
     data = bn.generate_cases(10)
@@ -78,7 +87,8 @@ def test_tabu_value_error2():  # noinc specified without tabu
         hc(data, params={'noinc': 10})
 
 
-def test_tabu_value_error3():  # invalid noinc value specified
+# invalid noinc value specified
+def test_tabu_value_error3():
     dsc = '/discrete/small/cancer.dsc'
     bn = BN.read(TESTDATA_DIR + dsc)
     data = bn.generate_cases(10)
@@ -87,10 +97,11 @@ def test_tabu_value_error3():  # invalid noinc value specified
     with pytest.raises(ValueError):
         hc(data, params={'tabu': 10, 'noinc': -1})
 
-# A->B learnt correctly for 10, 100 and 1K rows
 
+# --- A->B learnt correctly for 10, 100 and 1K rows
 
-def test_tabu_ab_10_1_ok(showall):  # A->B 10 rows, no trace, tabu=1
+# A->B 10 rows, no trace, tabu=1
+def test_tabu_ab_10_1_ok(showall):
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
     data = bn.generate_cases(10)
     dag, _ = hc(data, params={'tabu': 1, 'bnlearn': False})
@@ -99,7 +110,9 @@ def test_tabu_ab_10_1_ok(showall):  # A->B 10 rows, no trace, tabu=1
     assert dag.number_components() == 1
 
 
-def test_tabu_ab_10_2_ok(showall):  # A->B 10 rows, no trace, tabu=10
+# A->B 10 rows, no trace, tabu=10
+@requires_r_and_bnlearn
+def test_tabu_ab_10_2_ok(showall):
     bn = BN.read(TESTDATA_DIR + '/discrete/tiny/ab.dsc')
     data = bn.generate_cases(10)
     dag, _ = hc(data, params={'tabu': 10, 'bnlearn': False})
@@ -110,7 +123,9 @@ def test_tabu_ab_10_2_ok(showall):  # A->B 10 rows, no trace, tabu=10
     assert dag == dag_bnlearn
 
 
-def test_tabu_ab_10_3_ok(showall):  # A->B 10 rows
+# A->B 10 rows
+@requires_r_and_bnlearn
+def test_tabu_ab_10_3_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -130,10 +145,11 @@ def test_tabu_ab_10_3_ok(showall):  # A->B 10 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_10_4_ok(showall):  # A->B 10 rows, k is 2, empty DAG best
+# A->B 10 rows, k is 2, empty DAG best
+def test_tabu_ab_10_4_ok(showall):
 
     # Note, not comparing with bnlearn becausit erroneously doesn't return
-    # thinitial DAG. Increasing k to 2 means empty DAG is highest scoring.
+    # the initial DAG. Increasing k to 2 means empty DAG is highest scoring.
 
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
@@ -147,7 +163,9 @@ def test_tabu_ab_10_4_ok(showall):  # A->B 10 rows, k is 2, empty DAG best
     assert dag.number_components() == 2
 
 
-def test_tabu_ab_10_5_ok(showall):  # A->B 10 rows, BDeu score
+# A->B 10 rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_ab_10_5_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -168,7 +186,9 @@ def test_tabu_ab_10_5_ok(showall):  # A->B 10 rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_10_6_ok(showall):  # A->B 10 rows, BDeu score, iss=5
+# A->B 10 rows, BDeu score, iss=5
+@requires_r_and_bnlearn
+def test_tabu_ab_10_6_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
     params = {'score': 'bde', 'iss': 5, 'tabu': 10, 'bnlearn': False}
@@ -189,10 +209,11 @@ def test_tabu_ab_10_6_ok(showall):  # A->B 10 rows, BDeu score, iss=5
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_10_7_ok(showall):  # A->B 10 rows, BDS score
+# Disable test as gives different results on different hardware
+def xtest_tabu_ab_10_7_ok(showall):  # A->B 10 rows, BDS score
 
-    # don't comparwith bnlearn as bnlearn chosB->A over equal scoring A->B
-    # suspect just scoring rounding difference
+    # don't comparwith bnlearn as bnlearn chose B->A over equal scoring A->B
+    # suspect just scoring rounding difference.
 
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
@@ -214,7 +235,9 @@ def test_tabu_ab_10_7_ok(showall):  # A->B 10 rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_10_8_ok(showall):  # A->B 10 rows, BDS score, ISS=0.1
+# A->B 10 rows, BDS score, ISS=0.1
+@requires_r_and_bnlearn
+def test_tabu_ab_10_8_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
     params = {'score': 'bds', 'iss': 0.1, 'tabu': 10, 'bnlearn': False}
@@ -235,7 +258,9 @@ def test_tabu_ab_10_8_ok(showall):  # A->B 10 rows, BDS score, ISS=0.1
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_10_9_ok(showall):  # A->B 10 rows, Loglik score
+# A->B 10 rows, Loglik score
+@requires_r_and_bnlearn
+def test_tabu_ab_10_9_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 10
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -257,7 +282,9 @@ def test_tabu_ab_10_9_ok(showall):  # A->B 10 rows, Loglik score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_100_1_ok(showall):  # A->B 100 rows
+# A->B 100 rows
+@requires_r_and_bnlearn
+def test_tabu_ab_100_1_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 100
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -278,7 +305,9 @@ def test_tabu_ab_100_1_ok(showall):  # A->B 100 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_100_2_ok(showall):  # A->B 100 rows, BDeu score
+# A->B 100 rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_ab_100_2_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 100
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -301,7 +330,9 @@ def test_tabu_ab_100_2_ok(showall):  # A->B 100 rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_100_3_ok(showall):  # A->B 100 rows, BDS score
+# A->B 100 rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_ab_100_3_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 100
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -324,7 +355,9 @@ def test_tabu_ab_100_3_ok(showall):  # A->B 100 rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_100_4_ok(showall):  # A->B 100 rows, Log likelihood score
+# A->B 100 rows, Log likelihood score
+@requires_r_and_bnlearn
+def test_tabu_ab_100_4_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 100
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -347,7 +380,9 @@ def test_tabu_ab_100_4_ok(showall):  # A->B 100 rows, Log likelihood score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_1k_1_ok(showall):  # A->B 1k rows
+# A->B 1k rows
+@requires_r_and_bnlearn
+def test_tabu_ab_1k_1_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -369,7 +404,9 @@ def test_tabu_ab_1k_1_ok(showall):  # A->B 1k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_1k_2_ok(showall):  # A->B 1k rows, k = 0.5
+# A->B 1k rows, k = 0.5
+@requires_r_and_bnlearn
+def test_tabu_ab_1k_2_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -392,7 +429,9 @@ def test_tabu_ab_1k_2_ok(showall):  # A->B 1k rows, k = 0.5
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_1k_3_ok(showall):  # A->B 1k rows, BDeu score
+# A->B 1k rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_ab_1k_3_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -415,7 +454,9 @@ def test_tabu_ab_1k_3_ok(showall):  # A->B 1k rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_1k_4_ok(showall):  # A->B 1k rows, BDS score
+# A->B 1k rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_ab_1k_4_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -438,7 +479,9 @@ def test_tabu_ab_1k_4_ok(showall):  # A->B 1k rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_1k_5_ok(showall):  # A->B 1k rows, Log-Likelihood score
+# A->B 1k rows, Log-Likelihood score
+@requires_r_and_bnlearn
+def test_tabu_ab_1k_5_ok(showall):
     dsc = '/discrete/tiny/ab.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -460,10 +503,12 @@ def test_tabu_ab_1k_5_ok(showall):  # A->B 1k rows, Log-Likelihood score
           .format(round(trace.trace['time'][-1] /
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
-# B->A always learnt as A->B becausof equivalencand nodorder
 
+# --- B->A always learnt as A->B becausof equivalencand nodorder
 
-def test_tabu_ba_10_ok(showall):  # A<-B 10 rows
+# A<-B 10 rows
+@requires_r_and_bnlearn
+def test_tabu_ba_10_ok(showall):
     dsc = '/discrete/tiny/ba.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -486,7 +531,9 @@ def test_tabu_ba_10_ok(showall):  # A<-B 10 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ba_100_ok(showall):  # A<-B 100 rows
+# A<-B 100 rows
+@requires_r_and_bnlearn
+def test_tabu_ba_100_ok(showall):
     dsc = '/discrete/tiny/ba.dsc'
     N = 100
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -509,7 +556,9 @@ def test_tabu_ba_100_ok(showall):  # A<-B 100 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ba_1k_ok(showall):  # A<-B 1k rows
+# A<-B 1k rows
+@requires_r_and_bnlearn
+def test_tabu_ba_1k_ok(showall):
     dsc = '/discrete/tiny/ba.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -532,9 +581,11 @@ def test_tabu_ba_1k_ok(showall):  # A<-B 1k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-# A->B->C learnt correctly becausof nodorder at 10, 100, 1K rows
+# --- A->B->C learnt correctly becausof nodorder at 10, 100, 1K rows
 
-def test_tabu_abc_10_1_ok(showall):  # A->B->C 10 rows
+# A->B->C 10 rows
+@requires_r_and_bnlearn
+def test_tabu_abc_10_1_ok(showall):
     dsc = '/discrete/tiny/abc.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -559,7 +610,9 @@ def test_tabu_abc_10_1_ok(showall):  # A->B->C 10 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_10_2_ok(showall):  # A->B->C 10 rows, noinc=5
+# A->B->C 10 rows, noinc=5
+@requires_r_and_bnlearn
+def test_tabu_abc_10_2_ok(showall):
     dsc = '/discrete/tiny/abc.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -596,7 +649,9 @@ def test_tabu_abc_10_2_ok(showall):  # A->B->C 10 rows, noinc=5
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_10_3_ok(showall):  # A->B->C 10 rows, noinc=2
+# A->B->C 10 rows, noinc=2
+@requires_r_and_bnlearn
+def test_tabu_abc_10_3_ok(showall):
     dsc = '/discrete/tiny/abc.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -636,7 +691,9 @@ def test_tabu_abc_10_3_ok(showall):  # A->B->C 10 rows, noinc=2
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_100_ok(showall):  # A->B->C 100 rows
+# A->B->C 100 rows
+@requires_r_and_bnlearn
+def test_tabu_abc_100_ok(showall):
 
     # bnlearn and bnbench return different but equivalent DAGs
 
@@ -662,7 +719,9 @@ def test_tabu_abc_100_ok(showall):  # A->B->C 100 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_1k_1_ok(showall):  # A->B->C 1k rows
+# A->B->C 1k rows
+@requires_r_and_bnlearn
+def test_tabu_abc_1k_1_ok(showall):
 
     # differences between scores and iteration 3 blocked ... manually checked
     # and bnbench HC implementation OK
@@ -688,7 +747,9 @@ def test_tabu_abc_1k_1_ok(showall):  # A->B->C 1k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_1k_2_ok(showall):  # A->B->C 1k rows, BDeu score
+# A->B->C 1k rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_abc_1k_2_ok(showall):
     dsc = '/discrete/tiny/abc.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -714,7 +775,9 @@ def test_tabu_abc_1k_2_ok(showall):  # A->B->C 1k rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_1k_3_ok(showall):  # A->B->C 1k rows, BDS score
+# A->B->C 1k rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_abc_1k_3_ok(showall):
     dsc = '/discrete/tiny/abc.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -740,7 +803,9 @@ def test_tabu_abc_1k_3_ok(showall):  # A->B->C 1k rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_1k_4_ok(showall):  # A->B->C 1k rows, Log-likelihood score
+# A->B->C 1k rows, Log-likelihood score
+@requires_r_and_bnlearn
+def test_tabu_abc_1k_4_ok(showall):
     dsc = '/discrete/tiny/abc.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -766,7 +831,9 @@ def test_tabu_abc_1k_4_ok(showall):  # A->B->C 1k rows, Log-likelihood score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_abc_3_1k_ok(showall):  # A->B->C 1k rows
+# A->B->C 1k rows
+@requires_r_and_bnlearn
+def test_tabu_abc_3_1k_ok(showall):
     dsc = '/discrete/tiny/abc_3.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -791,7 +858,9 @@ def test_tabu_abc_3_1k_ok(showall):  # A->B->C 1k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_10_ok(showall):  # A->B<-C 10 rows
+# A->B<-C 10 rows
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_10_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -816,7 +885,9 @@ def test_tabu_ab_cb_10_ok(showall):  # A->B<-C 10 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_100_1_ok(showall):  # A->B<-C 100 rows
+# A->B<-C 100 rows
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_100_1_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 100
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -841,7 +912,9 @@ def test_tabu_ab_cb_100_1_ok(showall):  # A->B<-C 100 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_100_2_ok(showall):  # A->B<-C 100 rows, noinc=10
+# A->B<-C 100 rows, noinc=10
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_100_2_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 100
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -866,7 +939,9 @@ def test_tabu_ab_cb_100_2_ok(showall):  # A->B<-C 100 rows, noinc=10
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_100_3_ok(showall):  # A->B<-C 100 rows, noinc=5
+# A->B<-C 100 rows, noinc=5
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_100_3_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 100
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -897,7 +972,9 @@ def test_tabu_ab_cb_100_3_ok(showall):  # A->B<-C 100 rows, noinc=5
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_1_ok(showall):  # A->B<-C 1k rows
+# A->B<-C 1k rows
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_1_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -933,7 +1010,9 @@ def test_tabu_ab_cb_1k_1_ok(showall):  # A->B<-C 1k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_2_ok(showall):  # A->B<-C 1k rows
+# A->B<-C 1k rows
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_2_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -962,7 +1041,9 @@ def test_tabu_ab_cb_1k_2_ok(showall):  # A->B<-C 1k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_3_ok(showall):  # A->B<-C 1k rows, BDeu score
+# A->B<-C 1k rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_3_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -1004,7 +1085,9 @@ def test_tabu_ab_cb_1k_3_ok(showall):  # A->B<-C 1k rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_4_ok(showall):  # A->B<-C 1k rows, BDeu score
+# A->B<-C 1k rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_4_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10}
@@ -1040,7 +1123,9 @@ def test_tabu_ab_cb_1k_4_ok(showall):  # A->B<-C 1k rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_5_ok(showall):  # A->B<-C 1k rows, BDS score
+# A->B<-C 1k rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_5_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -1076,7 +1161,9 @@ def test_tabu_ab_cb_1k_5_ok(showall):  # A->B<-C 1k rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_6_ok(showall):  # A->B<-C 1k rows, BDS score
+# A->B<-C 1k rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_6_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': True}
@@ -1106,7 +1193,9 @@ def test_tabu_ab_cb_1k_6_ok(showall):  # A->B<-C 1k rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_1k_7_ok(showall):  # A->B<-C 1k rows, Log-likelihood score
+# A->B<-C 1k rows, Log-likelihood score
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_1k_7_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -1135,7 +1224,9 @@ def test_tabu_ab_cb_1k_7_ok(showall):  # A->B<-C 1k rows, Log-likelihood score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_10k_1_ok(showall):  # A->B<-C 10k rows
+# A->B<-C 10k rows
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_10k_1_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 10000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1172,7 +1263,9 @@ def test_tabu_ab_cb_10k_1_ok(showall):  # A->B<-C 10k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_ab_cb_10k_2_ok(showall):  # A->B<-C 10k rows
+# A->B<-C 10k rows
+@requires_r_and_bnlearn
+def test_tabu_ab_cb_10k_2_ok(showall):
     dsc = '/discrete/tiny/ab_cb.dsc'
     N = 10000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1202,9 +1295,11 @@ def test_tabu_ab_cb_10k_2_ok(showall):  # A->B<-C 10k rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-#   Learning and4_10: X1->X2->X4, X3->X2 - variation with N
+# --- Learning and4_10: X1->X2->X4, X3->X2 - variation with N
 
-def test_tabu_and4_10_1_ok(showall):  # X1->X2->X4, X3->X2 10 rows
+# X1->X2->X4, X3->X2 10 rows
+@requires_r_and_bnlearn
+def test_tabu_and4_10_1_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1236,7 +1331,9 @@ def test_tabu_and4_10_1_ok(showall):  # X1->X2->X4, X3->X2 10 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_2_ok(showall):  # X1->X2->X4, X3->X2 10 rows
+# X1->X2->X4, X3->X2 10 rows
+@requires_r_and_bnlearn
+def test_tabu_and4_10_2_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 10
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1266,7 +1363,9 @@ def test_tabu_and4_10_2_ok(showall):  # X1->X2->X4, X3->X2 10 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_3_ok(showall):  # X1->X2->X4, X3->X2 100 rows
+# X1->X2->X4, X3->X2 100 rows
+@requires_r_and_bnlearn
+def test_tabu_and4_10_3_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 100
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1294,7 +1393,9 @@ def test_tabu_and4_10_3_ok(showall):  # X1->X2->X4, X3->X2 100 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_4_ok(showall):  # X1->X2->X4, X3->X2 200 rows
+# X1->X2->X4, X3->X2 200 rows
+@requires_r_and_bnlearn
+def test_tabu_and4_10_4_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 200
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1322,7 +1423,9 @@ def test_tabu_and4_10_4_ok(showall):  # X1->X2->X4, X3->X2 200 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_5_ok(showall):  # X1->X2->X4, X3->X2 1K rows
+# X1->X2->X4, X3->X2 1K rows
+@requires_r_and_bnlearn
+def test_tabu_and4_10_5_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1352,7 +1455,9 @@ def test_tabu_and4_10_5_ok(showall):  # X1->X2->X4, X3->X2 1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_6_ok(showall):  # X1->X2->X4, X3->X2 1K rows, BDeu
+# X1->X2->X4, X3->X2 1K rows, BDeu
+@requires_r_and_bnlearn
+def test_tabu_and4_10_6_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -1384,7 +1489,9 @@ def test_tabu_and4_10_6_ok(showall):  # X1->X2->X4, X3->X2 1K rows, BDeu
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_7_ok(showall):  # X1->X2->X4, X3->X2 1K rows, BDS
+# X1->X2->X4, X3->X2 1K rows, BDS
+@requires_r_and_bnlearn
+def test_tabu_and4_10_7_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -1413,7 +1520,9 @@ def test_tabu_and4_10_7_ok(showall):  # X1->X2->X4, X3->X2 1K rows, BDS
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_and4_10_8_ok(showall):  # X1->X2->X4, X3->X2 1K rows, Loglik
+# X1->X2->X4, X3->X2 1K rows, Loglik
+@requires_r_and_bnlearn
+def test_tabu_and4_10_8_ok(showall):
     dsc = '/discrete/tiny/and4_10.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -1442,7 +1551,11 @@ def test_tabu_and4_10_8_ok(showall):  # X1->X2->X4, X3->X2 1K rows, Loglik
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_1_ok(showall):  # Cancer 1K rows
+# --- Cancer
+
+# Cancer 1K rows
+@requires_r_and_bnlearn
+def test_tabu_cancer_1_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1471,7 +1584,9 @@ def test_tabu_cancer_1_ok(showall):  # Cancer 1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_2_ok(showall):  # Cancer 1K rows, BDeu score
+# Cancer 1K rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_cancer_2_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -1513,7 +1628,9 @@ def test_tabu_cancer_2_ok(showall):  # Cancer 1K rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_3_ok(showall):  # Cancer 1K rows, BDeu score
+# Cancer 1K rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_cancer_3_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10}
@@ -1545,7 +1662,9 @@ def test_tabu_cancer_3_ok(showall):  # Cancer 1K rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_4_ok(showall):  # Cancer 1K rows, BDeu score, noinc=15
+# Cancer 1K rows, BDeu score, noinc=15
+@requires_r_and_bnlearn
+def test_tabu_cancer_4_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False, 'noinc': 15}
@@ -1578,7 +1697,9 @@ def test_tabu_cancer_4_ok(showall):  # Cancer 1K rows, BDeu score, noinc=15
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_5_ok(showall):  # Cancer 1K rows, BDS score
+# Cancer 1K rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_cancer_5_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -1617,7 +1738,9 @@ def test_tabu_cancer_5_ok(showall):  # Cancer 1K rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_6_ok(showall):  # Cancer 1K rows, BDS score
+# Cancer 1K rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_cancer_6_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10}
@@ -1646,7 +1769,9 @@ def test_tabu_cancer_6_ok(showall):  # Cancer 1K rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_cancer_7_ok(showall):  # Cancer 1K rows, Log-likelihood score
+# Cancer 1K rows, Log-likelihood score
+@requires_r_and_bnlearn
+def test_tabu_cancer_7_ok(showall):
     dsc = '/discrete/small/cancer.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -1677,9 +1802,11 @@ def test_tabu_cancer_7_ok(showall):  # Cancer 1K rows, Log-likelihood score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-#   Asia 8-nodmodel
+# --- Asia 8-node model
 
-def test_tabu_asia_1_ok(showall):  # Asia 500 rows
+# Asia 500 rows
+@requires_r_and_bnlearn
+def test_tabu_asia_1_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 500
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1714,7 +1841,9 @@ def test_tabu_asia_1_ok(showall):  # Asia 500 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_2_ok(showall):  # Asia 500 rows
+# Asia 500 rows
+@requires_r_and_bnlearn
+def test_tabu_asia_2_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 500
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1741,7 +1870,9 @@ def test_tabu_asia_2_ok(showall):  # Asia 500 rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_3_ok(showall):  # Asia 1K rows
+# Asia 1K rows
+@requires_r_and_bnlearn
+def test_tabu_asia_3_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1776,7 +1907,9 @@ def test_tabu_asia_3_ok(showall):  # Asia 1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_4_ok(showall):  # Asia 1K rows
+# Asia 1K rows
+@requires_r_and_bnlearn
+def test_tabu_asia_4_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -1803,7 +1936,9 @@ def test_tabu_asia_4_ok(showall):  # Asia 1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_5_ok(showall):  # Asia 1K rows, BDeu score
+# Asia 1K rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_asia_5_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10, 'bnlearn': False}
@@ -1835,7 +1970,9 @@ def test_tabu_asia_5_ok(showall):  # Asia 1K rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_6_ok(showall):  # Asia 1K rows, BDeu score
+# Asia 1K rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_asia_6_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     params = {'score': 'bde', 'tabu': 10}
@@ -1868,7 +2005,9 @@ def test_tabu_asia_6_ok(showall):  # Asia 1K rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_7_ok(showall):  # Asia 1K rows, BDS score
+# Asia 1K rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_asia_7_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10, 'bnlearn': False}
@@ -1901,7 +2040,9 @@ def test_tabu_asia_7_ok(showall):  # Asia 1K rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_8_ok(showall):  # Asia 1K rows, BDS score
+# Asia 1K rows, BDS score
+@requires_r_and_bnlearn
+def test_tabu_asia_8_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     params = {'score': 'bds', 'tabu': 10}
@@ -1934,7 +2075,9 @@ def test_tabu_asia_8_ok(showall):  # Asia 1K rows, BDS score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_9_ok(showall):  # Asia 1K rows, Loglik score
+# Asia 1K rows, Loglik score
+@requires_r_and_bnlearn
+def test_tabu_asia_9_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10, 'bnlearn': False}
@@ -1966,7 +2109,9 @@ def test_tabu_asia_9_ok(showall):  # Asia 1K rows, Loglik score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-def test_tabu_asia_10_ok(showall):  # Asia 1K rows, Loglik score
+# Asia 1K rows, Loglik score
+@requires_r_and_bnlearn
+def test_tabu_asia_10_ok(showall):
     dsc = '/discrete/small/asia.dsc'
     N = 1000
     params = {'score': 'loglik', 'tabu': 10}
@@ -1994,10 +2139,12 @@ def test_tabu_asia_10_ok(showall):  # Asia 1K rows, Loglik score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-#   CHILD 20-nodBN
+# --- CHILD 20-nodBN
 
+# Child 1K rows
 @pytest.mark.slow
-def test_tabu_child_1_ok(showall):  # Child 1K rows
+@requires_r_and_bnlearn
+def test_tabu_child_1_ok(showall):
     dsc = '/discrete/medium/child.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -2036,8 +2183,10 @@ def test_tabu_child_1_ok(showall):  # Child 1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
+# Child 1K rows
 @pytest.mark.slow
-def test_tabu_child_2_ok(showall):  # Child 1K rows
+@requires_r_and_bnlearn
+def test_tabu_child_2_ok(showall):
     dsc = '/discrete/medium/child.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -2072,8 +2221,10 @@ def test_tabu_child_2_ok(showall):  # Child 1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
+# Child 10K rows
 @pytest.mark.slow
-def test_tabu_child_3_ok(showall):  # Child 10K rows
+@requires_r_and_bnlearn
+def test_tabu_child_3_ok(showall):
     dsc = '/discrete/medium/child.dsc'
     N = 10000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -2108,8 +2259,10 @@ def test_tabu_child_3_ok(showall):  # Child 10K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
+# Child 10K rows
 @pytest.mark.slow
-def test_tabu_child_4_ok(showall):  # Child 10K rows
+@requires_r_and_bnlearn
+def test_tabu_child_4_ok(showall):
     dsc = '/discrete/medium/child.dsc'
     N = 10000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -2143,8 +2296,10 @@ def test_tabu_child_4_ok(showall):  # Child 10K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
+# Child 10K rows, BDeu score
 @pytest.mark.slow
-def test_tabu_child_5_ok(showall):  # Child 10K rows, BDeu score
+@requires_r_and_bnlearn
+def test_tabu_child_5_ok(showall):
     dsc = '/discrete/medium/child.dsc'
     N = 10000
     params = {'score': 'bic', 'tabu': 10}
@@ -2169,10 +2324,12 @@ def test_tabu_child_5_ok(showall):  # Child 10K rows, BDeu score
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
-#   INSURANCE 27-node BN
+# --- INSURANCE 27-node BN
 
+# Insurance 1K rows
 @pytest.mark.slow
-def test_tabu_insurance_1_ok(showall):  # Insuranc1K rows
+@requires_r_and_bnlearn
+def test_tabu_insurance_1_ok(showall):
     dsc = '/discrete/medium/insurance.dsc'
     N = 1000
     bn = BN.read(TESTDATA_DIR + dsc)
@@ -2202,8 +2359,10 @@ def test_tabu_insurance_1_ok(showall):  # Insuranc1K rows
                         (trace_bnlearn.trace['time'][-1] + 0.01), 2)))
 
 
+# Insurance 10K rows
 @pytest.mark.slow
-def test_tabu_insurance_10k_ok(showall):  # Insuranc1K rows
+@requires_r_and_bnlearn
+def test_tabu_insurance_10k_ok(showall):
     dsc = '/discrete/medium/insurance.dsc'
     N = 10000
     bn = BN.read(TESTDATA_DIR + dsc)

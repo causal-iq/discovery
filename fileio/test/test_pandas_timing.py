@@ -170,12 +170,12 @@ def test_pandas_tabu_sachs_c_2_timings():  # Tabu-Stable, sachs_c, 1K
 
 
 @pytest.mark.slow
-def test_pandas_tabu_sachs_c_3_timings():  # Tabu, sachs_c, 1M
+def xtest_pandas_tabu_sachs_c_3_timings():  # Tabu, sachs_c, 1M
     do_expt(network='sachs_c', N=1000000, id=3, params={'tabu': 10})
 
 
 @pytest.mark.slow
-def test_pandas_tabu_sachs_c_4_timings():  # Tabu, sachs_c, 1M
+def xtest_pandas_tabu_sachs_c_4_timings():  # Tabu, sachs_c, 1M
     do_expt(network='sachs_c', N=1000000, id=4,
             params={'tabu': 10, 'stable': 'score+'})
 

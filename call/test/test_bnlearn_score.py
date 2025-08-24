@@ -1,4 +1,3 @@
-
 # Test DAG scoring in R code
 
 import pytest
@@ -7,6 +6,7 @@ from random import random
 from os import remove
 
 from call.bnlearn import bnlearn_score
+from call.r import requires_r_and_bnlearn
 import testdata.example_dags as dag
 from fileio.common import TESTDATA_DIR
 from fileio.numpy import NumPy
@@ -17,26 +17,35 @@ from core.bn import BN
 TYPES = ['loglik', 'bic', 'aic', 'bde', 'k2', 'bdj', 'bds']  # scores to test
 
 
-@pytest.fixture(scope="function")  # temp file, automatically removed
+# temp file, automatically removed
+@pytest.fixture(scope="function")
 def tmpfile():
     _tmpfile = TESTDATA_DIR + '/tmp/{}.csv'.format(int(random() * 10000000))
     yield _tmpfile
-    remove(_tmpfile)
+    try:
+        remove(_tmpfile)
+    except Exception:
+        pass
 
 
-@pytest.fixture(scope="module")  # AB, 10 categorical rows
+# Generate 10 categorical rows from A --> B
+@pytest.fixture(scope="module")
 def ab10():
     bn = BN.read(TESTDATA_DIR + '/dsc/ab.dsc')
     return NumPy.from_df(df=bn.generate_cases(10), dstype='categorical',
                          keep_df=False)
 
 
-def test_bnlearn_score_type_error_1_():  # no arguments
+# --- Failure cases
+
+# no arguments
+def test_bnlearn_score_type_error_1_():
     with pytest.raises(TypeError):
         bnlearn_score()
 
 
-def test_bnlearn_score_type_error_2_(ab10):  # insufficient args
+# insufficient args
+def test_bnlearn_score_type_error_2_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(dag=dag.ab(), data=ab10, types=['bic'])
     with pytest.raises(TypeError):
@@ -47,7 +56,8 @@ def test_bnlearn_score_type_error_2_(ab10):  # insufficient args
         bnlearn_score(data=ab10, types=['bic'], params={'base': 'e'})
 
 
-def test_bnlearn_score_type_error_3_(ab10):  # bad dag type
+# bad dag type
+def test_bnlearn_score_type_error_3_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(False, ab10, ['bic'], params={'base': 'e'})
     with pytest.raises(TypeError):
@@ -56,7 +66,8 @@ def test_bnlearn_score_type_error_3_(ab10):  # bad dag type
         bnlearn_score({dag.ab()}, ab10, ['bic'], params={'base': 'e'})
 
 
-def test_bnlearn_score_type_error_4_(ab10):  # bad data type
+# bad data type
+def test_bnlearn_score_type_error_4_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(dag.ab(), ab10.as_df(), ['bic'], params={'base': 'e'})
     with pytest.raises(TypeError):
@@ -67,7 +78,8 @@ def test_bnlearn_score_type_error_4_(ab10):  # bad data type
         bnlearn_score(dag.ab(), [ab10], ['bic'], params={'base': 'e'})
 
 
-def test_bnlearn_score_type_error_5_(ab10):  # bad type for types
+# bad type for types
+def test_bnlearn_score_type_error_5_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(dag.ab(), ab10, 6, params={'base': 'e'})
     with pytest.raises(TypeError):
@@ -76,7 +88,8 @@ def test_bnlearn_score_type_error_5_(ab10):  # bad type for types
         bnlearn_score(dag.ab(), ab10, {'bic'}, params={'base': 'e'})
 
 
-def test_bnlearn_score_type_error_6_(ab10):  # bad type for params
+# bad type for params
+def test_bnlearn_score_type_error_6_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(dag.ab(), ab10, ['bic'], params=['base', 'e'])
     with pytest.raises(TypeError):
@@ -85,40 +98,50 @@ def test_bnlearn_score_type_error_6_(ab10):  # bad type for params
         bnlearn_score(dag.ab(), ab10, ['bic'], params=30.1)
 
 
-def test_bnlearn_score_type_error_7_(ab10):  # bad ISS type
+# bad ISS type
+def test_bnlearn_score_type_error_7_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(dag.ab(), ab10, types=['bde'],
                       params={'iss': 'wrong type'})
 
 
-def test_bnlearn_score_type_error_8_(ab10):  # bad k type
+# bad k type
+def test_bnlearn_score_type_error_8_(ab10):
     with pytest.raises(TypeError):
         bnlearn_score(dag.ab(), ab10, ['bic'], {'k': 'bad type'})
 
 
-def test_bnlearn_score_value_error_1(ab10):  # variable set mismatch
+# variable set mismatch
+def test_bnlearn_score_value_error_1(ab10):
     with pytest.raises(ValueError):
         bnlearn_score(dag.abc(), ab10, types=['bic'], params={'k': 1})
 
 
-def test_bnlearn_score_value_error_2():  # some variables single-valued
+# some variables single-valued
+def test_bnlearn_score_value_error_2():
     data = NumPy(array([[0, 0], [1, 0]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('N', 'Y'), 'B': ('0',)})
     with pytest.raises(ValueError):
         bnlearn_score(dag.ab(), data, ['bic'], {'k': 1})
 
 
-def test_bnlearn_score_value_error_3(ab10):  # invalid score type
+# invalid score type
+def test_bnlearn_score_value_error_3(ab10):
     with pytest.raises(ValueError):
         bnlearn_score(dag.ab(), ab10, ['invalid'], {'k': 1})
 
 
-def test_bnlearn_score_value_error_4(ab10):  # bad k value
+# bad k value
+def test_bnlearn_score_value_error_4(ab10):
     with pytest.raises(ValueError):
         bnlearn_score(dag.ab(), ab10, ['bic'], {'k': -1})
 
 
-def test_bnlearn_score_a_b_1_ok():  # A, B unconnected
+# --- Successful cases with discrete data
+
+# A, B unconnected
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_1_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     bnscores = bnlearn_score(dag.a_b(), data, TYPES, params={'iss': 1.0})
@@ -127,7 +150,9 @@ def test_bnlearn_score_a_b_1_ok():  # A, B unconnected
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_2_ok():  # A, B unconnected, ISS = 2
+# A, B unconnected, ISS = 2
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_2_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     bnscores = bnlearn_score(dag.a_b(), data, TYPES, {'iss': 2.0})
@@ -136,7 +161,9 @@ def test_bnlearn_score_a_b_2_ok():  # A, B unconnected, ISS = 2
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_3_ok():  # A, B unconnected, ISS = 10
+# A, B unconnected, ISS = 10
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_3_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     bnscores = bnlearn_score(dag.a_b(), data, TYPES, {'iss': 10.0})
@@ -145,7 +172,9 @@ def test_bnlearn_score_a_b_3_ok():  # A, B unconnected, ISS = 10
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_4_ok():  # A, B unconnected, ISS = 100
+# A, B unconnected, ISS = 100
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_4_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     bnscores = bnlearn_score(dag.a_b(), data, TYPES, {'iss': 100.0})
@@ -154,7 +183,9 @@ def test_bnlearn_score_a_b_4_ok():  # A, B unconnected, ISS = 100
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_5_ok():  # A, B unconnected, k=2
+# A, B unconnected, k=2
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_5_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     print('\n\n{}'.format(data.as_df()))
@@ -164,7 +195,9 @@ def test_bnlearn_score_a_b_5_ok():  # A, B unconnected, k=2
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_6_ok():  # A, B unconnected, k=0.5
+# A, B unconnected, k=0.5
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_6_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     print('\n\n{}'.format(data.as_df()))
@@ -174,7 +207,9 @@ def test_bnlearn_score_a_b_6_ok():  # A, B unconnected, k=0.5
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_7_ok():  # A, B unconnected, k=10.0
+# A, B unconnected, k=10.0
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_7_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     print('\n\n{}'.format(data.as_df()))
@@ -184,7 +219,9 @@ def test_bnlearn_score_a_b_7_ok():  # A, B unconnected, k=10.0
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_a_b_8_ok():  # A, B unconnected, k=0.1
+# A, B unconnected, k=0.1
+@requires_r_and_bnlearn
+def test_bnlearn_score_a_b_8_ok():
     data = NumPy(array([[0, 0], [1, 1]], dtype='uint8'), dstype='categorical',
                  col_values={'A': ('1', '0'), 'B': ('1', '0')})
     print('\n\n{}'.format(data.as_df()))
@@ -194,7 +231,11 @@ def test_bnlearn_score_a_b_8_ok():  # A, B unconnected, k=0.1
     assert dicts_same(bnscores, dict(scores.sum()))
 
 
-def test_bnlearn_score_x_y_1_ok():  # scoring X, Y data
+# --- Successful cases with continuous data
+
+# scoring X, Y data
+@requires_r_and_bnlearn
+def test_bnlearn_score_x_y_1_ok():
     data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
                  dstype='continuous', col_values={'X': None, 'Y': None})
     print('\n\n{}'.format(data.as_df()))
@@ -207,7 +248,9 @@ def test_bnlearn_score_x_y_1_ok():  # scoring X, Y data
     assert dicts_same(bnscores, dict(scores.sum()), sf=6)
 
 
-def test_bnlearn_score_x_y_2_ok():  # scoring X, Y data
+# scoring X, Y data
+@requires_r_and_bnlearn
+def test_bnlearn_score_x_y_2_ok():
     data = NumPy(array([[0.6, -0.4], [5.1, 1.7], [-3.2, 0.0],
                         [-2.0, -0.8], [-0.7, 0.6]], dtype='float32'),
                  dstype='continuous', col_values={'X': None, 'Y': None})
@@ -221,7 +264,9 @@ def test_bnlearn_score_x_y_2_ok():  # scoring X, Y data
     assert dicts_same(bnscores, dict(scores.sum()), sf=6)
 
 
-def test_bnlearn_score_xy_1_ok():  # scoring X, Y data
+# scoring X, Y data
+@requires_r_and_bnlearn
+def test_bnlearn_score_xy_1_ok():
     data = NumPy(array([[0.6, -0.4], [5.1, 1.7], [-3.2, 0.0],
                         [-2.0, -0.8], [-0.7, 0.6]], dtype='float32'),
                  dstype='continuous', col_values={'X': None, 'Y': None})
@@ -235,7 +280,9 @@ def test_bnlearn_score_xy_1_ok():  # scoring X, Y data
     assert dicts_same(bnscores, dict(scores.sum()), sf=2)
 
 
-def test_bnlearn_score_xyz_1_ok():  # scoring X --> Y --> Z DAG
+# scoring X --> Y --> Z DAG
+@requires_r_and_bnlearn
+def test_bnlearn_score_xyz_1_ok():
     data = NumPy(array([[0.2, 0.5, 2.4],
                         [0.4, 0.7, 2.6],
                         [-0.1, 0.0, 1.9],
@@ -254,7 +301,9 @@ def test_bnlearn_score_xyz_1_ok():  # scoring X --> Y --> Z DAG
     assert values_same(dict(scores.sum())['bic-g'], 3.673, sf=4)
 
 
-def test_bnlearn_score_xy_zy_1_ok():  # scoring X --> Y <-- Z DAG
+# scoring X --> Y <-- Z DAG
+@requires_r_and_bnlearn
+def test_bnlearn_score_xy_zy_1_ok():
     data = NumPy(array([[0.2, 0.5, 2.4],
                         [0.4, 0.7, 2.6],
                         [-0.1, 0.0, 1.9],
@@ -273,7 +322,9 @@ def test_bnlearn_score_xy_zy_1_ok():  # scoring X --> Y <-- Z DAG
     assert values_same(dict(scores.sum())['bic-g'], -7.6652, sf=5)
 
 
-def test_bnlearn_score_gauss_1_ok():  # scoring BNLearn example Gaussian
+# scoring BNLearn example Gaussian
+@requires_r_and_bnlearn
+def test_bnlearn_score_gauss_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous', N=5000)
     bnscores = bnlearn_score(dag.gauss(), data, ['bic-g'], {'k': 1.0})
@@ -290,9 +341,11 @@ def test_bnlearn_score_gauss_1_ok():  # scoring BNLearn example Gaussian
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-# Test Bayesian Gaussian Equivalent (bge) score
+# --- Test Bayesian Gaussian Equivalent (bge) score
 
-def test_bnlearn_score_bge_x_y_1_ok():  # scoring X Y data
+# scoring X Y data
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_x_y_1_ok():
     data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
                  dstype='continuous', col_values={'X': None, 'Y': None})
     print('\n\n{}'.format(data.as_df()))
@@ -304,7 +357,9 @@ def test_bnlearn_score_bge_x_y_1_ok():  # scoring X Y data
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_xy_1_ok():  # scoring X --> Y data
+# scoring X --> Y data
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_xy_1_ok():
     data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
                  dstype='continuous', col_values={'X': None, 'Y': None})
     print('\n\n{}'.format(data.as_df()))
@@ -316,7 +371,9 @@ def test_bnlearn_score_bge_xy_1_ok():  # scoring X --> Y data
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_yx_1_ok():  # scoring X <-- Y data
+# scoring X <-- Y data
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_yx_1_ok():
     data = NumPy(array([[1.1, 0.0], [2.2, 1.7], [-0.3, 0.0]], dtype='float32'),
                  dstype='continuous', col_values={'X': None, 'Y': None})
     print('\n\n{}'.format(data.as_df()))
@@ -328,7 +385,9 @@ def test_bnlearn_score_bge_yx_1_ok():  # scoring X <-- Y data
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_f1_f2_1_ok():  # scoring F1 F2 data
+# scoring F1 F2 data
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_f1_f2_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv', dstype='continuous')
     dag = DAG(['F1', 'F2'], [])
     print('\n\n{}'.format(data.as_df()))
@@ -340,7 +399,9 @@ def test_bnlearn_score_bge_f1_f2_1_ok():  # scoring F1 F2 data
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_f1f2_1_ok():  # scoring F1 --> F2 data
+# scoring F1 --> F2 data
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_f1f2_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv', dstype='continuous')
     dag = DAG(['F1', 'F2'], [('F1', '->', 'F2')])
     print('\n\n{}'.format(data.as_df()))
@@ -352,7 +413,9 @@ def test_bnlearn_score_bge_f1f2_1_ok():  # scoring F1 --> F2 data
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_f2f1_1_ok():  # scoring F1 --> F2 data
+# scoring F1 --> F2 data
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_f2f1_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/xy_3.csv', dstype='continuous')
     dag = DAG(['F1', 'F2'], [('F2', '->', 'F1')])
     print('\n\n{}'.format(data.as_df()))
@@ -364,7 +427,9 @@ def test_bnlearn_score_bge_f2f1_1_ok():  # scoring F1 --> F2 data
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_xyz_1_ok():  # scoring X --> Y --> Z
+# scoring X --> Y --> Z
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_xyz_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/xyz_10.csv', dstype='continuous')
     print('\n\n{}'.format(data.as_df()))
     bnscores = bnlearn_score(dag.xyz(), data, ['bge'], {'k': 1.0})
@@ -375,7 +440,9 @@ def test_bnlearn_score_bge_xyz_1_ok():  # scoring X --> Y --> Z
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_xy_zy_1_ok():  # scoring X --> Y <-- Z, 3 rows
+# scoring X --> Y <-- Z, 3 rows
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_xy_zy_1_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/xyz_10.csv', dstype='continuous',
                       N=3)
     print('\n\n{}'.format(data.as_df()))
@@ -387,7 +454,9 @@ def test_bnlearn_score_bge_xy_zy_1_ok():  # scoring X --> Y <-- Z, 3 rows
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_xy_zy_2_ok():  # scoring X --> Y <-- Z, 10 rows
+# scoring X --> Y <-- Z, 10 rows
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_xy_zy_2_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/xyz_10.csv', dstype='continuous')
     print('\n\n{}'.format(data.as_df()))
     bnscores = bnlearn_score(dag.xy_zy(), data, ['bge'], {'k': 1.0})
@@ -398,7 +467,9 @@ def test_bnlearn_score_bge_xy_zy_2_ok():  # scoring X --> Y <-- Z, 10 rows
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_gauss_10_ok():  # gauss, 10 rows
+# gauss, 10 rows
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_gauss_10_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous', N=10)
     dag = BN.read(TESTDATA_DIR + '/xdsl/gauss.xdsl').dag
@@ -411,7 +482,9 @@ def test_bnlearn_score_bge_gauss_10_ok():  # gauss, 10 rows
     assert dicts_same(bnscores, dict(scores.sum()), sf=7)
 
 
-def test_bnlearn_score_bge_gauss_1k_ok():  # gauss, 1k rows
+# gauss, 1k rows
+@requires_r_and_bnlearn
+def test_bnlearn_score_bge_gauss_1k_ok():
     data = NumPy.read(TESTDATA_DIR + '/simple/gauss.data.gz',
                       dstype='continuous', N=1000)
     dag = BN.read(TESTDATA_DIR + '/xdsl/gauss.xdsl').dag

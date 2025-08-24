@@ -1,7 +1,7 @@
 
 import pytest
 
-from call.r import dispatch_r
+from call.r import dispatch_r, requires_r_and_bnlearn
 
 
 def test_dispatch_r_type_error():
@@ -17,27 +17,33 @@ def test_dispatch_r_type_error():
         dispatch_r('test', 'echo', 17)
 
 
-def test_dispatch_r_value_error_1():  # bad package name
+# bad package name
+def test_dispatch_r_value_error_1():
     with pytest.raises(ValueError):
         dispatch_r('unsupported', 'echo')
 
 
-def test_dispatch_r_value_error_2():  # bad method name
+# bad method name
+def test_dispatch_r_value_error_2():
     with pytest.raises(ValueError):
         dispatch_r('test', 'unsupported')
 
 
-def test_dispatch_r_value_error_3():  # empty parameters
+# empty parameters
+def test_dispatch_r_value_error_3():
     with pytest.raises(ValueError):
         dispatch_r('test', 'echo', {})
 
 
-def test_dispatch_r_runtime_error():  # Error in R code
+# Error in R code
+def test_dispatch_r_runtime_error():
     with pytest.raises(RuntimeError):
         dispatch_r('test', 'error')
 
 
-def test_dispatch_r_runtime_test_echo_ok():  # Echo parameters works
+# Echo parameters works
+@requires_r_and_bnlearn
+def test_dispatch_r_runtime_test_echo_ok():
     params = {'float': 0.2, 'int': 7, 'str': 'hello', 'array': [13, 17],
               'dict': {'f': 2.9, 'i': 2, 's': 'd'}}
     check, stdout = dispatch_r('test', 'echo', params)

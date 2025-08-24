@@ -554,49 +554,53 @@ def bnlearn_learn(algorithm, data, context=None, params=None,
     if algorithm not in BNLEARN_ALGORITHMS:
         raise ValueError('bnlearn_learn unsupported algorithm')
 
-    if isinstance(data, str):
-        tmpfile = None
-        if not exists(data):
-            raise FileNotFoundError('bnlearn_learn data file does not exist')
-        if algorithm not in ['hc', 'tabu', 'h2pc', 'mmhc'] \
-                and len(read_csv(data).columns) <= 2:
-            raise ValueError('bnlearn_learn data < 3 columns')
-    else:
-        tmpfile = 'call/R/tmp/{}.csv'.format(int(random() * 10000000))
-        Pandas(df=data.as_df()).write(tmpfile)
-        if algorithm not in ['hc', 'tabu', 'h2pc', 'mmhc'] \
-                and len(data.nodes) <= 2:
-            raise ValueError('bnlearn_learn data < 3 columns')
+    try:
+        if isinstance(data, str):
+            tmpfile = None
+            if not exists(data):
+                raise FileNotFoundError('bnlearn_learn data file missing')
+            if algorithm not in ['hc', 'tabu', 'h2pc', 'mmhc'] \
+                    and len(read_csv(data).columns) <= 2:
+                raise ValueError('bnlearn_learn data < 3 columns')
+        else:
+            tmpfile = 'call/R/tmp/{}.csv'.format(int(random() * 10000000))
+            Pandas(df=data.as_df()).write(tmpfile)
+            if algorithm not in ['hc', 'tabu', 'h2pc', 'mmhc'] \
+                    and len(data.nodes) <= 2:
+                raise ValueError('bnlearn_learn data < 3 columns')
 
-    if (context is not None
+        if (context is not None
             and (len(set(context.keys()) - set(CONTEXT_FIELDS))
                  or not {'in', 'id'}.issubset(context.keys()))):
-        raise ValueError('bnlearn_learn() bad context values')
+            raise ValueError('bnlearn_learn() bad context values')
 
-    # Validate learning parameters and return in format required by Trace and
-    # by the bnlearn algorithms
+        # Validate learning parameters and return in format required by Trace
+        # and by the bnlearn algorithms
+        params, bnlearn_params = _validate_learn_params(algorithm, params,
+                                                        data.dstype, knowledge)
+        bnlearn_params.update({'datafile': data if tmpfile is None
+                               else tmpfile, 'dstype': data.dstype})
 
-    params, bnlearn_params = _validate_learn_params(algorithm, params,
-                                                    data.dstype, knowledge)
-    bnlearn_params.update({'datafile': data if tmpfile is None else tmpfile,
-                           'dstype': data.dstype})
+        # Call a R sub-process to perform the learning
+        graph, stdout = dispatch_r('bnlearn', 'learn', bnlearn_params)
 
-    # Call a R sub-process to perform the learning
+        # Construct the learning trace from stdout
+        elapsed = graph['elapsed']
+        if algorithm in ['hc', 'tabu', 'h2pc', 'mmhc']:
+            graph = DAG(graph['nodes'], _arcs_to_edges(graph['arcs']))
+            trace = _get_hc_trace(stdout, algorithm, context, params, data.N,
+                                  graph, elapsed) if context else None
+        else:
+            graph = PDAG(graph['nodes'], _arcs_to_edges(graph['arcs']))
+            trace = _get_pc_trace(stdout, algorithm, context, params, data.N,
+                                  graph, elapsed) if context else None
+            
+        if tmpfile is not None:
+            remove(tmpfile)
 
-    # print(bnlearn_params)
-    graph, stdout = dispatch_r('bnlearn', 'learn', bnlearn_params)
-    elapsed = graph['elapsed']
-
-    if algorithm in ['hc', 'tabu', 'h2pc', 'mmhc']:
-        graph = DAG(graph['nodes'], _arcs_to_edges(graph['arcs']))
-        trace = _get_hc_trace(stdout, algorithm, context, params, data.N,
-                              graph, elapsed) if context else None
-    else:
-        graph = PDAG(graph['nodes'], _arcs_to_edges(graph['arcs']))
-        trace = _get_pc_trace(stdout, algorithm, context, params, data.N,
-                              graph, elapsed) if context else None
-
-    if tmpfile is not None:
-        remove(tmpfile)
+    except Exception:
+        if tmpfile is not None:
+            remove(tmpfile)
+        raise
 
     return (graph, trace)

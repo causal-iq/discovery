@@ -8,7 +8,6 @@ from learn.knowledge import Knowledge, Rule, RuleSet, \
 from learn.trace import Activity
 from learn.dagchange import DAGChange, BestDAGChanges
 from fileio.common import TESTDATA_DIR
-from fileio.pandas import Pandas
 from fileio.numpy import NumPy
 from core.bn import BN
 from core.common import init_stable_random

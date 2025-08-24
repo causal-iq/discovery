@@ -9,6 +9,7 @@ from core.common import Randomise
 from fileio.common import EXPTS_DIR
 from fileio.numpy import NumPy
 from fileio.oracle import Oracle
+from call.r import initialise_r_environment
 from call.bnlearn import bnlearn_learn
 from call.tetrad import tetrad_learn
 from call.causal import causal_learn
@@ -158,7 +159,8 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
 
     else:
 
-        # bnlearn algorithm
+        # bnlearn algorithm - first check R and bnlearn installed
+        initialise_r_environment()
 
         try:
             _, trace = bnlearn_learn(props['algorithm'].value['method'],

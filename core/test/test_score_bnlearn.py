@@ -6,6 +6,7 @@ from pandas import DataFrame
 from random import random
 from os import remove
 
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_score
 import testdata.example_dags as dag
 from fileio.common import TESTDATA_DIR
@@ -18,14 +19,19 @@ TYPES = ['loglik', 'bic', 'aic', 'bde', 'k2', 'bdj', 'bds']  # scores to test
 DEFAULT_PARAMS = {'iss': 1.0, 'prior': 'uniform', 'base': 'e'}
 
 
-@pytest.fixture(scope="function")  # temp file, automatically removed
+# temp file, automatically removed
+@pytest.fixture(scope="function")
 def tmpfile():
     _tmpfile = TESTDATA_DIR + '/tmp/{}.csv'.format(int(random() * 10000000))
     yield _tmpfile
     remove(_tmpfile)
 
 
-def test_score_bnlearn_a_b_3_ok():  # A, B unconnected
+# --- Check scores for delete networks
+
+# A, B unconnected
+@requires_r_and_bnlearn
+def test_score_bnlearn_a_b_3_ok():
     data = Pandas(DataFrame({'A': ['1', '0', '1'],
                              'B': ['1', '0', '1']}, dtype='category'))
     bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
@@ -34,7 +40,9 @@ def test_score_bnlearn_a_b_3_ok():  # A, B unconnected
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_a_b_4_ok():  # A, B unconnected
+# A, B unconnected, 4 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_a_b_4_ok():
     data = Pandas(DataFrame({'A': ['1', '1', '1', '0'],
                              'B': ['1', '0', '1', '1']}, dtype='category'))
     bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
@@ -43,7 +51,9 @@ def test_score_bnlearn_a_b_4_ok():  # A, B unconnected
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_a_b_5_ok():  # A, B unconnected
+# A, B unconnected, 4 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_a_b_5_ok():
     data = Pandas(DataFrame({'A': ['1', '0', '1', '0'],
                              'B': ['1', '0', '1', '0']}, dtype='category'))
     bnlearn = bnlearn_score(dag.a_b(), data, TYPES, DEFAULT_PARAMS)
@@ -52,7 +62,9 @@ def test_score_bnlearn_a_b_5_ok():  # A, B unconnected
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_a_b_6_ok():  # A, B unconnected
+# A, B unconnected, 7 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_a_b_6_ok():
     data = Pandas(DataFrame({'A': ['1', '0', '1', '0', '0', '0', '0'],
                              'B': ['0', '0', '0', '1', '0', '1', '0']},
                             dtype='category'))
@@ -62,7 +74,9 @@ def test_score_bnlearn_a_b_6_ok():  # A, B unconnected
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_ab_1_ok():  # A --> B, 2 rows
+# A --> B, 2 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_ab_1_ok():
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
     bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
@@ -71,7 +85,9 @@ def test_score_bnlearn_ab_1_ok():  # A --> B, 2 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_ab_2_ok():  # A --> B, 4 rows
+# A --> B, 4 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_ab_2_ok():
     data = Pandas(DataFrame({'A': ['0', '1', '0', '1'],
                              'B': ['0', '1', '0', '1']}, dtype='category'))
     bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
@@ -80,7 +96,9 @@ def test_score_bnlearn_ab_2_ok():  # A --> B, 4 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_ab_3_ok():  # A --> B, 3 rows
+# A --> B, 3 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_ab_3_ok():
     data = Pandas(DataFrame({'A': ['0', '1', '1'], 'B': ['0', '1', '1']},
                             dtype='category'))
     bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
@@ -89,7 +107,9 @@ def test_score_bnlearn_ab_3_ok():  # A --> B, 3 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_ab_4_ok():  # A --> B, 4 rows
+# A --> B, 4 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_ab_4_ok():
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
                              'B': ['0', '1', '0', '1']}, dtype='category'))
     bnlearn = bnlearn_score(dag.ab(), data, TYPES, DEFAULT_PARAMS)
@@ -98,7 +118,9 @@ def test_score_bnlearn_ab_4_ok():  # A --> B, 4 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_ac_bc_1_ok():  # A --> C <-- B, 2 parent combos
+# A --> C <-- B, 2 parent combos
+@requires_r_and_bnlearn
+def test_score_bnlearn_ac_bc_1_ok():
     data = Pandas(DataFrame({'A': ['0', '1', '1'],
                              'B': ['0', '1', '1'],
                              'C': ['0', '1', '1']}, dtype='category'))
@@ -108,7 +130,9 @@ def test_score_bnlearn_ac_bc_1_ok():  # A --> C <-- B, 2 parent combos
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_ac_bc_2_ok():  # A --> C <-- B, all parent combo
+# A --> C <-- B, all parent combo
+@requires_r_and_bnlearn
+def test_score_bnlearn_ac_bc_2_ok():
     data = Pandas(DataFrame({'A': ['0', '1', '1', '0', '1'],
                              'B': ['0', '1', '1', '1', '0'],
                              'C': ['0', '1', '1', '1', '1']},
@@ -119,7 +143,9 @@ def test_score_bnlearn_ac_bc_2_ok():  # A --> C <-- B, all parent combo
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_heckerman_1_ok():  # N1 --> N2, 12 rows
+# N1 --> N2, 12 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_heckerman_1_ok():
     data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
                        dstype='categorical')
     dag = DAG(['N1', 'N2'], [('N1', '->', 'N2')])
@@ -128,7 +154,9 @@ def test_score_bnlearn_heckerman_1_ok():  # N1 --> N2, 12 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_heckerman_2_ok():  # N1 _|_ N2, 12 rows
+# N1 _|_ N2, 12 rows
+@requires_r_and_bnlearn
+def test_score_bnlearn_heckerman_2_ok():
     data = Pandas.read(TESTDATA_DIR + '/simple/heckerman.csv',
                        dstype='categorical')
     dag = DAG(['N1', 'N2'], [])
@@ -137,7 +165,9 @@ def test_score_bnlearn_heckerman_2_ok():  # N1 _|_ N2, 12 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_asia_1k():  # bnlearn score for ASIA, 1K
+# bnlearn score for ASIA, 1K
+@requires_r_and_bnlearn
+def test_score_bnlearn_asia_1k():
     asia = BN.read(TESTDATA_DIR + '/asia/asia.dsc')
     data = Pandas(asia.generate_cases(1000))
     bnlearn = bnlearn_score(asia.dag, data, TYPES, DEFAULT_PARAMS)
@@ -146,7 +176,9 @@ def test_score_bnlearn_asia_1k():  # bnlearn score for ASIA, 1K
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_asia_10k():  # bnlearn score ASIA, 1000K
+# bnlearn score ASIA, 1000K
+@requires_r_and_bnlearn
+def test_score_bnlearn_asia_10k():
     asia = BN.read(TESTDATA_DIR + '/asia/asia.dsc')
     data = Pandas(asia.generate_cases(10000))
     bnlearn = bnlearn_score(asia.dag, data, TYPES, DEFAULT_PARAMS)
@@ -155,7 +187,9 @@ def test_score_bnlearn_asia_10k():  # bnlearn score ASIA, 1000K
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_score_bnlearn_alarm_press():  # ALARM subset
+# ALARM subset
+@requires_r_and_bnlearn
+def test_score_bnlearn_alarm_press():
     dag = DAG(['INT', 'KIN', 'VEN', 'PRE'],
               [('INT', '->', 'PRE'),
                ('KIN', '->', 'PRE'),
@@ -171,8 +205,10 @@ def test_score_bnlearn_alarm_press():  # ALARM subset
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
+# bnlearn score ALARM, 10K
 @pytest.mark.slow
-def test_score_bnlearn_alarm_10k():  # bnlearn score ALARM, 10K
+@requires_r_and_bnlearn
+def test_score_bnlearn_alarm_10k():
     alarm = BN.read(TESTDATA_DIR + '/alarm/alarm.dsc')
     data = Pandas(alarm.generate_cases(10000))
     bnlearn = bnlearn_score(alarm.dag, data, TYPES, DEFAULT_PARAMS)
@@ -181,8 +217,10 @@ def test_score_bnlearn_alarm_10k():  # bnlearn score ALARM, 10K
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
+# bnlearn PATHFINDER
 @pytest.mark.slow
-def test_score_bnlearn_pathfinder_25k():  # bnlearn PATHFINDER
+@requires_r_and_bnlearn
+def test_score_bnlearn_pathfinder_25k():
     pathfinder = BN.read(TESTDATA_DIR + '/pathfinder/pathfinder.dsc')
     data = Pandas(pathfinder.generate_cases(25000))
     bnlearn = bnlearn_score(pathfinder.dag, data, TYPES, DEFAULT_PARAMS)
@@ -192,7 +230,9 @@ def test_score_bnlearn_pathfinder_25k():  # bnlearn PATHFINDER
 
 # Check score for continuous networks
 
-def test_score_bnlearn_x_y_score():  # score X --> Y Gaussian Network
+# score X --> Y Gaussian Network
+@requires_r_and_bnlearn
+def test_score_bnlearn_x_y_score():
     x_y = BN.read(TESTDATA_DIR + '/xdsl/x_y.xdsl')
     print('\n\n{}'.format(x_y.dag))
     data = Pandas(x_y.generate_cases(3))

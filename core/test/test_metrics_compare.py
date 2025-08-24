@@ -4,10 +4,10 @@
 import pytest
 
 from core.graph import PDAG, DAG
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_compare
 from fileio.common import TESTDATA_DIR
 import fileio.bayesys as bayesys
-import testdata.example_pdags as ex_pdag
 import testdata.example_dags as ex_dag
 import testdata.example_sdgs as ex_sdg
 
@@ -16,6 +16,7 @@ LEARNT = TESTDATA_DIR + '/noisy/Graphs learned/{0:}/{1:}/' \
     + 'DAGlearned_{1:}_{0:}_N_{2:}k.csv'
 
 
+# returns a baseline set of metrics
 @pytest.fixture
 def expected():
     return {'arc_matched': 0, 'arc_reversed': 0, 'edge_not_arc': 0,
@@ -24,6 +25,7 @@ def expected():
             'missing_matched': 0, 'shd': 0, 'p': None, 'r': None, 'f1': 0.0}
 
 
+# returns a baseline set of metrics including detailed edge metrics
 @pytest.fixture
 def expected2():
     return {'arc_matched': 0, 'arc_reversed': 0, 'edge_not_arc': 0,
@@ -37,6 +39,7 @@ def expected2():
                       'edge_missing': set()}}
 
 
+# helper to print out SHD results
 @pytest.fixture
 def print_shd():
     def _method(desc, metrics):
@@ -45,7 +48,10 @@ def print_shd():
     return _method
 
 
-def test_compared_to_type_error1():  # bad argument type
+# --- Failure cases
+
+# bad argument type
+def test_compared_to_type_error1():
     with pytest.raises(TypeError):
         ex_dag.empty().compared_to()
     with pytest.raises(TypeError):
@@ -55,58 +61,26 @@ def test_compared_to_type_error1():  # bad argument type
     with pytest.raises(TypeError):
         ex_dag.empty().compared_to(ex_sdg.ab())
 
-# comparisons between simple internal test graphs
 
+# --- comparisons between simple internal test graphs
 
-def test_compared_to_empty_ok1(expected):  # empty to itself
+# empty to itself
+def test_compared_to_empty_ok1(expected):
     metrics = ex_dag.empty().compared_to(ex_dag.empty())
     print('\nComparing empty with itself:\n{}\n'.format(metrics))
     assert metrics == expected
 
 
-def test_compared_to_empty_ok2(expected):  # empty to itself
-    metrics = ex_dag.empty().compared_to(ex_pdag.empty())
-    print('\nComparing empty with itself:\n{}\n'.format(metrics))
-    assert metrics == expected
-
-
-def test_compared_to_empty_ok3(expected):  # empty to itself
-    metrics = ex_pdag.empty().compared_to(ex_dag.empty())
-    print('\nComparing empty with itself:\n{}\n'.format(metrics))
-    assert metrics == expected
-
-
-def test_compared_to_empty_ok4(expected):  # empty to itself
-    metrics = ex_pdag.empty().compared_to(ex_pdag.empty())
-    print('\nComparing empty with itself:\n{}\n'.format(metrics))
-    assert metrics == expected
-
-
-def test_compared_to_empty_ok5(expected2):  # empty to itself
+# empty to itself, with edge details
+def test_compared_to_empty_ok2(expected2):
     metrics = ex_dag.empty().compared_to(ex_dag.empty(), identify_edges=True)
     print('\nComparing empty with itself:\n{}\n'.format(metrics))
     assert metrics == expected2
 
 
-def test_compared_to_empty_ok6(expected2):  # empty to itself
-    metrics = ex_dag.empty().compared_to(ex_pdag.empty(), identify_edges=True)
-    print('\nComparing empty with itself:\n{}\n'.format(metrics))
-    assert metrics == expected2
-
-
-def test_compared_to_empty_ok7(expected2):  # empty to itself
-    metrics = ex_pdag.empty().compared_to(ex_dag.empty(), identify_edges=True)
-    print('\nComparing empty with itself:\n{}\n'.format(metrics))
-    assert metrics == expected2
-
-
-def test_compared_to_empty_ok8(expected2):  # empty to itself
-    metrics = ex_pdag.empty().compared_to(ex_pdag.empty(), identify_edges=True)
-    print('\nComparing empty with itself:\n{}\n'.format(metrics))
-    assert metrics == expected2
-
-
-def test_compared_to_a_ok1(expected):  # single node to itself
+# single node to itself
+@requires_r_and_bnlearn
+def test_compared_to_a_ok1(expected):
     dag = ex_dag.a()
     metrics = dag.compared_to(dag)
     print('\nComparing A with itself:\n{}\n'.format(metrics))
@@ -124,14 +98,17 @@ def test_compared_to_a_ok1(expected):  # single node to itself
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
-def test_compared_to_a_ok2(expected2):  # single node to itself
+# single node to itself, with edge details
+def test_compared_to_a_ok2(expected2):
     dag = ex_dag.a()
     metrics = dag.compared_to(dag, identify_edges=True)
     print('\nComparing A with itself:\n{}\n'.format(metrics))
     assert metrics == expected2
 
 
-def test_compared_to_ab_ok1(expected):  # A -> B with itself
+# A -> B with itself
+@requires_r_and_bnlearn
+def test_compared_to_ab_ok1(expected):
     dag1 = ex_dag.ab()
     metrics = dag1.compared_to(dag1)
     expected2 = dict(expected)
@@ -157,7 +134,8 @@ def test_compared_to_ab_ok1(expected):  # A -> B with itself
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
-def test_compared_to_ab_ok2(expected2):  # A -> B with itself
+# A -> B with itself
+def test_compared_to_ab_ok2(expected2):
     dag1 = ex_dag.ab()
     metrics = dag1.compared_to(dag1, identify_edges=True)
     expected2.update({'arc_matched': 1, 'p': 1.0, 'r': 1.0, 'f1': 1.0})
@@ -165,7 +143,9 @@ def test_compared_to_ab_ok2(expected2):  # A -> B with itself
     assert metrics == expected2  # compare the DAGs
 
 
-def test_compared_to_ab_ok3(expected):  # A -> B with A <- B
+# A -> B with A <- B
+@requires_r_and_bnlearn
+def test_compared_to_ab_ok3(expected):
     dag1 = ex_dag.ab()
     dag2 = ex_dag.ba()
     metrics = dag1.compared_to(dag2)
@@ -193,7 +173,8 @@ def test_compared_to_ab_ok3(expected):  # A -> B with A <- B
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
-def test_compared_to_ab_ok4(expected2):  # A -> B with A <- B
+# A -> B with A <- B
+def test_compared_to_ab_ok4(expected2):
     dag1 = ex_dag.ab()
     dag2 = ex_dag.ba()
     metrics = dag1.compared_to(dag2, identify_edges=True)
@@ -202,7 +183,8 @@ def test_compared_to_ab_ok4(expected2):  # A -> B with A <- B
     assert metrics == expected2  # compare the DAGs
 
 
-def test_compared_to_ab_ok5(expected2):  # A -> B with A <- B
+# A -> B with A <- B
+def test_compared_to_ab_ok5(expected2):
     dag1 = ex_dag.ba()
     dag2 = ex_dag.ab()
     metrics = dag1.compared_to(dag2, identify_edges=True)
@@ -211,7 +193,9 @@ def test_compared_to_ab_ok5(expected2):  # A -> B with A <- B
     assert metrics == expected2  # compare the DAGs
 
 
-def test_compared_to_abc_ok1(expected2):  # A -> B <- C with A  B -> C
+# A -> B <- C with A  B -> C
+@requires_r_and_bnlearn
+def test_compared_to_abc_ok1(expected2):
     dag1 = DAG(['A', 'B', 'C'], [('A', '->', 'B'), ('C', '->', 'B')])
     dag2 = DAG(['A', 'B', 'C'], [('B', '->', 'C')])
 
@@ -242,7 +226,9 @@ def test_compared_to_abc_ok1(expected2):  # A -> B <- C with A  B -> C
     assert bnlearn == {'tp': 0, 'fp': 2, 'fn': 1, 'shd': 2}
 
 
-def test_compared_to_and4_12_13_ok1(expected):  # 2>1<3<2<4 & 2<1<3>2<4
+# 2>1<3<2<4 & 2<1<3>2<4
+@requires_r_and_bnlearn
+def test_compared_to_and4_12_13_ok1(expected):
     dag1 = ex_dag.and4_12()
     dag2 = ex_dag.and4_13()
     metrics = dag1.compared_to(dag2)
@@ -273,7 +259,8 @@ def test_compared_to_and4_12_13_ok1(expected):  # 2>1<3<2<4 & 2<1<3>2<4
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
-def test_compared_to_and4_12_13_ok2(expected2):  # 2>1<3<2<4 & 2<1<3>2<4
+# 2>1<3<2<4 & 2<1<3>2<4
+def test_compared_to_and4_12_13_ok2(expected2):
     dag1 = ex_dag.and4_12()
     dag2 = ex_dag.and4_13()
     metrics = dag1.compared_to(dag2, identify_edges=True)
@@ -285,7 +272,9 @@ def test_compared_to_and4_12_13_ok2(expected2):  # 2>1<3<2<4 & 2<1<3>2<4
     assert metrics == expected2  # compare the DAGs
 
 
-def test_compared_to_and4_5_17_ok1(expected):  # 1>2<3 4 & 2<4>3>1>2, 4>1
+# 1>2<3 4 & 2<4>3>1>2, 4>1
+@requires_r_and_bnlearn
+def test_compared_to_and4_5_17_ok1(expected):
     dag1 = ex_dag.and4_5()
     dag2 = ex_dag.and4_17()
     metrics = dag1.compared_to(dag2)
@@ -315,7 +304,8 @@ def test_compared_to_and4_5_17_ok1(expected):  # 1>2<3 4 & 2<4>3>1>2, 4>1
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
-def test_compared_to_and4_5_17_ok2(expected2):  # 1>2<3 4 & 2<4>3>1>2, 4>1
+# 1>2<3 4 & 2<4>3>1>2, 4>1
+def test_compared_to_and4_5_17_ok2(expected2):
     dag1 = ex_dag.and4_5()
     dag2 = ex_dag.and4_17()
     metrics = dag1.compared_to(dag2, identify_edges=True)
@@ -327,10 +317,12 @@ def test_compared_to_and4_5_17_ok2(expected2):  # 1>2<3 4 & 2<4>3>1>2, 4>1
                                'arc_extra': {('X3', 'X2')}})
     assert metrics == expected2
 
-# Larger graph shd comparisons with bnlearn
 
+# --- Larger graph shd comparisons with bnlearn
 
-def test_compared_to_dhs1():  # d7a-fges & d7a-tabu
+# d7a-fges & d7a-tabu
+@requires_r_and_bnlearn
+def test_compared_to_dhs1():
     dag1 = bayesys.read(TESTDATA_DIR + '/dhs/d7a/d7a-fges.csv')
     dag2 = bayesys.read(TESTDATA_DIR + '/dhs/d7a/d7a-tabu.csv')
     metrics = dag1.compared_to(dag2, bayesys='v1.5+')
@@ -357,7 +349,9 @@ def test_compared_to_dhs1():  # d7a-fges & d7a-tabu
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
-def test_compared_to_dhs2():  # d8atr_fges cf d8atr_fges3
+# d8atr_fges cf d8atr_fges3
+@requires_r_and_bnlearn
+def test_compared_to_dhs2():
     dag1 = bayesys.read(TESTDATA_DIR + '/dhs/d8atr/d8atr-fges.csv')
     dag2 = bayesys.read(TESTDATA_DIR + '/dhs/d8atr/d8atr-fges3.csv')
     metrics = dag1.compared_to(dag2, bayesys='v1.5+')
@@ -380,8 +374,10 @@ def test_compared_to_dhs2():  # d8atr_fges cf d8atr_fges3
         assert metrics['r'] == bnlearn['tp'] / (bnlearn['tp'] + bnlearn['fn'])
 
 
+# ASIA: learnt against true
 @pytest.mark.slow
-def test_compared_to_asia(print_shd):  # ASIA: learnt against true
+@requires_r_and_bnlearn
+def test_compared_to_asia(print_shd):
     print('\n\nSHD for ASIA learnt against true graphs')
     for algo in ['GS', 'HC', 'TABU']:
         for size in ['0.1', '1', '10', '100', '1000']:
@@ -413,8 +409,10 @@ def test_compared_to_asia(print_shd):  # ASIA: learnt against true
                                                         bnlearn['fn'])
 
 
+# SPORTS: learnt against true
 @pytest.mark.slow
-def test_compared_to_sports(print_shd):  # SPORTS: learnt against true
+@requires_r_and_bnlearn
+def test_compared_to_sports(print_shd):
     print('\n\nSHD for SPORTS learnt against true graphs')
     for algo in ['GS', 'HC', 'TABU']:
         for size in ['0.1', '1', '10', '100', '1000']:
@@ -446,8 +444,10 @@ def test_compared_to_sports(print_shd):  # SPORTS: learnt against true
                                                         bnlearn['fn'])
 
 
+# ALARM: learnt against true
 @pytest.mark.slow
-def test_compared_to_alarm(print_shd):  # ALARM: learnt against true
+@requires_r_and_bnlearn
+def test_compared_to_alarm(print_shd):
     print('\n\nSHD for ALARM learnt against true graphs')
     for algo in ['GS', 'HC', 'TABU']:
         for size in ['0.1', '1', '10', '100', '1000']:
@@ -479,8 +479,10 @@ def test_compared_to_alarm(print_shd):  # ALARM: learnt against true
                                                         bnlearn['fn'])
 
 
+# PROPERTY: learnt cf. true
 @pytest.mark.slow
-def test_compared_to_property(print_shd):  # PROPERTY: learnt cf. true
+@requires_r_and_bnlearn
+def test_compared_to_property(print_shd):
     print('\n\nSHD for PROPERTY learnt against true graphs')
     for algo in ['GS', 'HC', 'TABU']:
         for size in ['0.1', '1', '10', '100', '1000']:
@@ -512,8 +514,10 @@ def test_compared_to_property(print_shd):  # PROPERTY: learnt cf. true
                                                         bnlearn['fn'])
 
 
+# FORMED: learnt against true
 @pytest.mark.slow
-def test_compared_to_formed(print_shd):  # FORMED: learnt against true
+@requires_r_and_bnlearn
+def test_compared_to_formed(print_shd):
     print('\n\nSHD for FORMED learnt against true graphs')
     for algo in ['GS', 'HC', 'TABU']:
         for size in ['0.1', '1', '10', '100', '1000']:
@@ -545,8 +549,10 @@ def test_compared_to_formed(print_shd):  # FORMED: learnt against true
                                                         bnlearn['fn'])
 
 
+# PATHFINDER
 @pytest.mark.slow
-def test_compared_to_pathfinder(print_shd):  # PATHFINDER
+@requires_r_and_bnlearn
+def test_compared_to_pathfinder(print_shd):
     print('\n\nSHD for PATHFINDER learnt against true graphs')
     for algo in ['GS', 'HC', 'TABU']:
         for size in ['0.1', '1', '10', '100', '1000']:

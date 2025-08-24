@@ -5,6 +5,7 @@ from pandas import DataFrame
 from core.metrics import dicts_same
 from core.score import free_params, dag_score, ENTROPY_SCORES, BAYESIAN_SCORES
 from core.bn import BN
+from call.r import requires_r_and_bnlearn
 from call.bnlearn import bnlearn_score
 import testdata.example_dags as dag
 from fileio.common import TESTDATA_DIR
@@ -16,7 +17,10 @@ ENTROPY_PARAMS = {'base': 'e', 'k': 1.0}
 BAYESIAN_PARAMS = {'iss': 1.0, 'prior': 'uniform'}
 
 
-def test_graph_score_type_error_1():  # bad primary arg types for DAG.score
+# --- Failure cases
+
+# bad primary arg types for DAG.score
+def test_graph_score_type_error_1():
     graph = dag.ab()
     with pytest.raises(TypeError):
         graph.score()
@@ -32,14 +36,16 @@ def test_graph_score_type_error_1():  # bad primary arg types for DAG.score
                               dtype='category'), 'bic', True)
 
 
-def test_graph_score_type_error_2():  # bad score type
+# bad score type
+def test_graph_score_type_error_2():
     graph = dag.ab()
     with pytest.raises(TypeError):
         graph.score(DataFrame({'A': ['0', '1'], 'B': ['1', '1']},
                               dtype='category'), [37])
 
 
-def test_graph_score_type_error_3():  # bad 'base' score param type
+# bad 'base' score param type
+def test_graph_score_type_error_3():
     graph = dag.ab()
     with pytest.raises(TypeError):
         graph.score(DataFrame({'A': ['0', '1'], 'B': ['1', '0']},
@@ -49,14 +55,16 @@ def test_graph_score_type_error_3():  # bad 'base' score param type
                               dtype='category'), 'bic', {'base': True})
 
 
-def test_graph_score_type_error_4():  # bad 'prior' score param type
+# bad 'prior' score param type
+def test_graph_score_type_error_4():
     graph = dag.ab()
     with pytest.raises(TypeError):
         graph.score(DataFrame({'A': ['0', '1'], 'B': ['1', '0']},
                               dtype='category'), 'bde', {'prior': 12})
 
 
-def test_graph_score_type_error_5():  # bad 'iss' score param type
+# bad 'iss' score param type
+def test_graph_score_type_error_5():
     graph = dag.ab()
     with pytest.raises(TypeError):
         graph.score(DataFrame({'A': ['0', '1'], 'B': ['1', '0']},
@@ -71,7 +79,8 @@ def test_graph_score_type_error_6():  # bad 'k' score param type
                               dtype='category'), 'bic', {'k': 'should be num'})
 
 
-def test_graph_score_value_error_7():  # DAG / Data column mismatch
+# DAG / Data column mismatch
+def test_graph_score_value_error_7():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '1'], 'C': ['0', '1']},
                             dtype='category'))
@@ -79,7 +88,8 @@ def test_graph_score_value_error_7():  # DAG / Data column mismatch
         graph.score(data, 'aic')
 
 
-def test_graph_score_value_error_8():  # single-valued variables
+# single-valued variables
+def test_graph_score_value_error_8():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['0', '0']},
                             dtype='category'))
@@ -87,7 +97,8 @@ def test_graph_score_value_error_8():  # single-valued variables
         graph.score(data, 'aic')
 
 
-def test_dag_score_type_error_1():  # bad arg types
+# bad arg types
+def test_dag_score_type_error_1():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['0', '1']},
                             dtype='category'))
@@ -103,7 +114,8 @@ def test_dag_score_type_error_1():  # bad arg types
         dag_score(graph, None, 'bic', {})
 
 
-def test_dag_score_type_error_2():  # bad base type
+# bad base type
+def test_dag_score_type_error_2():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['0', '1']},
                             dtype='category'))
@@ -111,7 +123,8 @@ def test_dag_score_type_error_2():  # bad base type
         dag_score(graph, data, 'bic', {'base': []})
 
 
-def test_dag_score_type_error_3():  # bad k type
+# bad k type
+def test_dag_score_type_error_3():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['0', '1']},
                             dtype='category'))
@@ -121,7 +134,8 @@ def test_dag_score_type_error_3():  # bad k type
         dag_score(graph, data, 'bic', {'k': {}})
 
 
-def test_dag_score_type_error_4():  # bad prior type
+# bad prior type
+def test_dag_score_type_error_4():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['0', '1']},
                             dtype='category'))
@@ -131,7 +145,8 @@ def test_dag_score_type_error_4():  # bad prior type
         dag_score(graph, data, 'bde', {'prior': {}})
 
 
-def test_dag_score_type_error_5():  # bad iss type
+# bad iss type
+def test_dag_score_type_error_5():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['1', '0'], 'B': ['0', '1']},
                             dtype='category'))
@@ -141,13 +156,15 @@ def test_dag_score_type_error_5():  # bad iss type
         dag_score(graph, data, 'bds', {'iss': {}})
 
 
-def test_dag_score_type_error_6():  # cannot score an oracle type
+# cannot score an oracle type
+def test_dag_score_type_error_6():
     bn = BN.read(TESTDATA_DIR + '/xdsl/ab.xdsl')
     with pytest.raises(TypeError):
         dag_score(bn.dag, Oracle(bn), 'bic', {})
 
 
-def test_dag_score_value_error_2():  # unsupported score types
+# unsupported score types
+def test_dag_score_value_error_2():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['0', '1']},
                   dtype='category'))
@@ -159,7 +176,8 @@ def test_dag_score_value_error_2():  # unsupported score types
         dag_score(graph, data, ['unsupported', 'bic'], {})
 
 
-def test_dag_score_value_error_3():  # single-valued data tyoe
+# single-valued data type
+def test_dag_score_value_error_3():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '1']},
                             dtype='category'))
@@ -167,7 +185,8 @@ def test_dag_score_value_error_3():  # single-valued data tyoe
         dag_score(graph, data, 'bic', {})
 
 
-def test_dag_score_value_error_4():  # data / dag column mismatch
+# data / dag column mismatch
+def test_dag_score_value_error_4():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'C': ['1', '2']},
                             dtype='category'))
@@ -175,7 +194,8 @@ def test_dag_score_value_error_4():  # data / dag column mismatch
         dag_score(graph, data, 'bic', {})
 
 
-def test_dag_score_value_error_5():  # unknown score parameter
+# unknown score parameter
+def test_dag_score_value_error_5():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                             dtype='category'))
@@ -185,7 +205,8 @@ def test_dag_score_value_error_5():  # unknown score parameter
         dag_score(graph, data, 'bic', {'base': 2, 'unsupported': 3})
 
 
-def test_dag_score_value_error_6():  # bad "base" score param value
+# bad "base" score param value
+def test_dag_score_value_error_6():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                             dtype='category'))
@@ -195,7 +216,8 @@ def test_dag_score_value_error_6():  # bad "base" score param value
         dag_score(graph, data, 'bic', {'base': '2'})
 
 
-def test_dag_score_value_error_7():  # bad "prior" score param value
+# bad "prior" score param value
+def test_dag_score_value_error_7():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                             dtype='category'))
@@ -203,7 +225,8 @@ def test_dag_score_value_error_7():  # bad "prior" score param value
         dag_score(graph, data, 'bic', {'prior': 'unsupported'})
 
 
-def test_dag_score_value_error_8():  # bad "iss" score param value
+# bad "iss" score param value
+def test_dag_score_value_error_8():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                   dtype='category'))
@@ -219,7 +242,8 @@ def test_dag_score_value_error_8():  # bad "iss" score param value
         dag_score(graph, data, 'bic', {'iss': 10000000})
 
 
-def test_dag_score_value_error_9():  # bad "k" score param value
+# bad "k" score param value
+def test_dag_score_value_error_9():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                             dtype='category'))
@@ -234,10 +258,11 @@ def test_dag_score_value_error_9():  # bad "k" score param value
     with pytest.raises(ValueError):
         dag_score(graph, data, 'bic', {'k': 10000000})
 
+
 # Test for irrelevant score parameters disabled for now (error_11 & 8)
 
-
-def xtest_dag_score_value_error_10():  # irrelevant parameters for entropy
+# irrelevant parameters for entropy
+def xtest_dag_score_value_error_10():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                             dtype='category'))
@@ -251,7 +276,8 @@ def xtest_dag_score_value_error_10():  # irrelevant parameters for entropy
         dag_score(graph, data, 'aic', {'iss': 10})
 
 
-def xtest_dag_score_value_error_11():  # irrelevant parameters for bayesian
+# irrelevant parameters for bayesian
+def xtest_dag_score_value_error_11():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '2']},
                             dtype='category'))
@@ -263,8 +289,12 @@ def xtest_dag_score_value_error_11():  # irrelevant parameters for bayesian
         dag_score(graph, data, 'bde', {'k': 10.0})
 
 
+# --- Successful score cases
+
+# A --> B, 2 rows
+@requires_r_and_bnlearn
 def test_dag_score_ab1():
-    graph = dag.ab()  # A --> B
+    graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
     assert free_params(graph, data.as_df()) == 3
@@ -276,7 +306,9 @@ def test_dag_score_ab1():
                       {'bic': -3.5, 'loglik': -2, 'aic': -5})
 
 
-def test_dag_score_ab2():  # set k = 2
+# A --> B, 2 rows, set k = 2
+@requires_r_and_bnlearn
+def test_dag_score_ab2():
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
@@ -291,8 +323,10 @@ def test_dag_score_ab2():  # set k = 2
                       {'bic': -5, 'loglik': -2, 'aic': -8})
 
 
+# A --> B, 4 rows
+@requires_r_and_bnlearn
 def test_dag_score_ab3():
-    graph = dag.ab()  # A --> B
+    graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
                              'B': ['0', '1', '0', '1']},
                   dtype='category'))
@@ -307,6 +341,8 @@ def test_dag_score_ab3():
                       {'bic': -11, 'loglik': -8, 'aic': -11})
 
 
+# A --> B, 4 rows
+@requires_r_and_bnlearn
 def test_dag_score_ab4():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
@@ -324,6 +360,8 @@ def test_dag_score_ab4():
                       {'bic': -9, 'loglik': -6, 'aic': -9})
 
 
+# A --> B, 4 rows
+@requires_r_and_bnlearn
 def test_dag_score_ab5():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '1', '1', '1'],
@@ -347,6 +385,8 @@ def test_dag_score_ab5():
                        'aic': -3.976876201})
 
 
+# A --> B, 4 rows, 3 states
+@requires_r_and_bnlearn
 def test_dag_score_ab6():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
@@ -369,6 +409,8 @@ def test_dag_score_ab6():
                        'aic': -7.408239965})
 
 
+# A --> B, 4 rows, 3 states
+@requires_r_and_bnlearn
 def test_dag_score_ab7():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1', '2', '2', '2'],
@@ -393,6 +435,8 @@ def test_dag_score_ab7():
                        'aic': -13.31362629})
 
 
+# A --> B, 2 rows, Bayesian scores
+@requires_r_and_bnlearn
 def test_dag_score_ab8():  # Bayesian scores for A --> B, 2 rows
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
@@ -407,7 +451,9 @@ def test_dag_score_ab8():  # Bayesian scores for A --> B, 2 rows
                        'bds': -3.465735903, 'k2': -3.178053830})
 
 
-def test_dag_score_ab9():  # Bayesian scores for A --> B, 2 rows, ISS =5
+# Bayesian scores for A --> B, 2 rows, ISS =5
+@requires_r_and_bnlearn
+def test_dag_score_ab9():
     graph = dag.ab()  # A --> B
     data = Pandas(DataFrame({'A': ['0', '1'], 'B': ['0', '1']},
                             dtype='category'))
@@ -422,7 +468,9 @@ def test_dag_score_ab9():  # Bayesian scores for A --> B, 2 rows, ISS =5
                        'bds': -2.954910279, 'k2': -3.178053830})
 
 
-def test_dag_score_ab10():  # Bayesian scores, A --> B, 8 rows
+# Bayesian scores, A --> B, 8 rows
+@requires_r_and_bnlearn
+def test_dag_score_ab10():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1', '2', '2', '2'],
                              'B': ['0', '1', '1', '2', '0', '1', '1']},
@@ -436,7 +484,9 @@ def test_dag_score_ab10():  # Bayesian scores, A --> B, 8 rows
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_dag_score_ab11():  # Bayesian scores, A --> B, 8 rows, ISS=10.0
+# Bayesian scores, A --> B, 8 rows, ISS=10.0
+@requires_r_and_bnlearn
+def test_dag_score_ab11():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1', '2', '2', '2'],
                              'B': ['0', '1', '1', '2', '0', '1', '1']},
@@ -452,7 +502,9 @@ def test_dag_score_ab11():  # Bayesian scores, A --> B, 8 rows, ISS=10.0
     assert dicts_same(bnlearn, dict(scores.sum()))
 
 
-def test_dag_score_ab12():  # single-valued data type allowed
+# single-valued data type allowed
+@requires_r_and_bnlearn
+def test_dag_score_ab12():
     graph = dag.ab()
     data = Pandas(DataFrame({'A': ['2', '0'], 'B': ['1', '1']},
                             dtype='category'))
@@ -460,6 +512,8 @@ def test_dag_score_ab12():  # single-valued data type allowed
     assert dicts_same({'A': -1.732867951, 'B': 0}, bic)
 
 
+# A --> B --> C, 7 rows
+@requires_r_and_bnlearn
 def test_dag_score_abc1():
     graph = dag.abc()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1', '2', '2', '2'],
@@ -484,8 +538,10 @@ def test_dag_score_abc1():
                        'loglik': -5.313626289})
 
 
+# A --> B --> C, 10 rows
+@requires_r_and_bnlearn
 def test_dag_score_abc2():
-    graph = dag.abc()  # A --> B --> C
+    graph = dag.abc()
     data = Pandas(DataFrame(
            {'A': ['0', '0', '1', '1', '2', '2', '2', '3', '3', '3'],
             'B': ['0', '1', '1', '2', '0', '1', '1', '3', '3', '3'],
@@ -510,8 +566,10 @@ def test_dag_score_abc2():
                        'loglik': -8.795880017})
 
 
+# A --> C <-- B, 3 rows
+@requires_r_and_bnlearn
 def test_dag_score_ac_bc1():
-    graph = dag.ac_bc()  # A --> C <-- B
+    graph = dag.ac_bc()
     data = Pandas(DataFrame({'A': ['1', '0'],
                              'B': ['0', '1'],
                              'C': ['0', '1']}, dtype='category'))
@@ -532,6 +590,8 @@ def test_dag_score_ac_bc1():
                        'loglik': -1.204119983})
 
 
+# A --> C <-- B, 4 rows
+@requires_r_and_bnlearn
 def test_dag_score_ac_bc2():
     graph = dag.ac_bc()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1'],
@@ -555,6 +615,8 @@ def test_dag_score_ac_bc2():
                        'loglik': -2.408239965})
 
 
+# A --> C <-- B, 5 rows
+@requires_r_and_bnlearn
 def test_dag_score_ac_bc3():
     graph = dag.ac_bc()
     data = Pandas(DataFrame({'A': ['0', '0', '1', '1', '1'],
@@ -579,6 +641,8 @@ def test_dag_score_ac_bc3():
                        'loglik': -3.524912524})
 
 
+# A --> C <-- B, 10 rows
+@requires_r_and_bnlearn
 def test_dag_score_ac_bc4():
     graph = dag.ac_bc()
     data = {'A': ['0', '0', '1', '1', '2', '2', '2', '3', '3', '3'],
@@ -603,6 +667,8 @@ def test_dag_score_ac_bc4():
                        'loglik': -12.32079254})
 
 
+# Cancer, 4 rows
+@requires_r_and_bnlearn
 def test_dag_score_cancer_1():
     graph = dag.cancer()
     data = Pandas(DataFrame({'Smoker': ['no', 'no', 'yes', 'yes'],
@@ -628,7 +694,9 @@ def test_dag_score_cancer_1():
                        'loglik': -3.612359948})
 
 
-def test_dag_score_cancer_2():  # use 'k' as 0.1
+# Cancer, 4 rows, k = 0.1
+@requires_r_and_bnlearn
+def test_dag_score_cancer_2():
     graph = dag.cancer()
     data = Pandas(DataFrame({'Smoker': ['no', 'no', 'yes', 'yes'],
                              'Pollution': ['low', 'high', 'low', 'high'],
@@ -655,9 +723,9 @@ def test_dag_score_cancer_2():  # use 'k' as 0.1
                        'loglik': -3.612359948})
 
 
-# Test reference scores
-
-def test_dag_score_covid_ref_1():  # Covid reference, 1K rows
+# Covid reference, 1K rows
+@requires_r_and_bnlearn
+def test_dag_score_covid_ref_1():
     data = NumPy.read(TESTDATA_DIR + '/experiments/datasets/covid.data.gz',
                       dstype='categorical', N=1000)
     print(data.as_df().tail())
