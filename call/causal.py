@@ -160,8 +160,9 @@ def causal_learn(algorithm, data, context=None, params=None):
 
     # learn the graph using BDeu
     start = time()
+    node_names = [data.orig_to_ext[n] for n in data.nodes]
     results = ges(data.sample, score_func='local_score_BDeu', maxP=None,
-                  parameters=None, node_names=data.nodes)
+                  parameters=None, node_names=node_names)
     elapsed = time() - start
     graph = results["G"]
 

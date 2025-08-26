@@ -80,11 +80,13 @@ SERIES_P = {
 
     # These are experimental causal-learn series
 
-    "CAUSAL/GES/STD_BDEU": {"package": Package.CAUSAL,
-                            "algorithm": Algorithm.GES,
-                            "params": {"score": "bde",
-                                       "iss": 1,
-                                       "base": "e"}}
+    "CAUSAL/GES/BDEU_BASE3": {"package": Package.CAUSAL,
+                              "algorithm": Algorithm.GES,
+                              "params": {"score": "bde",
+                                         "iss": 1,
+                                         "base": "e"},
+                              "randomise": ([Randomise.ORDER, Randomise.ROWS,
+                                             Randomise.NAMES], 3)}
 }
 
 

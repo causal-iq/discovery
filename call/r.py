@@ -159,8 +159,7 @@ def run_r_script(id):
 
     # Obtain stdout & stderr as lists of UTF-8 lines, stripping <CRLF>
     stdout = [ln.decode('UTF-8')[0:-2] for ln in r.stdout if len(ln)]
-    # print('\n\nR method {}.{} ({}) stdout:\n{}'
-    #       .format(package, method, id, '\n'.join(stdout)))
+    # print('\n\nR method ({}) stdout:\n{}'.format(id, '\n'.join(stdout)))
     stderr = [ln.decode('UTF-8')[0:-2] for ln in r.stderr if len(ln)]
     # print('\nR stderr: {}\n<ends>\n'.format('\n'.join(stderr)))
 
