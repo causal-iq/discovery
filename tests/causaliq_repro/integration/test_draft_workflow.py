@@ -219,24 +219,29 @@ def check_upload_metadata_and_readme_changed(name: str, base_dir: str,
     deposit = Deposit(name=name, sandbox=True, base_dir=base_dir)
 
     # patch _identify_changes return to signal metadata & readme change
-    fileid = deposit.status["files"]["readme.md.j2"]["fileid"]
+    fileid1 = deposit.status["files"]["readme.md.j2"]["fileid"]
     monkeypatch.setattr(Deposit, "_identify_changes",
                         set_changes({"metadata": True,
                                      "files": ["readme.md.j2"],
-                                     "deleted": [("readme.md.j2", fileid)]}))
+                                     "deleted": [("readme.md.j2", fileid1)]}))
     deposit.metadata["title"] = deposit.metadata["title"].replace("2", "2B")
 
     deposit.upload(dry_run=False, token=token)
     recid = deposit.status["recid"]
+    fileid2 = deposit.status["files"]["readme.md.j2"]["fileid"]
+    size = deposit.status["files"]["readme.md.j2"]["size"]
+
     monkeypatch.undo()
 
     # check stdout as expected
     stdout = get_stdout(capsys)
-    return
     assert stdout == (
         "\n"
         "** Uploading '' to sandbox Zenodo\n"
         f"   - update metadata (recid: {recid})\n"
+        f"   - remove file readme.md (recid: {recid}, fileid: {fileid1})\n"
+        f"   - add file readme.md (recid: {recid}, fileid: {fileid2}"
+        f", {size} bytes)\n"
     )
 
 
@@ -441,8 +446,7 @@ def test_root_only(token: str, capsys: CaptureFixture,
 
 
 # Test workflow with a draft root and hub
-def test_root_and_hub(token: str, capsys: CaptureFixture,
-                      monkeypatch: MonkeyPatch):
+def test_root_and_hub(token: str, capsys: CaptureFixture):
     base_dir = REPRO_TEST_DATA_DIR + "integration/root3/"
 
     # Ensure empty status files are present
@@ -496,5 +500,152 @@ def test_root_and_hub(token: str, capsys: CaptureFixture,
                        base_dir=base_dir, token=token, capsys=capsys)
 
     # delete the root deposit
+    check_delete(name="", related={}, base_dir=base_dir, token=token,
+                 capsys=capsys)
+
+
+# Test workflow with a draft root, hub and leaves
+def test_root_hub_and_leaves(token: str, capsys: CaptureFixture):
+    base_dir = REPRO_TEST_DATA_DIR + "integration/root4/"
+
+    # Ensure empty status files are present
+    write_empty_status_file(name="", base_dir=base_dir)
+    write_empty_status_file(name="hub", base_dir=base_dir)
+    write_empty_status_file(name="hub/leaf1", base_dir=base_dir)
+    write_empty_status_file(name="hub/leaf2", base_dir=base_dir)
+
+    # --- upload which creates the root deposit
+
+    root_id = check_upload_create(name="", related={}, base_dir=base_dir,
+                                  token=token, capsys=capsys)
+    root_url = (SANDBOX_URL.replace("api", "") +
+                f"records/{root_id}?preview=1")
+
+    # checking root deposit metadata
+    check_get_metadata(name="", rootid="4", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
+
+    # --- upload which creates the hub deposit
+
+    hub_id = check_upload_create(name="hub", related={'': root_id},
+                                 base_dir=base_dir, token=token, capsys=capsys)
+    hub_url = (SANDBOX_URL.replace("api", "") +
+               f"records/{hub_id}?preview=1")
+
+    # checking hub deposit metadata - related should reference root
+    related = {
+        root_url: {"relation": "isPartOf",
+                   "resource_type": "other",
+                   "scheme": "url"
+                   }
+    }
+    check_get_metadata(name="hub", rootid="4 Hub", files={"readme.md"},
+                       related=related, base_dir=base_dir, token=token,
+                       capsys=capsys)
+
+    # checking root deposit metadata - related should now reference hub
+    related = {
+        hub_url: {"relation": "hasPart",
+                  "resource_type": "other",
+                  "scheme": "url"
+                  }
+    }
+    check_get_metadata(name="", rootid="4", files={"readme.md"},
+                       related=related, base_dir=base_dir, token=token,
+                       capsys=capsys)
+
+    # --- upload which creates the leaf1 deposit
+
+    leaf1_id = check_upload_create(name="hub/leaf1", related={'hub': hub_id},
+                                   base_dir=base_dir, token=token,
+                                   capsys=capsys)
+    leaf1_url = (SANDBOX_URL.replace("api", "") +
+                 f"records/{leaf1_id}?preview=1")
+
+    # check metadata of leaf1 deposit
+    related = {
+        hub_url: {"relation": "isPartOf",
+                  "resource_type": "other",
+                  "scheme": "url"
+                  }
+    }
+    check_get_metadata(name="hub/leaf1", rootid="4 Leaf 1",
+                       files={"readme.md"}, related=related, base_dir=base_dir,
+                       token=token, capsys=capsys)
+
+    # check metadata of hub deposit - related should reference root and leaf1
+    related = {
+        root_url: {"relation": "isPartOf",
+                   "resource_type": "other",
+                   "scheme": "url"
+                   },
+        leaf1_url: {"relation": "hasPart",
+                    "resource_type": "other",
+                    "scheme": "url"
+                    },
+    }
+    check_get_metadata(name="hub", rootid="4 Hub",
+                       files={"readme.md"}, related=related, base_dir=base_dir,
+                       token=token, capsys=capsys)
+
+    # --- upload which creates the leaf2 deposit
+
+    leaf2_id = check_upload_create(name="hub/leaf2", related={'hub': hub_id},
+                                   base_dir=base_dir, token=token,
+                                   capsys=capsys)
+    leaf2_url = (SANDBOX_URL.replace("api", "") +
+                 f"records/{leaf2_id}?preview=1")
+
+    # check metadata of leaf2 deposit
+    related = {
+        hub_url: {"relation": "isPartOf",
+                  "resource_type": "other",
+                  "scheme": "url"
+                  }
+    }
+    check_get_metadata(name="hub/leaf2", rootid="4 Leaf 2",
+                       files={"readme.md"}, related=related, base_dir=base_dir,
+                       token=token, capsys=capsys)
+
+    # --- delete the leaf1 deposit
+
+    check_delete(name="hub/leaf1", related={'hub': hub_id},
+                 base_dir=base_dir, token=token, capsys=capsys)
+
+    # check hub deposit has leaf1 link removed
+    related = {
+        root_url: {"relation": "isPartOf",
+                   "resource_type": "other",
+                   "scheme": "url"
+                   },
+        leaf2_url: {"relation": "hasPart",
+                    "resource_type": "other",
+                    "scheme": "url"}
+    }
+    check_get_metadata(name="hub", rootid="4 Hub",
+                       files={"readme.md"}, related=related, base_dir=base_dir,
+                       token=token, capsys=capsys)
+
+    # --- delete the hub deposit
+
+    check_delete(name="hub", related={'': root_id, 'hub/leaf2': leaf2_id},
+                 base_dir=base_dir, token=token, capsys=capsys)
+
+    # check root deposit has hub related link removed
+    check_get_metadata(name="", rootid="4", files={"readme.md"}, related={},
+                       base_dir=base_dir, token=token, capsys=capsys)
+
+    # check leaf2 deposit has hub related link removed
+    check_get_metadata(name="hub/leaf2", rootid="4 Leaf 2",
+                       files={"readme.md"}, related={}, base_dir=base_dir,
+                       token=token, capsys=capsys)
+
+    # --- delete the leaf2 deposit
+
+    check_delete(name="hub/leaf2", related={}, base_dir=base_dir, 
+                 token=token, capsys=capsys)
+
+    # --- delete the root deposit
+
     check_delete(name="", related={}, base_dir=base_dir, token=token,
                  capsys=capsys)

@@ -56,7 +56,6 @@ COMMON_METADATA = {  # Common metadata in all CausalIQ deposits
     "creator_orcid": CREATOR_ORCID,
     "creator_affiliation": "see ORCID",
     "license": LICENSE,
-    "upload_type": ResourceType.OTHER.value,
     "keywords": [
         "Bayesian Networks",
         "Causal Discovery",
@@ -262,11 +261,25 @@ class Deposit:
         # Update related links in parent deposit if there is one
         if to != "":
             parent = "/".join(self.name.split("/")[:-1])
-            print(f" * Updating related link to '{to}' in '{parent}' " +
-                  f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
             parent = Deposit(name=parent, sandbox=self.sandbox,
                              base_dir=self.base)
-            parent._update_deposit(dry_run=dry_run, token=token)
+            if "recid" in parent.status:
+                print(f" * Updating related link to '{to}' in '{parent.name}' "
+                      + f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
+                parent._update_deposit(dry_run=dry_run, token=token)
+
+        # Update related links in child deposits if there are any
+        for child in scandir(self.base + self.name):
+            if not child.is_dir():
+                continue
+            child = (child.name if self.name == ""
+                     else self.name + "/" + child.name)
+            child = Deposit(name=child, sandbox=self.sandbox,
+                            base_dir=self.base)
+            if "recid" in child.status:
+                print(f" * Updating related link to '{to}' in '{child.name}' "
+                      + f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
+                child._update_deposit(dry_run=dry_run, token=token)
 
     def _render_jinja2_templates(self):
         """
@@ -431,7 +444,9 @@ class Deposit:
         for child in scandir(self.base + self.name):
             if not child.is_dir():
                 continue
-            child = self._related_info(name=child.name,
+            child_name = (child.name if self.name == ""
+                          else self.name + "/" + child.name)
+            child = self._related_info(name=child_name,
                                        relation=RelationType.HAS_PART)
             if child is not None:
                 self.metadata["related_identifiers"].append(child)
