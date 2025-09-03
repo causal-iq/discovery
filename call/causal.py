@@ -3,23 +3,43 @@
 #
 
 from time import time
+from pytest import skip
+from numpy import ndarray
 
 from causallearn.graph.GraphNode import GraphNode
 from causallearn.graph.GeneralGraph import GeneralGraph
 from causallearn.search.ScoreBased.GES import ges
 from causallearn.utils.GESUtils import score_g
 from causallearn.score.LocalScoreFunctionClass import LocalScoreClass
-from causallearn.score.LocalScoreFunction import local_score_BDeu
+from causallearn.score.LocalScoreFunction import local_score_BDeu, \
+    local_score_BIC
 from causallearn.utils.PDAG2DAG import pdag2dag
 
 from learn.trace import CONTEXT_FIELDS, Trace, Activity, Detail
 from fileio.pandas import Pandas
 from fileio.numpy import NumPy
-from core.graph import PDAG
+from core.graph import PDAG, DAG
 
 CAUSAL_ALGORITHMS = {
     'ges': 'score'
 }
+
+
+def requires_causal_learn(func):
+    """
+        Decorator to skip test if causal-learn package is not installed
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            from causallearn.graph.GraphNode import GraphNode
+            GraphNode('A')  # just to stop linter error
+        except ImportError:
+            skip("causal-learn package not installed")
+        return func(*args, **kwargs)
+
+    wrapper.__name__ = func.__name__
+    wrapper.__doc__ = func.__doc__
+    return wrapper
 
 
 def _validate_learn_params(params: dict, dstype: str):
@@ -32,24 +52,33 @@ def _validate_learn_params(params: dict, dstype: str):
         :raises TypeError: if params have invalid types
         :raises ValueError: if invalid parameters or data values
     """
-    # set default parameter values
-    params = {} if params is None else params.copy()
-    if "score" not in params:
-        params.update({"score": "bde"})
-    if params["score"] == "bde" and "iss" not in params:
-        params.update({"iss": 1})
-    if "base" not in params:
-        params.update({'base': 'e'})
+    # not supporting mixed data types yet
+    if dstype not in {'categorical', 'continuous'}:
+        raise ValueError('Mixed data types unsupported')
 
-    # At moment , only discrete data and standard BDeu score supported
-    if (dstype != "categorical"
-            or params != {"score": "bde", "iss": 1, "base": "e"}):
+    # set default parameter values
+    _params = ({"score": "bde", "iss": 1, "base": "e"}
+               if dstype == "categorical" else
+               {"score": "bic-g", "k": 1, "base": "e"})
+
+    # override defaults with any specfied parameters
+    _params.update(params if params is not None else {})
+
+    # At moment , only discrete data with BDeu and continuous data with BIC
+    # score are supported
+    if ((dstype == "categorical" and
+            _params != {"score": "bde", "iss": 1, "base": "e"}) or
+        (dstype == "continuous" and
+            _params != {"score": "bic-g", "k": 1, "base": "e"})):
         raise ValueError("causal_learn: bad parameter values")
+
+    return _params
 
 
 def _generate_trace(graph: GeneralGraph, elapsed: float, data: NumPy,
                     params: dict, context: dict,
-                    steps: list[GeneralGraph] = None):
+                    steps: tuple[list[GeneralGraph], list[GeneralGraph]] 
+                    = None):
     """
         Generate a (minimal) CausalIQ Learning Trace
 
@@ -58,27 +87,37 @@ def _generate_trace(graph: GeneralGraph, elapsed: float, data: NumPy,
         :param NumPy data: data graph learned from in CausalIQ format
         :param dict params: the learning parameters
         :param dict context: context information
-        :param list[GeneralGraph] steps: sequence of graphs learned
+        :param tuple steps: 2 sequences of graphs learned
 
         :returns Trace: minimal CausalIQ trace with initial and final steps
     """
     # set up a scoring function
     score_func = LocalScoreClass(
         data=data.sample,
-        local_score_fun=local_score_BDeu,
+        local_score_fun=(local_score_BDeu if params['score'] == 'bde'
+                         else local_score_BIC),
         parameters=None  # Will use default lambda_value = 1
     )
 
-    # Construct the empty graph and obtain its score
+    # Empty graph and obtain its score using causal-learn and CausalIQ
     empty = GeneralGraph(nodes=[GraphNode(n) for n in data.nodes])
-    empty_score = score_g(data, empty, score_func, None)
-    print(f"Initial score: {empty_score:.5e}\n")
+    empty_cl_score = score_g(data, empty, score_func, None)
+    empty = DAG(nodes=list(data.nodes), edges=[])
+    empty_score = (empty.score(data=data,
+                               types=[params['score']])[params['score']]).sum()
+    print(f"Initial score: {empty_cl_score:.5e}, {empty_score:.5e}\n")
 
-    # Extend learned PDAG to a DAG and obtain its score
+    # Extend learned PDAG to a DAG and obtain its score using CL & CausalIQ
 
     dag = pdag2dag(graph)
-    learned_score = score_g(data, dag, score_func, None)
-    print(f"Learned BIC score: {learned_score}\n")
+    learned_cl_score = score_g(data, dag, score_func, None)
+    if isinstance(learned_cl_score, ndarray):
+        learned_cl_score = learned_cl_score.sum()
+    pdag = to_causaliq_pdag(graph)
+    dag = DAG.extendPDAG(pdag)
+    learned_score = dag.score(data=data,
+                              types=[params["score"]])[params['score']].sum()
+    print(f"Learned score: {learned_cl_score:.5e}, {learned_score:.5e}\n")
 
     # Instantiate Trace with context details and add init and stop records
     # and learnt graph
@@ -89,7 +128,7 @@ def _generate_trace(graph: GeneralGraph, elapsed: float, data: NumPy,
     trace.add(Activity.INIT, {Detail.DELTA: empty_score})
     trace.add(Activity.STOP, {Detail.DELTA: learned_score})
     trace.trace['time'][-1] = elapsed
-    trace.result = to_causaliq_pdag(graph)
+    trace.result = pdag
 
     # print out edge changes in the two phases - this could be the basis of
     # creating a full trace, by adding new direct/undirect actions, or by
@@ -97,9 +136,14 @@ def _generate_trace(graph: GeneralGraph, elapsed: float, data: NumPy,
     # Each iteration generally results in two edge changes.
     if steps is not None:
         prev_edges = set()
-        for i, graph in enumerate(steps):
+        for i, graph in enumerate(steps[0]):
             edges = {str(e) for e in graph.get_graph_edges()}
             print(f"INSERT iteration {i+1} adds : {edges - prev_edges}"
+                  f" and drops: {prev_edges - edges}")
+            prev_edges = edges
+        for i, graph in enumerate(steps[1]):
+            edges = {str(e) for e in graph.get_graph_edges()}
+            print(f"DELETE iteration {i+1} adds : {edges - prev_edges}"
                   f" and drops: {prev_edges - edges}")
             prev_edges = edges
 
@@ -123,7 +167,7 @@ def to_causaliq_pdag(graph: GeneralGraph):
 
 def causal_learn(algorithm, data, context=None, params=None):
     """
-        Return graph learnt from data using tetrad algorithms
+        Return graph learnt from data using causal-learn algorithms
 
         :param str algorithm: algorithm to use, e.g. 'fges'
         :param Numpy/Pandas/str data: data or data filename to learn from
@@ -168,6 +212,6 @@ def causal_learn(algorithm, data, context=None, params=None):
 
     trace = (None if context is None
              else _generate_trace(graph, elapsed, data, params, context,
-                                  results["G_step1"]))
+                                  (results["G_step1"], results["G_step2"])))
 
     return to_causaliq_pdag(graph), trace
