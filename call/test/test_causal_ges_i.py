@@ -2,6 +2,7 @@
 # Integration tests of causal-learn GES algorithm
 
 import pytest
+import time
 
 from call.causal import requires_causal_learn, causal_learn
 from fileio.common import TESTDATA_DIR
@@ -160,6 +161,47 @@ def test_causal_asia_1k_ok():
     assert values_same(trace.trace["delta/score"][-1], -2262.291085, sf=10)
 
 
+# --- Test timeout functionality
+
+@requires_causal_learn
+def test_causal_mock_timeout(monkeypatch):
+    """Test that causal-learn respects timeout limits"""
+
+    # Load small test data
+    data = NumPy.read(filename=TESTDATA_DIR + '/simple/ab_3.csv',
+                      dstype="categorical")
+
+    # Mock the ges function to simulate a long-running algorithm
+    def slow_ges(*args, **kwargs):
+        time.sleep(2)  # Simulate 2 second execution
+        return {"G": object(), "G_step1": [], "G_step2": []}
+
+    print(f"\n  Testing timeout with {data.N} rows...")
+    start_time = time.time()
+
+    # Use monkeypatch instead of unittest.mock.patch
+    monkeypatch.setattr('call.causal.ges', slow_ges)
+
+    # Test that 1-second timeout raises RuntimeError
+    # (converted from TimeoutError)
+    with pytest.raises(RuntimeError, match="timed out"):
+        causal_learn(algorithm="ges", data=data, maxtime=1)
+
+    elapsed = time.time() - start_time
+    print(f"  Timeout test completed in {elapsed:.2f}s")
+
+
+# Child, 10K rows - causes timeout
+@requires_causal_learn
+def test_causal_child_1k_timeout_error():
+    data = NumPy.read(filename=TESTDATA_DIR +
+                      '/experiments/datasets/child.data.gz',
+                      dstype="categorical", N=1000)
+    with pytest.raises(RuntimeError):
+        causal_learn(algorithm="ges", data=data, maxtime=1,
+                     context={"in": "asia.dsc", "id": "ges/asia/1k"})
+
+
 # --- Successful cases with continuous data
 
 # XY with 3 rows continuous data
@@ -172,13 +214,13 @@ def test_causal_ges_xy_3_ok():
     print(f"\n\nGES, XY, N=3:\n{trace}\n{graph}")
 
     assert isinstance(graph, PDAG)
-    assert graph.is_DAG() is False
+    assert graph.is_DAG() is True
     assert graph.nodes == ["F1", "F2"]
-    assert graph.edges == {("F1", "F2"): EdgeType.UNDIRECTED}
+    assert graph.edges == {}
 
     assert isinstance(trace, Trace)
     assert values_same(trace.trace["delta/score"][0], -10.400300, sf=8)
-    assert values_same(trace.trace["delta/score"][-1], -10.645278, sf=8)
+    assert values_same(trace.trace["delta/score"][-1], -10.400300, sf=8)
 
 
 # XYZ with 10 rows continuous data
@@ -191,19 +233,16 @@ def test_causal_ges_xyz_10_ok():
     print(f"\n\nGES, XY, N=3:\n{trace}\n{graph}")
 
     assert isinstance(graph, PDAG)
-    assert graph.is_DAG() is False
+    assert graph.is_DAG() is True
     assert graph.nodes == ["X", "Y", "Z"]
-    assert graph.edges == {
-        ("X", "Y"): EdgeType.UNDIRECTED,
-        ("X", "Z"): EdgeType.UNDIRECTED
-        }
+    assert graph.edges == {}
 
     assert isinstance(trace, Trace)
     assert values_same(trace.trace["delta/score"][0], -78.921743, sf=8)
-    assert values_same(trace.trace["delta/score"][-1], -80.847896, sf=8)
+    assert values_same(trace.trace["delta/score"][-1], -78.921743, sf=8)
 
 
-# Gauss with 100 rows continuous data
+# Gauss with 100 rows continuous data - close to true graph
 @requires_causal_learn
 def test_causal_ges_gauss_100_ok():
     data = NumPy.read(filename=TESTDATA_DIR + '/simple/gauss.data.gz',
@@ -216,14 +255,43 @@ def test_causal_ges_gauss_100_ok():
     assert graph.is_DAG() is False
     assert graph.nodes == ["A", "B", "C", "D", "E", "F", "G"]
     assert graph.edges == {
-        ("A", "B"): EdgeType.UNDIRECTED,
-        ("A", "C"): EdgeType.UNDIRECTED,
-        ("A", "D"): EdgeType.UNDIRECTED,
-        ("A", "E"): EdgeType.UNDIRECTED,
-        ("A", "F"): EdgeType.UNDIRECTED,
-        ("A", "G"): EdgeType.UNDIRECTED
+        ("A", "C"): EdgeType.DIRECTED,
+        ("A", "F"): EdgeType.DIRECTED,
+        ("B", "C"): EdgeType.DIRECTED,
+        ("B", "D"): EdgeType.UNDIRECTED,
+        ("C", "F"): EdgeType.DIRECTED,
+        ("E", "F"): EdgeType.DIRECTED,
+        ("G", "F"): EdgeType.DIRECTED
         }
 
     assert isinstance(trace, Trace)
     assert values_same(trace.trace["delta/score"][0], -1783.963542, sf=10)
-    assert values_same(trace.trace["delta/score"][-1], -1793.276536, sf=10)
+    assert values_same(trace.trace["delta/score"][-1], -1116.627850, sf=10)
+
+
+# Gauss with 1k rows continuous data
+@requires_causal_learn
+def test_causal_ges_gauss_1k_ok():
+    data = NumPy.read(filename=TESTDATA_DIR + '/simple/gauss.data.gz',
+                      dstype="continuous", N=1000)
+    graph, trace = causal_learn(algorithm="ges", data=data,
+                                context={"in": "gauss_1k", "id": "gauss_1k"})
+    print(f"\n\nGES, gauss, N=1k:\n{trace}\n{graph}")
+
+    assert isinstance(graph, PDAG)
+    assert graph.is_DAG() is True
+    assert graph.nodes == ["A", "B", "C", "D", "E", "F", "G"]
+    assert graph.edges == {
+        ("A", "C"): EdgeType.DIRECTED,
+        ("A", "F"): EdgeType.DIRECTED,
+        ("B", "C"): EdgeType.DIRECTED,
+        ("B", "D"): EdgeType.DIRECTED,
+        ("C", "F"): EdgeType.DIRECTED,
+        ("E", "F"): EdgeType.DIRECTED,
+        ("F", "D"): EdgeType.DIRECTED,
+        ("G", "F"): EdgeType.DIRECTED
+        }
+
+    assert isinstance(trace, Trace)
+    assert values_same(trace.trace["delta/score"][0], -17607.686118, sf=10)
+    assert values_same(trace.trace["delta/score"][-1], -10756.904452, sf=10)

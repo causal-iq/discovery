@@ -37,6 +37,12 @@ class Algorithm(Enum):  # supported algorithms
             'colour': '#aaaa00'}
     GES = {'method': 'ges', 'name': 'GES', 'label': 'GES',
            'colour': '#bb0000'}
+    ASTAR = {'method': 'astar', 'name': 'ASTAR', 'label': 'ASTAR',
+             'colour': '#0000aa'}
+    GRASP = {'method': 'grasp', 'name': 'GRASP', 'label': 'GRASP',
+             'colour': "#b1340b"}
+    BOSS = {'method': 'boss', 'name': 'BOSS', 'label': 'BOSS',
+            'colour': "#0bb1ab"}
 
 
 class Ordering(Enum):  # types of node ordering supported

@@ -25,7 +25,7 @@ def pytest_addoption(parser):
     parser.addoption("--N", action="store", default=None,
                      help="min, max sample size")
     parser.addoption("--maxtime", action="store", default=None,
-                     help="maximum elapsed execution time")
+                     help="maximum algorithm execution time in seconds")
     parser.addoption("--file", action="store", default=None,
                      help="Output file name")
     parser.addoption("--params", action="store", default=None,

@@ -20,18 +20,20 @@ from experiments.common import series_props, reference_bn, \
     Algorithm, Package, process_args, Ordering
 
 
+# Fixture which returns specific command line arguments
 @pytest.fixture()
 def args(pytestconfig):
     args = {'action': pytestconfig.getoption("action"),
             'series': pytestconfig.getoption('series'),
             'networks': pytestconfig.getoption('networks'),
+            'maxtime': pytestconfig.getoption('maxtime'),
             'N': pytestconfig.getoption('N')}
     return args
 
 
 def do_experiment(action, series, network, N, existing, props, bn, data,
                   context, randomise, sample_num, root_dir=EXPTS_DIR,
-                  init_cache=True):
+                  init_cache=True, maxtime=None):
     """
         Run an individual learning experiment.
 
@@ -150,9 +152,11 @@ def do_experiment(action, series, network, N, existing, props, bn, data,
 
         # causal-learn Python package from Carnegie-Mellon
 
+        print(f"\n\nmaxtime is {maxtime}")
         try:
             _, trace = causal_learn(props['algorithm'].value['method'],
-                                    data, params=params, context=context)
+                                    data, params=params, context=context,
+                                    maxtime=maxtime)
         except RuntimeError:
             print('*** causal-learn failed to learn graph')
             return (None, False)
@@ -221,7 +225,8 @@ def run_learn(args, root_dir=EXPTS_DIR):
     if not isinstance(args, dict) or not isinstance(root_dir, str):
         raise TypeError('run_learn() bad arg types')
 
-    action, reqd_series, _, networks, _, Ns, Ss, _, _, _ = \
+    print(args)
+    action, reqd_series, _, networks, _, Ns, Ss, maxtime, _, _ = \
         process_args(args, analyse=False)
     if action is None:
         if root_dir != EXPTS_DIR:
@@ -309,7 +314,8 @@ def run_learn(args, root_dir=EXPTS_DIR):
                     diffs, trace = \
                         do_experiment(action, series, network, N, existing,
                                       props, ref_bn, data, context,
-                                      randomise, i, root_dir, init_cache)
+                                      randomise, i, root_dir, init_cache,
+                                      maxtime)
                     if trace is not None and Randomise.NAMES not in randomise:
                         init_cache = False
                     if diffs is not False:
