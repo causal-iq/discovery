@@ -43,6 +43,8 @@ class Algorithm(Enum):  # supported algorithms
              'colour': "#b1340b"}
     BOSS = {'method': 'boss', 'name': 'BOSS', 'label': 'BOSS',
             'colour': "#0bb1ab"}
+    DP = {'method': 'dp', 'name': 'DP', 'label': 'DP',
+          'colour': "#b13a0b"}
 
 
 class Ordering(Enum):  # types of node ordering supported

@@ -11,40 +11,55 @@ from call.causal import _validate_learn_params
 # Mixed data types not supported
 def test_mixed_data_type_value_error():
     with pytest.raises(ValueError):
-        _validate_learn_params(params={}, dstype='mixed')
+        _validate_learn_params(algorithm="ges", params={}, dstype='mixed')
 
 
 # Unknown data types not supported
 def test_unknown_data_type_value_error():
     with pytest.raises(ValueError):
-        _validate_learn_params(params={}, dstype='unknown')
+        _validate_learn_params(algorithm="ges", params={}, dstype='unknown')
 
 
 # Categorical data but not bde score
 def test_bad_categorical_score_value_error():
     with pytest.raises(ValueError):
-        _validate_learn_params(params={'score': 'bic'}, dstype='categorical')
+        _validate_learn_params(algorithm="boss", params={'score': 'bic'},
+                               dstype='categorical')
 
 
 # Continuous data but not bic-g score
 def test_bad_continuous_score_value_error():
     with pytest.raises(ValueError):
-        _validate_learn_params(params={'score': 'bic'}, dstype='continuous')
+        _validate_learn_params(algorithm="astar", params={'score': 'bic'},
+                               dstype='continuous')
     with pytest.raises(ValueError):
-        _validate_learn_params(params={'score': 'bde'}, dstype='continuous')
+        _validate_learn_params(algorithm="dp", params={'score': 'bde'},
+                               dstype='continuous')
+
+
+# Categorical data not supported for exact algorithms
+def test_exact_categorical_value_error():
+    with pytest.raises(ValueError):
+        _validate_learn_params(algorithm="astar", params={'score': 'bde'},
+                               dstype='categorical')
+    with pytest.raises(ValueError):
+        _validate_learn_params(algorithm="dp", params={'score': 'bde'},
+                               dstype='categorical')
 
 
 # ISS value other than default value
 def test_bad_iss_value_error():
     with pytest.raises(ValueError):
-        _validate_learn_params(params={'score': 'bde', 'iss': 2},
+        _validate_learn_params(algorithm="astar",
+                               params={'score': 'bde', 'iss': 2},
                                dstype='categorical')
 
 
 # ISS value other than default value
 def test_bad_k_value_error():
     with pytest.raises(ValueError):
-        _validate_learn_params(params={'score': 'bic-g', 'k': 2},
+        _validate_learn_params(algorithm="ges",
+                               params={'score': 'bic-g', 'k': 2},
                                dstype='continuous')
 
 
@@ -52,13 +67,15 @@ def test_bad_k_value_error():
 
 # Defaults for categorical data
 def test_categorical_defaults_ok():
-    params = _validate_learn_params(params={}, dstype='categorical')
+    params = _validate_learn_params(algorithm="ges", params={},
+                                    dstype='categorical')
     assert params == {'score': 'bde', 'iss': 1, 'base': 'e'}
 
 
 # Defaults for continuous data
 def test_continuous_defaults_ok():
-    params = _validate_learn_params(params={}, dstype='continuous')
+    params = _validate_learn_params(algorithm="grasp",
+                                    params={}, dstype='continuous')
     assert params == {'score': 'bic-g', 'k': 1, 'base': 'e'}
 
 
@@ -66,19 +83,22 @@ def test_continuous_defaults_ok():
 
 # params set to None
 def test_params_are_none_ok():
-    params = _validate_learn_params(params=None, dstype='categorical')
+    params = _validate_learn_params(algorithm="boss",
+                                    params=None, dstype='categorical')
     assert params == {'score': 'bde', 'iss': 1, 'base': 'e'}
 
 
 # Correct params for categorical data
 def test_categorical_params_ok():
-    params = _validate_learn_params(params={'score': 'bde', 'iss': 1,
+    params = _validate_learn_params(algorithm="ges",
+                                    params={'score': 'bde', 'iss': 1,
                                             'base': 'e'}, dstype='categorical')
     assert params == {'score': 'bde', 'iss': 1, 'base': 'e'}
 
 
 # Correct params for continuous data
 def test_continuous_params_ok():
-    params = _validate_learn_params(params={'score': 'bic-g', 'k': 1,
+    params = _validate_learn_params(algorithm="dp",
+                                    params={'score': 'bic-g', 'k': 1,
                                             'base': 'e'}, dstype='continuous')
     assert params == {'score': 'bic-g', 'k': 1, 'base': 'e'}

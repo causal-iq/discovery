@@ -4,17 +4,24 @@
 
 from time import time
 from pytest import skip
-from numpy import ndarray
+from numpy import ndarray, where
 from functools import wraps
+from random import seed
+from warnings import catch_warnings, filterwarnings
 
 from causallearn.graph.GraphNode import GraphNode
 from causallearn.graph.GeneralGraph import GeneralGraph
+from causallearn.graph.Dag import Dag
 from causallearn.search.ScoreBased.GES import ges
+from causallearn.search.ScoreBased.ExactSearch import bic_exact_search
+from causallearn.search.PermutationBased.BOSS import boss
+from causallearn.search.PermutationBased.GRaSP import grasp
 from causallearn.utils.GESUtils import score_g
 from causallearn.score.LocalScoreFunctionClass import LocalScoreClass
 from causallearn.score.LocalScoreFunction import local_score_BDeu, \
     local_score_BIC
 from causallearn.utils.PDAG2DAG import pdag2dag
+from causallearn.utils.DAG2CPDAG import dag2cpdag
 
 from learn.trace import CONTEXT_FIELDS, Trace, Activity, Detail
 from fileio.pandas import Pandas
@@ -25,9 +32,9 @@ from core.timing import run_with_timeout, TimeoutError
 CAUSAL_ALGORITHMS = {
     "astar": "score",
     "boss": "score",
+    "dp": "score",
     "ges": "score",
     "grasp": "score"
-
 }
 
 
@@ -47,15 +54,18 @@ def requires_causal_learn(func):
     return wrapper
 
 
-def _validate_learn_params(params: dict, dstype: str):
+def _validate_learn_params(algorithm: str, params: dict, dstype: str) -> dict:
     """
         Validate parameters supplied for learning by causal-learn.
 
+        :param str algorithm: algorithm to use, e.g. 'fges'
         :param dict params: parameters as specified in causaliq
         :param str dstype: dataset type: categorical, continuous or mixed
 
         :raises TypeError: if params have invalid types
         :raises ValueError: if invalid parameters or data values
+
+        :returns dict: modified params with default values
     """
     # not supporting mixed data types yet
     if dstype not in {'categorical', 'continuous'}:
@@ -69,10 +79,11 @@ def _validate_learn_params(params: dict, dstype: str):
     # override defaults with any specfied parameters
     _params.update(params if params is not None else {})
 
-    # At moment , only discrete data with BDeu and continuous data with BIC
-    # score are supported
+    # At moment , only categorical data with BDeu (not astar or dp) and
+    # continuous data with BIC score are supported
     if ((dstype == "categorical" and
-            _params != {"score": "bde", "iss": 1, "base": "e"}) or
+            (_params != {"score": "bde", "iss": 1, "base": "e"}
+             or algorithm in {"astar", "dp"})) or
         (dstype == "continuous" and
             _params != {"score": "bic-g", "k": 1, "base": "e"})):
         raise ValueError("causal_learn: bad parameter values")
@@ -80,13 +91,14 @@ def _validate_learn_params(params: dict, dstype: str):
     return _params
 
 
-def _generate_trace(graph: GeneralGraph, elapsed: float, data: NumPy,
-                    params: dict, context: dict,
+def _generate_trace(algorithm: str, graph: GeneralGraph, elapsed: float,
+                    data: NumPy, params: dict, context: dict,
                     steps: tuple[list[GeneralGraph], list[GeneralGraph]]
                     = None):
     """
         Generate a (minimal) CausalIQ Learning Trace
 
+        :param str algorithm: algorithm that was used
         :param GeneralGraph graph: the learned graph
         :param float elapsed: elapsed time for learning (seconds)
         :param NumPy data: data graph learned from in CausalIQ format
@@ -130,8 +142,8 @@ def _generate_trace(graph: GeneralGraph, elapsed: float, data: NumPy,
     # Instantiate Trace with context details and add init and stop records
     # and learnt graph
     context = context.copy()
-    context.update({'algorithm': "GES", 'params': params, 'N': data.N,
-                    'external': 'causal-learn', 'dataset': True})
+    context.update({'algorithm': algorithm.upper(), 'params': params, ''
+                    'N': data.N, 'external': 'causal-learn', 'dataset': True})
     trace = Trace(context)
     trace.add(Activity.INIT, {Detail.DELTA: empty_score})
     trace.add(Activity.STOP, {Detail.DELTA: learned_score})
@@ -173,7 +185,6 @@ def to_causaliq_pdag(graph: GeneralGraph):
     return PDAG(nodes=graph.get_node_names(), edges=edges)
 
 
-# Define the GES algorithm execution as a separate function for timeout
 def run_algo(algorithm: str, data: NumPy, score: str) -> dict:
     """
         Run the causal-learn algorithm
@@ -184,15 +195,45 @@ def run_algo(algorithm: str, data: NumPy, score: str) -> dict:
 
         :raises ValueError: if unknown algorithm specified
 
-        :returns dict: of algorithm results
+        :returns tuple: (graph: GeneralGraph - learnt graph,
+                         steps: tuple of graphs at each iteration)
     """
-    print(f"\n\nAlgorithm is {algorithm} using {score} score")
-
+    # Determine causal-learn score function and external node names
     score_func = "local_score_BDeu" if score == 'bde' else "local_score_BIC"
-    print(score_func)
+    print(f"\n\nAlgorithm is {algorithm} using {score_func} score")
     node_names = [data.orig_to_ext[n] for n in data.nodes]
-    return ges(data.sample, score_func=score_func, maxP=None,
-               parameters=None, node_names=node_names)
+
+    # Run GES - returns GeneralGraph, and intermediate graphs
+    if algorithm == 'ges':
+        results = ges(data.sample, score_func=score_func, maxP=None,
+                      parameters=None, node_names=node_names)
+        return (results['G'], (results['G_step1'], results["G_step2"]))
+
+    if algorithm in {"astar", "dp"}:
+        adj_mat, diags = bic_exact_search(data.sample, search_method=algorithm,
+                                          verbose=True)
+        print(f"\nDiagnostics: {diags}\n")
+
+        # change returned adjacency matric into GeneralGraph CPDAG
+        nodes = [GraphNode(n) for n in node_names]
+        graph = Dag(nodes)
+        for i, j in zip(*where(adj_mat == 1)):
+            graph.add_directed_edge(nodes[i], nodes[j])
+
+        return (dag2cpdag(graph), None)
+
+    elif algorithm in {"boss", "grasp"}:
+        seed(42)  # ensure reproducible results
+        with catch_warnings():
+            filterwarnings("ignore", message="Using 'local_score_BIC_from_" +
+                           "cov' instead for efficiency")
+            algo = boss if algorithm == "boss" else grasp
+            graph = algo(data.sample, score_func=score_func, verbose=True,
+                         node_names=node_names)
+        return (graph, None)
+
+    else:
+        raise ValueError(f"*** {algorithm} is unknown")
 
 
 def causal_learn(algorithm, data, context=None, params=None, maxtime=None):
@@ -223,7 +264,8 @@ def causal_learn(algorithm, data, context=None, params=None, maxtime=None):
     if algorithm not in CAUSAL_ALGORITHMS:
         raise ValueError('causal-learn unsupported algorithm')
 
-    params = _validate_learn_params(params=params, dstype=data.dstype)
+    params = _validate_learn_params(algorithm=algorithm, params=params,
+                                    dstype=data.dstype)
 
     if (context is not None
             and (len(set(context.keys()) - set(CONTEXT_FIELDS))
@@ -235,11 +277,11 @@ def causal_learn(algorithm, data, context=None, params=None, maxtime=None):
     # Execute the algorithm with timeout if specified
     start = time()
     try:
-        results = run_with_timeout(run_algo,
-                                   args=(algorithm, data, params["score"]),
-                                   timeout_seconds=maxtime)
+        graph, steps = run_with_timeout(run_algo,
+                                        args=(algorithm, data,
+                                              params["score"]),
+                                        timeout_seconds=maxtime)
         elapsed = time() - start
-        graph = results["G"]
     except TimeoutError:
         print(f"*** causal-learn algorithm timed out after {maxtime} seconds")
         raise RuntimeError(f"causal-learn algorithm timed out after "
@@ -249,8 +291,8 @@ def causal_learn(algorithm, data, context=None, params=None, maxtime=None):
         print(f"*** causal-learn failed: {e}")
         raise RuntimeError(f"causal-learn failed: {e}")
 
-    trace = (None if context is None
-             else _generate_trace(graph, elapsed, data, params, context,
-                                  (results["G_step1"], results["G_step2"])))
+    trace = (None if context is None else
+             _generate_trace(algorithm, graph, elapsed, data, params, context, 
+                             steps))
 
     return to_causaliq_pdag(graph), trace
