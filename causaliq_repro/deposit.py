@@ -2,6 +2,7 @@
 
 from os import scandir
 from os.path import getsize
+from datetime import date
 from enum import Enum
 from hashlib import new as new_hashlib
 import requests
@@ -19,6 +20,7 @@ class ZenodoOp(StrEnum):  # Operations possible on Zenodo deposits
     CREATE = "create deposit"
     UPDATE = "update metadata"
     PUBLISH = "publish deposit"
+    NEW_VERSION = "create new version"
     DOWNLOAD_FILE = "download file"
     GET_METADATA = "get metadata"
     DELETE = "delete deposit"
@@ -48,6 +50,10 @@ ZENODO_DIR = "causaliq_repro/zenodo/"  # where Zenodo template files located
 
 ZENODO_URL = None  # safety for now, "https://zenodo.org/api"
 SANDBOX_URL = "https://sandbox.zenodo.org/api"
+
+DOI_HOSTNAME = "https://doi.org/"
+ZENODO_DOI_PREFIX = "10.5281/zenodo."
+SANDBOX_DOI_PREFIX = "10.5072/zenodo."
 
 LICENSE = "CC-BY-4.0"
 CREATOR_ORCID = "0000-0002-7970-1453"
@@ -133,14 +139,19 @@ class Deposit:
         if changes is None:
             print(f"   - no changes made (recid: {self.status['recid']})")
         else:
-            update_related = False
             # create the deposit on Zenodo if necessary
             if "recid" not in self.status:
                 self._create_deposit(dry_run, token)
-                update_related = True
+                created = True
 
-            # or modify its metadata if necessary
-            elif changes["metadata"] is True:
+            # if published and changes required, then create new version first
+            else:
+                created = False
+                if self.status["published"] is True:
+                    self._new_version(dry_run, token)
+
+            # Modify metadata of an existing deposit if necessary
+            if created is False and changes["metadata"] is True:
                 self._update_deposit(dry_run, token)
 
             # remove deleted or changed files
@@ -161,10 +172,35 @@ class Deposit:
             if dry_run is False:
                 self._write_status()
 
-            # update links to this deposit in related deposits
-            if update_related is True:
-                self._update_related(to=self.name, dry_run=dry_run,
-                                     token=token)
+    def publish(self, dry_run: bool, token: str):
+        """
+            Publish a draft deposit on Zenodo.
+
+            :param bool dry_run: whether this is just a dry run
+            :param str token: Authentication token for Zenodo
+            :raises ZenodoError: if the API request fails
+        """
+        operation = ZenodoOp.PUBLISH
+
+        if "recid" not in self.status or self.status["published"] is True:
+            raise ValueError("Cannot publish: no draft deposit found")
+
+        print(f"\n** Publishing '{self.name}' " +
+              f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
+
+        if dry_run is False:
+            self.metadata["publication_date"] = date.today().isoformat()
+            update_response = requests.put(**self._request(ZenodoOp.UPDATE,
+                                                           token))
+            self._check_response(ZenodoOp.UPDATE, update_response)
+
+            response = requests.post(**self._request(operation, token))
+            published_info = self._check_response(operation, response)
+            self.status["conceptdoi"] = published_info.get("conceptdoi")
+            self.status["published"] = True
+            self._write_status()
+
+        print(f"   - {operation.value} (recid: {self.status['recid']})")
 
     def download(self, file: str, dry_run: bool, token: str):
         """
@@ -246,40 +282,6 @@ class Deposit:
             self._write_status()
 
         print(f"   - {operation.value} (recid: {recid})")
-
-        # update links in related deposits
-        self._update_related(to=self.name, dry_run=dry_run, token=token)
-
-    def _update_related(self, to: str, dry_run: bool, token: str):
-        """
-            Update the related links of all related deposits
-
-            :param str to: links referring to this deposit must be updated
-            :param bool dry_run: whether this ia just a dry run
-            :param str token: Authentication token for Zenodo
-        """
-        # Update related links in parent deposit if there is one
-        if to != "":
-            parent = "/".join(self.name.split("/")[:-1])
-            parent = Deposit(name=parent, sandbox=self.sandbox,
-                             base_dir=self.base)
-            if "recid" in parent.status:
-                print(f" * Updating related link to '{to}' in '{parent.name}' "
-                      + f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
-                parent._update_deposit(dry_run=dry_run, token=token)
-
-        # Update related links in child deposits if there are any
-        for child in scandir(self.base + self.name):
-            if not child.is_dir():
-                continue
-            child = (child.name if self.name == ""
-                     else self.name + "/" + child.name)
-            child = Deposit(name=child, sandbox=self.sandbox,
-                            base_dir=self.base)
-            if "recid" in child.status:
-                print(f" * Updating related link to '{to}' in '{child.name}' "
-                      + f"on {'sandbox' if self.sandbox else 'LIVE'} Zenodo")
-                child._update_deposit(dry_run=dry_run, token=token)
 
     def _render_jinja2_templates(self):
         """
@@ -407,13 +409,14 @@ class Deposit:
         status = deposit.status
         resource_type_str = deposit.metadata["upload_type"]
 
-        # return None if deposit not on Zenodo
-        if "recid" not in status:
+        # return None if deposit not on Zenodo or is draft
+        if "recid" not in status or status["published"] is False:
             return None
 
-        # Use DOI if deposit published, otherwise URL
-        if "doi" in status:
-            id = status["doi"]
+        # Use DOI if deposit published, otherwise URL (latter is a placeholder,
+        # as currently only including links to published deposits)
+        if status["published"] is True:
+            id = status["conceptdoi"]
             scheme = SchemeType.DOI.value
         else:
             id = ((ZENODO_URL if self.sandbox is False
@@ -546,6 +549,35 @@ class Deposit:
 
         print(f"   - {operation.value} (recid: {self.status['recid']})")
 
+    def _new_version(self, dry_run: bool, token: str):
+        """
+            Create a new draft version of a published deposit
+
+            :param bool dry_run: whether this is just a dry run
+            :param str token: Authentication token for Zenodo
+            :raises ZenodoError: if the API request fails
+        """
+        operation = ZenodoOp.NEW_VERSION
+
+        if "recid" not in self.status or self.status["published"] is False:
+            raise ValueError(f"Cannot {operation.value}: no published deposit")
+
+        if dry_run is False:
+            response = requests.post(**self._request(operation, token))
+            info = self._check_response(operation, response)
+
+            self.status["recid"] = info["record_id"]
+            self.status["version"] += 1
+            self.status["published"] = False
+            self._write_status()
+
+        else:
+            self.status["recid"] = -3
+            self.status["version"] += 1
+
+        print(f"   - {operation.value} (recid: {self.status['recid']}"
+              f", version: {self.status['version']})")
+
     def _request(self, operation: str, token: str, file_data: tuple = None):
         """
             Builds the Zenodo request - the URL, headers and content
@@ -572,9 +604,9 @@ class Deposit:
         # supply authentication token
         headers = {"Authorization": f"Bearer {token}" if token else None}
 
-        # request JSON response for create, update and get_metadata
+        # request JSON response for create, update, new vers. and get_metadata
         if operation in {ZenodoOp.GET_METADATA, ZenodoOp.CREATE,
-                         ZenodoOp.UPDATE}:
+                         ZenodoOp.UPDATE, ZenodoOp.NEW_VERSION}:
             headers.update({"Content-Type": "application/json"})
 
         # supply metadata information with create and update operation
@@ -591,6 +623,14 @@ class Deposit:
         # supply file id when removing a file
         if operation == ZenodoOp.REMOVE_FILE:
             request["url"] += f"/files/{file_data[1]}"
+
+        # Add publish action to URL
+        if operation == ZenodoOp.PUBLISH:
+            request["url"] += "/actions/publish"
+
+        # Add new version action to URL
+        if operation == ZenodoOp.NEW_VERSION:
+            request["url"] += "/actions/newversion"
 
         # Add stream flag when downloading a file
         if operation == ZenodoOp.DOWNLOAD_FILE:
@@ -611,6 +651,8 @@ class Deposit:
         EXPECTED_STATUS = {
             ZenodoOp.CREATE: 201,
             ZenodoOp.UPDATE: 200,
+            ZenodoOp.PUBLISH: 202,
+            ZenodoOp.NEW_VERSION: 201,
             ZenodoOp.GET_METADATA: 200,
             ZenodoOp.DELETE: 204,
             ZenodoOp.ADD_FILE: 201,
