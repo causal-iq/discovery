@@ -124,7 +124,9 @@ def _generate_trace(algorithm: str, graph: GeneralGraph, elapsed: float,
     empty_cl_score = score_g(data, empty, score_func, None)
     empty = DAG(nodes=node_names, edges=[])
     empty_score = (empty.score(data=data,
-                               types=[params['score']])[params['score']]).sum()
+                               types=[params['score']],
+                               params={'unistate_ok': True})
+                   [params['score']]).sum()
     print(f"Initial score: {empty_cl_score:.5e}, {empty_score:.5e}\n")
 
     # Extend learned PDAG to a DAG and obtain its score using CL & CausalIQ
@@ -135,8 +137,10 @@ def _generate_trace(algorithm: str, graph: GeneralGraph, elapsed: float,
         learned_cl_score = learned_cl_score.sum()
     pdag = to_causaliq_pdag(graph)
     dag = DAG.extendPDAG(pdag)
-    learned_score = dag.score(data=data,
-                              types=[params["score"]])[params['score']].sum()
+    learned_score = (dag.score(data=data,
+                               types=[params["score"]],
+                               params={"unistate_ok": True})
+                     [params['score']]).sum()
     print(f"Learned score: {learned_cl_score:.5e}, {learned_score:.5e}\n")
 
     # Instantiate Trace with context details and add init and stop records
@@ -292,7 +296,7 @@ def causal_learn(algorithm, data, context=None, params=None, maxtime=None):
         raise RuntimeError(f"causal-learn failed: {e}")
 
     trace = (None if context is None else
-             _generate_trace(algorithm, graph, elapsed, data, params, context, 
+             _generate_trace(algorithm, graph, elapsed, data, params, context,
                              steps))
 
     return to_causaliq_pdag(graph), trace

@@ -10,7 +10,6 @@ from numpy import nan
 from math import floor, ceil
 from re import compile
 
-from conftest import EXPT_ARGS
 from experiments.config import Ordering, SERIES_GROUPS_P, SERIES_P, \
     FIGURE_PARAMS_P, Package, Algorithm
 from core.common import Randomise, ln
@@ -20,6 +19,9 @@ from learn.knowledge import RuleSet
 
 INT = compile(r'^\-*\d+$')
 FLOAT = compile(r'^\-*\d+\.\d+$')
+
+EXPT_ARGS = {'action', 'series', 'metrics', 'nodes', 'networks', 'N',
+             'maxtime', 'file', 'params'}
 
 # Types of experimental analysis supported
 

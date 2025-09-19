@@ -2,9 +2,6 @@
 
 import pytest
 
-EXPT_ARGS = {'action', 'series', 'metrics', 'nodes', 'networks', 'N',
-             'maxtime', 'file', 'params'}
-
 
 def pytest_addoption(parser):
     """
