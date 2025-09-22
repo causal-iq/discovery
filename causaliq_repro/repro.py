@@ -1,7 +1,10 @@
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter, Namespace
 from os import getenv
 from enum import Enum
 from requests import get as get_url
+from typing import Optional
+
+from causaliq_repro.deposit import Deposit, ZENODO_DIR
 
 ZENODO_LIVE_BASE = "https://zenodo.org/api"
 ZENODO_SANDBOX_BASE = "https://sandbox.zenodo.org/api"
@@ -30,13 +33,30 @@ def run_repro():
     """
         Run the reproducibility job specified by command line arguments.
     """
+    # get and check consistency the command line arguments
     args = get_args()
 
-    # Example usage
-    print(f"Operation: {args.operation}")
-    print(f"Target: {args.target}")
-    print(f"Run: {args.run}")
-    print(f"Zenodo: {args.zenodo}")
+    # validate that required operation valid
+    args = validate_args(args)
+    if args is None:
+        return
+
+    # perform the requested operation
+    sandbox = args.zenodo == "sandbox"
+    dry_run = args.run is not True
+    if dry_run is True:
+        print("\n** This is a DRY-RUN - operations WOULD be:")
+    deposit = Deposit(name=args.target, sandbox=sandbox,
+                      base_dir=args.base_dir)
+    if args.operation == "upload":
+        deposit.upload(dry_run=dry_run, token=args.token)
+    elif args.operation == "publish":
+        deposit.publish(dry_run=dry_run, token=args.token)
+    elif args.operation == "delete":
+        deposit.delete(dry_run=dry_run, token=args.token)
+    else:
+        print(f"'{args.operation}' not yet supported")
+    print("\nOperations complete\n")
 
 
 def get_zenodo_token(sandbox: bool):
@@ -83,8 +103,10 @@ def get_args():
         "  download  Download results and asset\n"
     )
     if admin is True:
-        op_choices += ["upload"]
-        op_help += "  upload    Upload asset"
+        op_choices += ["upload", "publish", "delete"]
+        op_help += "  upload    Upload deposit [admin only]\n"
+        op_help += "  publish   Publish deposit [admin only]\n"
+        op_help += "  delete    Delete draft deposit [admin only]\n"
     parser.add_argument("operation", choices=op_choices, help=op_help)
 
     parser.add_argument(
@@ -109,8 +131,52 @@ def get_args():
     args = parser.parse_args()
 
     # set live/sandbox if not set, and add token to args
-    args.zenodo = ("live" if admin is False else
-                   ("sandbox" if args.operation == "upload" else "live"))
+
+    if not hasattr(args, "zenodo") or args.zenodo == "None":
+        args.zenodo = ("live" if admin is False else
+                       ("sandbox" if args.operation in
+                        {"upload", "publish", "delete"} else "live"))
     args.token = get_zenodo_token(sandbox=(args.zenodo == "sandbox"))
+
+    return args
+
+
+def validate_args(args: Namespace,
+                  base_dir: Optional[str] = None) -> Namespace:
+    """
+        Validate args take into account existing state of the target etc.
+
+        :param Namespace args: arguments specified on c (timed out)ommand line
+        :param str|None base_dir: optional base directory for testing
+
+        :returns Namespace|None: modified and augmented process arguments
+    """
+    args.base_dir = ZENODO_DIR if base_dir is None else base_dir
+    args.target = "" if args.target == "root" else args.target
+    sandbox = args.zenodo == "sandbox"
+
+    # try to instantiate the deposit which effectively checks the target name
+    # and whether the mandatory files are present
+    try:
+        deposit = Deposit(name=args.target, sandbox=sandbox,
+                          base_dir=args.base_dir)
+    except Exception as e:
+        print(f"Unknown target or invalid/missing files ({e})")
+        return None
+
+    # learn, analyse and download not supported yet
+    if args.operation in {"learn", "analyse", "download"}:
+        print(f"'{args.operation}' not supported yet")
+        return None
+
+    # delete and publish only allowed when deposit in draft status
+    state = ("absent" if "recid" not in deposit.status
+             else ("published" if deposit.status["published"] else "draft"))
+    if args.operation == "publish" and state != "draft":
+        print("Can only publish deposits in draft status")
+        return None
+    elif args.operation == "delete" and state != "draft":
+        print("Can only delete deposits in draft status")
+        return None
 
     return args

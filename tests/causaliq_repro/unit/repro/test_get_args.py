@@ -115,13 +115,43 @@ def test_user_zenodo_forbidden(monkeypatch):
 # --- Privileged user, successful commands ---
 
 # Admin specifies upload (defaults to sandbox)
-def test_admin_upload(monkeypatch):
+def test_admin_sandbox_upload(monkeypatch):
     test_args = ["repro.py", "upload", "papers/ijar_stable/fig1"]
     monkeypatch.setattr(sys, "argv", test_args)
     monkeypatch.setattr("causaliq_repro.repro.get_zenodo_token",
                         lambda *a, **kw: "dummy token")
     args = get_args()
     assert args.operation == "upload"
+    assert args.target == "papers/ijar_stable/fig1"
+    assert args.run is False
+    assert args.zenodo == "sandbox"
+    assert args.token == "dummy token"
+
+
+# Admin publishes to live
+def test_admin_live_publish(monkeypatch):
+    test_args = ["repro.py", "publish", "papers/ijar_stable/fig1",
+                 "--zenodo", "live"]
+    monkeypatch.setattr(sys, "argv", test_args)
+    monkeypatch.setattr("causaliq_repro.repro.get_zenodo_token",
+                        lambda *a, **kw: "dummy token")
+    args = get_args()
+    assert args.operation == "publish"
+    assert args.target == "papers/ijar_stable/fig1"
+    assert args.run is False
+    assert args.zenodo == "live"
+    assert args.token == "dummy token"
+
+
+# Admin deletes from sandbox
+def test_admin_sandbox_delete(monkeypatch):
+    test_args = ["repro.py", "delete", "papers/ijar_stable/fig1",
+                 "--zenodo", "sandbox"]
+    monkeypatch.setattr(sys, "argv", test_args)
+    monkeypatch.setattr("causaliq_repro.repro.get_zenodo_token",
+                        lambda *a, **kw: "dummy token")
+    args = get_args()
+    assert args.operation == "delete"
     assert args.target == "papers/ijar_stable/fig1"
     assert args.run is False
     assert args.zenodo == "sandbox"
