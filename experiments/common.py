@@ -1619,8 +1619,8 @@ def process_args(args, analyse):
 
     if args['maxtime'] is not None:
         maxtime = convert_str(args['maxtime'])
-        if not isinstance(maxtime, int) or maxtime < 1 or maxtime > 7200:
-            error += ' - invalid maxtime, must be between 1 and 7200\n'
+        if not isinstance(maxtime, int) or maxtime < 1 or maxtime > 100000:
+            error += ' - invalid maxtime, must be between 1 and 100,000\n'
     else:
         maxtime = None
 
