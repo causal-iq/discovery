@@ -1,0 +1,38 @@
+## CausalIQ: Asia Bayesian Network Definition and Synthetic Datasets
+
+### Overview
+This repository contains the Asia Bayesian Network (BN) definitions and 
+synthetic datasets generated using the network.
+The Asia BN is a benchmark model in Bayesian network research, 
+representing a hypothetical scenario involving lung cancer, 
+tuberculosis, and related symptoms.
+
+### Contents
+The deposit includes the following:
+1. **Network Definitions**:
+   - `asia.dsc`: Network definition in DSC format
+   - `asia.xdsl`: Network definition in XDSL format (compatible with GeNIe/SMILE).
+2. **Synthetic Datasets**:
+   - `asia_100k.csv.gz`: Dataset with 100,000 rows.
+   - `asia_10m.csv.gz`: Dataset with 10,000,000 rows.
+3. **Documentation**:
+   - This `README.md` file.
+
+### Usage
+1. **Network Definitions**:
+   - Open the `.xdsl` file in GeNIe/SMILE for visualization and editing.
+   - Use the `.dsc` with other Bayesian network tools.
+2. **Synthetic Datasets**:
+   - Load the `.csv` files into your preferred data analysis tool 
+     (e.g., Python, R, Excel).
+   - Use the datasets for testing structure learning, inference,
+     or causal discovery algorithms.
+3. **CausalIQ Reproducibility Framework**
+   - The CausalIQ reproducibility framework will automatically download the
+     network definitions and sample datasets from this deposit as required
+     to reproduce results, tables and figures used in CausalIQ papers.
+
+### References
+Lauritzen, S. L., & Spiegelhalter, D. J. (1988). _Local computations with 
+probabilities on graphical structures and their application to expert systems._
+Journal of the Royal Statistical Society: Series B, 50(2), 157–224.

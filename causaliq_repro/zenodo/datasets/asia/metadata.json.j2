@@ -1,0 +1,74 @@
+{% set description -%}
+This deposit contains the <i>Asia</i> Bayesian Network (BN) definitions and some
+synthetic datasets generated using the network. The Asia BN is a well-known
+benchmark model in probabilistic reasoning and Bayesian network research.
+It is widely used for testing algorithms in structure learning, inference,
+and causal discovery.
+
+<h5><strong>Contents</strong></h5>
+
+<ul>
+<li>The Asia Bayesian Network definition in <code>.dsc</code> and 
+<code>.xdsl</code> format</li>
+<li>Synthetic datasets generated from the network with 100,000
+and 10,000,000 rows</li>
+<li>Supporting metadata and documentation.</li>
+</ul>
+<h5><strong>Applications</strong></h5>
+This resource is intended for researchers, educators, and practitioners 
+working in the fields of machine learning, artificial intelligence, 
+and causal inference. Additionally, the CausalIQ software automatically uses 
+this dataset to reproduce results in the CausalIQ papers.
+
+<h5><strong>References</strong></h5>
+<p>The Asia Bayesian Network was first introduced by Lauritzen and
+Spiegelhalter (1988).</p>
+
+{%- endset %}
+
+
+{% set additional_keywords =
+[
+"Synthetic Data",
+"Asia Network"
+]
+%}
+
+{% set additional_related_identifiers =
+[
+    {
+        "identifier": "10.1111/j.2517-6161.1988.tb01721.x",
+        "relation": "isReferencedBy",
+        "resource_type": "publication"
+    },
+    {
+        "identifier": "https://www.bnlearn.com/bnrepository/",
+        "relation": "isDerivedFrom",
+        "resource_type": "other"
+    },
+    {
+        "identifier": "https://github.com/causal-iq/discovery",
+        "relation": "isSupplementTo",
+        "resource_type": "software"
+    }
+]
+%}
+
+
+{
+  "title": "CausalIQ: Asia Bayesian Network",
+  "description": "{{ description | replace('\n', ' ') }}",
+  "creators": [
+    {
+      "name": "{{ creator_name }}",
+      "orcid": "{{ creator_orcid }}",
+      "affiliation": "{{ creator_affiliation }}"
+    }
+  ],
+  "license": "{{ license }}",
+  "upload_type": "dataset",
+  "keywords": {{ (additional_keywords + keywords) | tojson }},
+  "related_identifiers": {{ (additional_related_identifiers + 
+                             related_identifiers) | tojson }},
+  "language": "{{ language }}",
+  "access_right": "{{ access_right }}"}

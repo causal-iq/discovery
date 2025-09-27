@@ -14,6 +14,9 @@ build/
 # Ignore temporary files in test data
 tests/**/*.tmp
 
+# Ignore data files in production repro area
+causaliq_repro/zenodo/**/*.csv.gz
+
 # Ignore sandbox_status.json in production repro area
 causaliq_repro/zenodo/**/sandbox_status.json
 
